@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { requireUser } from "@/lib/auth";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
-export async function GET(request: Request, { params }: { params: Promise<{ reservaId: string }> }) {
+async function gerarLinkPagamento(request: NextRequest, reservaId: string) {
   const user = await requireUser();
-  const { reservaId } = await params;
   if (!isSupabaseConfigured()) return NextResponse.json({ message: "Supabase nao configurado." }, { status: 503 });
   if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) return NextResponse.json({ message: "Mercado Pago nao configurado." }, { status: 503 });
 
@@ -54,5 +53,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ rese
 
   const link = created.init_point ?? created.sandbox_init_point;
   if (!link) return NextResponse.json({ message: "Erro ao gerar link de pagamento." }, { status: 500 });
+
+  if (request.headers.get("accept")?.includes("application/json")) {
+    return NextResponse.json({
+      redirect: link,
+      reference_id: `reserva_${reserva.id}`,
+    });
+  }
+
   return NextResponse.redirect(link);
+}
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ reservaId: string }> }) {
+  const { reservaId } = await params;
+  return gerarLinkPagamento(request, reservaId);
+}
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ reservaId: string }> }) {
+  const { reservaId } = await params;
+  return gerarLinkPagamento(request, reservaId);
 }

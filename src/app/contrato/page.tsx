@@ -1,7 +1,42 @@
+import { revalidatePath } from "next/cache";
+import { AdminPageHero } from "@/components/admin/AdminPageChrome";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { requireAdmin } from "@/lib/auth";
+import { getLatestContract } from "@/lib/data";
+import { getSupabaseAdmin } from "@/lib/supabase";
+
+async function saveContract(formData: FormData) {
+  "use server";
+  await requireAdmin();
+
+  const versao = String(formData.get("versao") ?? "").trim();
+  const conteudo = String(formData.get("conteudo") ?? "").trim();
+  if (!versao || !conteudo) return;
+
+  await getSupabaseAdmin().from("contracts").insert({ versao, conteudo });
+  revalidatePath("/contrato");
+}
 
 export default async function ContratoPage() {
   await requireAdmin();
-  return <AdminShell><h1 className="h3">Contrato</h1><p>Rota migrada. Editor do contrato sera ligado a tabela contracts apos configurar Supabase.</p></AdminShell>;
+  const contrato = await getLatestContract();
+
+  return (
+    <AdminShell>
+      <AdminPageHero eyebrow="Contrato" title="Editar Contrato">
+        <p className="mb-0">Cria uma nova versao do contrato, seguindo o `ContratoController` do Laravel.</p>
+      </AdminPageHero>
+      <form action={saveContract} className="eq-card p-4 admin-contract-form">
+        <label>
+          <span>Versao do Contrato</span>
+          <input className="form-control" name="versao" defaultValue={contrato?.versao ?? ""} required />
+        </label>
+        <label>
+          <span>Conteudo do Contrato</span>
+          <textarea className="form-control" name="conteudo" rows={16} defaultValue={contrato?.conteudo ?? ""} required />
+        </label>
+        <button className="eq-btn" type="submit">Salvar Contrato</button>
+      </form>
+    </AdminShell>
+  );
 }

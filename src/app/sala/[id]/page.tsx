@@ -64,7 +64,7 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                     disabled={indisponivel}
                   />
                 ) : (
-                  <a href="/login" className="eq-btn w-100">Entrar para reservar</a>
+                  <a href={`/login?sala_id=${sala.id}`} className="eq-btn w-100">Entrar para reservar</a>
                 )}
                 {endereco && (
                   <div className="eq-card p-4 mt-3">

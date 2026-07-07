@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getProfile } from "./data";
+import { getProfile, getProfileByEmail } from "./data";
 import { getSupabaseAnon } from "./supabase";
 import type { AppUser } from "./types";
 
@@ -13,9 +13,9 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     const { data, error } = await getSupabaseAnon().auth.getUser(token);
     if (error || !data.user) return null;
 
-    const profile = await getProfile(data.user.id);
+    const profile = (await getProfile(data.user.id)) ?? (data.user.email ? await getProfileByEmail(data.user.email) : null);
     return {
-      id: data.user.id,
+      id: profile?.id ?? data.user.id,
       email: data.user.email,
       name: profile?.name ?? data.user.user_metadata?.name ?? null,
       tipo_usuario: profile?.tipo_usuario ?? data.user.user_metadata?.tipo_usuario ?? "cliente",

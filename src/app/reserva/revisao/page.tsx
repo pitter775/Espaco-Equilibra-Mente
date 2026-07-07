@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ConfirmReservationButton } from "@/components/site/ConfirmReservationButton";
 import { money } from "@/lib/format";
 
 export default async function RevisaoPage() {
@@ -16,13 +17,7 @@ export default async function RevisaoPage() {
           <p>Sala: <strong>{reserva.sala_nome}</strong></p>
           <ul>{reserva.horarios.map((h) => <li key={`${h.data_reserva}-${h.hora_inicio}`}>{h.data_reserva} - {h.hora_inicio} as {h.hora_fim}</li>)}</ul>
           <h2 className="h4">Total: {money(reserva.valor_total)}</h2>
-          <form action="/api/reserva/confirmar" method="post">
-            <select name="metodo_pagamento" className="form-control mb-3" defaultValue="mercadopago">
-              <option value="mercadopago">Mercado Pago</option>
-              <option value="pagbank">PagBank</option>
-            </select>
-            <button className="eq-btn" type="submit">Confirmar e pagar</button>
-          </form>
+          <ConfirmReservationButton />
         </div>
       </div>
     </main>

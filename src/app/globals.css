@@ -59,6 +59,841 @@ a {
   box-shadow: none;
 }
 
+.eq-btn.danger {
+  background: #b83a2f;
+}
+
+.eq-status {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 11px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.eq-status-success {
+  background: #2f8f46;
+}
+
+.eq-status-warning {
+  background: #c8921b;
+}
+
+.eq-status-danger {
+  background: #b83a2f;
+}
+
+.eq-status-secondary {
+  background: #6d746d;
+}
+
+.eq-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.eq-modal {
+  width: min(880px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  padding: 24px;
+}
+
+.eq-icon-btn {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #216c2e;
+  font-weight: 700;
+}
+
+.admin-hero {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 142px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #203522, #4f7f3f);
+  color: #fff;
+  padding: 28px 32px;
+}
+
+.admin-hero h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.admin-kicker {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.78;
+}
+
+.admin-hero-pulse {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  border: 14px solid rgba(255, 255, 255, 0.18);
+  animation: adminPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes adminPulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-metrics div {
+  border-radius: 8px;
+  background: #fff;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(28, 42, 25, 0.08);
+}
+
+.admin-metrics span {
+  display: block;
+  color: #6a736a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-metrics strong {
+  display: block;
+  margin-top: 4px;
+  color: #203522;
+  font-size: 28px;
+}
+
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-segments {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #eef4ec;
+  padding: 4px;
+}
+
+.admin-segments button {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #426043;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-segments button.active {
+  background: #216c2e;
+  color: #fff;
+}
+
+.admin-user-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-user-card {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 13px;
+  text-align: left;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(28, 42, 25, 0.12);
+}
+
+.admin-room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-room-card {
+  display: grid;
+  grid-template-rows: 150px 1fr;
+  overflow: hidden;
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0;
+  text-align: left;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(28, 42, 25, 0.12);
+}
+
+.admin-room-image {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #eef4ec;
+  color: #6a736a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-room-image img,
+.admin-image-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-room-content {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.admin-room-content div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.admin-room-content strong,
+.admin-room-content span,
+.admin-room-content small {
+  display: block;
+}
+
+.admin-room-content strong {
+  color: #203522;
+}
+
+.admin-room-content span,
+.admin-room-content small {
+  color: #697369;
+}
+
+.admin-room-modal {
+  width: min(1120px, 96vw);
+}
+
+.admin-room-form label,
+.admin-room-form label span {
+  display: block;
+}
+
+.admin-room-form label span,
+.admin-room-sections h3 {
+  margin-bottom: 7px;
+  color: #203522;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-form-wide {
+  grid-column: span 4;
+}
+
+.admin-convenience-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-convenience-list label {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #426043;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.admin-room-sections {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.admin-room-sections section {
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-image-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-image-strip > div {
+  overflow: hidden;
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-image-strip img {
+  aspect-ratio: 4 / 3;
+}
+
+.admin-image-strip > div > div {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+}
+
+.admin-image-strip .eq-btn,
+.admin-block-list .eq-btn,
+.admin-inline-form .eq-btn,
+.admin-key-grid .eq-btn,
+.admin-block-form .eq-btn {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.admin-inline-form,
+.admin-key-grid,
+.admin-block-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-key-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+}
+
+.admin-block-form {
+  grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) auto;
+}
+
+.admin-block-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-block-list > div {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.5fr) auto;
+  gap: 10px;
+  align-items: center;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 10px;
+}
+
+.admin-block-list span {
+  color: #203522;
+  font-weight: 800;
+}
+
+.admin-block-list small {
+  color: #697369;
+}
+
+.admin-reservation-toolbar {
+  grid-template-columns: minmax(260px, 1fr) 180px 220px;
+}
+
+.admin-reservation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-reservation-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 0.9fr 1.1fr 1.2fr;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px;
+}
+
+.admin-reservation-row strong,
+.admin-reservation-row span,
+.admin-reservation-row small {
+  display: block;
+}
+
+.admin-reservation-row strong {
+  color: #203522;
+}
+
+.admin-reservation-row span,
+.admin-reservation-row small {
+  color: #697369;
+}
+
+.admin-reservation-person {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.admin-reservation-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-reservation-actions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-reservation-actions .eq-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.admin-reservation-modal {
+  width: min(1120px, 96vw);
+}
+
+.admin-reservation-detail {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 18px;
+}
+
+.admin-reservation-image {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #eef4ec;
+  color: #6a736a;
+  font-weight: 700;
+}
+
+.admin-reservation-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-reservation-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-reservation-detail-grid section {
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-reservation-detail-grid h3 {
+  margin-bottom: 12px;
+  color: #203522;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.admin-reservation-detail-grid p {
+  margin-bottom: 6px;
+  color: #697369;
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.admin-dashboard-panel {
+  padding: 18px;
+}
+
+.admin-dashboard-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-dashboard-heading h2 {
+  margin: 0;
+  color: #203522;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-dashboard-heading span,
+.admin-upcoming-list small {
+  color: #697369;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-chart-bars {
+  display: grid;
+  gap: 9px;
+}
+
+.admin-chart-bars.compact {
+  gap: 7px;
+}
+
+.admin-chart-bars > div {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) minmax(74px, auto);
+  gap: 9px;
+  align-items: center;
+}
+
+.admin-chart-bars span,
+.admin-chart-bars strong {
+  color: #697369;
+  font-size: 12px;
+}
+
+.admin-chart-bars i {
+  display: block;
+  min-width: 8px;
+  height: 10px;
+  border-radius: 999px;
+  background: #216c2e;
+}
+
+.admin-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-status-grid div {
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-status-grid strong {
+  display: block;
+  font-size: 26px;
+}
+
+.admin-status-grid span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-status-grid .is-confirmada {
+  background: #edf7ea;
+  color: #347245;
+}
+
+.admin-status-grid .is-pendente {
+  background: #fff6df;
+  color: #a87a16;
+}
+
+.admin-status-grid .is-cancelada {
+  background: #fff0f0;
+  color: #bf5454;
+}
+
+.admin-ranking-list,
+.admin-upcoming-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-ranking-list > div,
+.admin-upcoming-list > div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 12px;
+}
+
+.admin-ranking-list b {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: #216c2e;
+  color: #fff;
+}
+
+.admin-ranking-list strong,
+.admin-ranking-list small,
+.admin-upcoming-list strong,
+.admin-upcoming-list span,
+.admin-upcoming-list small {
+  display: block;
+}
+
+.admin-ranking-list strong,
+.admin-upcoming-list strong {
+  color: #203522;
+}
+
+.admin-ranking-list small,
+.admin-upcoming-list span {
+  color: #697369;
+}
+
+.admin-external-card {
+  max-width: 760px;
+}
+
+.admin-external-card h2 {
+  margin-bottom: 12px;
+  color: #203522;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.admin-external-card p {
+  color: #697369;
+}
+
+.admin-lock-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-lock-card {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px;
+}
+
+.admin-lock-image {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #eef4ec;
+  color: #6a736a;
+  font-weight: 700;
+}
+
+.admin-lock-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-lock-content {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-lock-content h2 {
+  margin: 0;
+  color: #203522;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-lock-content label,
+.admin-contract-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-lock-content label span,
+.admin-contract-form label span {
+  color: #203522;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-lock-content small {
+  color: #b83a2f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-contract-form {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-user-card strong,
+.admin-user-card span,
+.admin-user-card small {
+  display: block;
+}
+
+.admin-user-card span,
+.admin-user-card small {
+  color: #697369;
+}
+
+.admin-avatar {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #216c2e;
+  font-weight: 800;
+}
+
+.admin-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-user-modal {
+  width: min(980px, 96vw);
+}
+
+.admin-user-detail {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+}
+
+.admin-user-detail section,
+.admin-approval-box {
+  border: 1px solid #edf0eb;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.admin-user-detail h3 {
+  margin-bottom: 14px;
+  font-size: 17px;
+}
+
+.admin-document-box {
+  display: grid;
+  gap: 6px;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 14px;
+}
+
+.admin-document-box span {
+  color: #203522;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.admin-approval-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.admin-approval-box span {
+  display: block;
+  color: #697369;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 991px) {
+  .admin-metrics,
+  .admin-user-grid,
+  .admin-room-grid,
+  .admin-user-detail,
+  .admin-toolbar,
+  .admin-form-grid,
+  .admin-image-strip,
+  .admin-inline-form,
+  .admin-key-grid,
+  .admin-block-form,
+  .admin-block-list > div,
+  .admin-reservation-toolbar,
+  .admin-reservation-row,
+  .admin-reservation-detail,
+  .admin-reservation-detail-grid,
+  .admin-dashboard-grid,
+  .admin-status-grid,
+  .admin-lock-grid,
+  .admin-lock-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-form-wide {
+    grid-column: auto;
+  }
+
+  .admin-segments {
+    overflow-x: auto;
+  }
+}
+
 .eq-card {
   border-radius: 8px;
   background: #fff;

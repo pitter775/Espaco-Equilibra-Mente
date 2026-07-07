@@ -1,0 +1,425 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
+import type { BloqueioSala, Conveniencia, Fechadura, Sala } from "@/lib/types";
+import { money } from "@/lib/format";
+
+type RoomWithRelationArrays = Sala & {
+  fechadura?: Fechadura | Fechadura[] | null;
+};
+
+function statusLabel(status?: string | null) {
+  const labels: Record<string, string> = {
+    disponivel: "Disponivel",
+    indisponivel: "Indisponivel",
+    manutencao: "Manutencao",
+  };
+  return labels[String(status ?? "disponivel").toLowerCase()] ?? String(status ?? "Disponivel");
+}
+
+function statusClass(status?: string | null) {
+  const value = String(status ?? "").toLowerCase();
+  if (value === "disponivel") return "success";
+  if (value === "manutencao") return "warning";
+  return "secondary";
+}
+
+function roomImage(sala: Sala) {
+  return sala.imagens?.find((imagem) => imagem.principal)?.imagem_base64 ?? sala.imagens?.[0]?.imagem_base64 ?? "";
+}
+
+function getFechadura(sala: RoomWithRelationArrays): Fechadura | null {
+  if (Array.isArray(sala.fechadura)) return sala.fechadura[0] ?? null;
+  return sala.fechadura ?? null;
+}
+
+function normalizeTime(value?: string | null) {
+  return value ? value.slice(0, 5) : "";
+}
+
+function readFiles(files: FileList | null): Promise<string[]> {
+  if (!files?.length) return Promise.resolve([]);
+  return Promise.all(Array.from(files).map((file) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  })));
+}
+
+function formPayload(form: HTMLFormElement, conveniencias: Conveniencia[], imagens: string[] = []) {
+  const data = new FormData(form);
+  return {
+    nome: data.get("nome"),
+    status: data.get("status"),
+    valor: data.get("valor"),
+    metragem: data.get("metragem"),
+    descricao: data.get("descricao"),
+    endereco: {
+      id: data.get("endereco_id"),
+      rua: data.get("rua"),
+      numero: data.get("numero"),
+      complemento: data.get("complemento"),
+      bairro: data.get("bairro"),
+      cidade: data.get("cidade"),
+      estado: data.get("estado"),
+      cep: data.get("cep"),
+    },
+    conveniencias: conveniencias
+      .filter((item) => data.get(`conveniencia_${item.id}`))
+      .map((item) => item.id),
+    imagens,
+  };
+}
+
+export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelationArrays[]; conveniencias: Conveniencia[] }) {
+  const router = useRouter();
+  const [selected, setSelected] = useState<RoomWithRelationArrays | null>(null);
+  const [filter, setFilter] = useState("todos");
+  const [query, setQuery] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState("");
+
+  const stats = useMemo(() => ({
+    total: salas.length,
+    disponiveis: salas.filter((sala) => sala.status === "disponivel").length,
+    manutencao: salas.filter((sala) => sala.status === "manutencao").length,
+    imagens: salas.reduce((total, sala) => total + (sala.imagens?.length ?? 0), 0),
+  }), [salas]);
+
+  const filtered = salas.filter((sala) => {
+    const matchesStatus = filter === "todos" || sala.status === filter;
+    const text = `${sala.nome} ${sala.descricao ?? ""} ${sala.endereco?.cidade ?? ""}`.toLowerCase();
+    return matchesStatus && text.includes(query.toLowerCase());
+  });
+
+  async function submitJson(url: string, options: RequestInit, successMessage: string) {
+    setLoading(url);
+    setMessage("");
+    const response = await fetch(url, {
+      ...options,
+      headers: { "content-type": "application/json", ...(options.headers ?? {}) },
+    });
+    const data = await response.json();
+    setLoading("");
+
+    if (!response.ok || !data.success) {
+      setMessage(data.message || "Nao foi possivel salvar.");
+      return false;
+    }
+
+    setMessage(data.message || successMessage);
+    router.refresh();
+    return true;
+  }
+
+  async function createRoom(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const imagens = await readFiles((form.elements.namedItem("imagens") as HTMLInputElement | null)?.files ?? null);
+    const ok = await submitJson("/api/admin/salas", {
+      method: "POST",
+      body: JSON.stringify(formPayload(form, conveniencias, imagens)),
+    }, "Sala criada com sucesso!");
+    if (ok) form.reset();
+  }
+
+  async function updateRoom(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    const form = event.currentTarget;
+    await submitJson(`/api/admin/salas/${selected.id}`, {
+      method: "PUT",
+      body: JSON.stringify(formPayload(form, conveniencias)),
+    }, "Sala atualizada com sucesso!");
+  }
+
+  async function addImages(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    const form = event.currentTarget;
+    const imagens = await readFiles((form.elements.namedItem("imagens") as HTMLInputElement | null)?.files ?? null);
+    const ok = await submitJson(`/api/admin/salas/${selected.id}/imagens`, {
+      method: "POST",
+      body: JSON.stringify({ imagens }),
+    }, "Imagens da sala salvas com sucesso!");
+    if (ok) form.reset();
+  }
+
+  async function saveLock(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    const data = new FormData(event.currentTarget);
+    await submitJson(`/api/admin/salas/${selected.id}/fechadura`, {
+      method: "PUT",
+      body: JSON.stringify({ chaves: [data.get("chave_0"), data.get("chave_1"), data.get("chave_2"), data.get("chave_3")] }),
+    }, "Fechadura atualizada com sucesso!");
+  }
+
+  async function addBlock(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const ok = await submitJson(`/api/admin/salas/${selected.id}/bloqueios`, {
+      method: "POST",
+      body: JSON.stringify({
+        tipo: data.get("tipo"),
+        data_inicio: data.get("data_inicio"),
+        data_fim: data.get("data_fim"),
+        hora_inicio: data.get("hora_inicio"),
+        hora_fim: data.get("hora_fim"),
+        motivo: data.get("motivo"),
+      }),
+    }, "Bloqueio cadastrado com sucesso.");
+    if (ok) form.reset();
+  }
+
+  async function removeImage(id: number) {
+    await submitJson(`/api/admin/imagens/${id}`, { method: "DELETE" }, "Imagem excluida com sucesso.");
+  }
+
+  async function setMainImage(id: number) {
+    await submitJson(`/api/admin/imagens/${id}`, { method: "PATCH", body: JSON.stringify({ principal: true }) }, "Imagem definida como principal!");
+  }
+
+  async function removeBlock(id: number) {
+    await submitJson(`/api/admin/bloqueios/${id}`, { method: "DELETE" }, "Bloqueio removido com sucesso.");
+  }
+
+  const selectedConveniencias = new Set(selected?.conveniencias?.map((item) => item.id) ?? []);
+  const fechadura = selected ? getFechadura(selected) : null;
+  const chaves = fechadura?.chaves ?? [];
+  const bloqueios = [...(selected?.bloqueios ?? [])].sort((a, b) => `${b.data_inicio}${b.created_at ?? ""}`.localeCompare(`${a.data_inicio}${a.created_at ?? ""}`));
+
+  return (
+    <>
+      <AdminPageHero eyebrow="Cadastro operacional" title="Salas">
+        <p className="mb-0">Cadastro, endereco, imagens, conveniencias, bloqueios e chaves seguindo a fonte Laravel.</p>
+      </AdminPageHero>
+      <AdminMetrics items={[
+        { label: "Total", value: stats.total },
+        { label: "Disponiveis", value: stats.disponiveis },
+        { label: "Manutencao", value: stats.manutencao },
+        { label: "Imagens", value: stats.imagens },
+      ]} />
+
+      <div className="eq-card p-3 mb-3">
+        <div className="admin-toolbar">
+          <input className="form-control" placeholder="Buscar por sala, descricao ou cidade" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <div className="admin-segments">
+            {["todos", "disponivel", "indisponivel", "manutencao"].map((item) => (
+              <button key={item} className={filter === item ? "active" : ""} type="button" onClick={() => setFilter(item)}>
+                {item === "todos" ? "Todos" : statusLabel(item)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="admin-room-grid">
+          {filtered.map((sala) => (
+            <button className="admin-room-card" key={sala.id} type="button" onClick={() => { setSelected(sala); setMessage(""); }}>
+              <div className="admin-room-image">
+                {roomImage(sala) ? <img src={roomImage(sala)} alt="" /> : <span>Sem imagem</span>}
+              </div>
+              <div className="admin-room-content">
+                <div>
+                  <strong>{sala.nome}</strong>
+                  <em className={`eq-status eq-status-${statusClass(sala.status)}`}>{statusLabel(sala.status)}</em>
+                </div>
+                <span>{money(sala.valor)} / hora - {sala.metragem} m2</span>
+                <small>{sala.endereco ? `${sala.endereco.bairro}, ${sala.endereco.cidade}/${sala.endereco.estado}` : "Endereco nao cadastrado"}</small>
+                <small>{sala.imagens?.length ?? 0} imagens - {sala.conveniencias?.length ?? 0} conveniencias - {sala.bloqueios?.length ?? 0} bloqueios</small>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {!filtered.length && <p className="text-center mb-0 p-4">Nenhuma sala encontrada.</p>}
+      </div>
+
+      <form className="eq-card p-4 admin-room-form" onSubmit={createRoom}>
+        <div className="d-flex flex-wrap justify-content-between gap-2 mb-3">
+          <div>
+            <p className="admin-kicker mb-1">Nova sala</p>
+            <h2 className="h5 mb-0">Cadastrar sala completa</h2>
+          </div>
+          <button className="eq-btn" type="submit" disabled={Boolean(loading)}>Criar sala</button>
+        </div>
+        <RoomFields conveniencias={conveniencias} />
+      </form>
+
+      {selected && (
+        <div className="eq-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="eq-modal eq-card admin-room-modal">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <p className="admin-kicker mb-1">Editar sala</p>
+                <h2 className="h4 mb-0">{selected.nome}</h2>
+              </div>
+              <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+            </div>
+
+            <form key={`room-${selected.id}`} className="admin-room-form" onSubmit={updateRoom}>
+              <RoomFields sala={selected} conveniencias={conveniencias} selectedConveniencias={selectedConveniencias} />
+              <div className="admin-modal-actions">
+                <button className="eq-btn" type="submit" disabled={Boolean(loading)}>Salvar sala</button>
+              </div>
+            </form>
+
+            <div className="admin-room-sections">
+              <section>
+                <h3>Imagens</h3>
+                <div className="admin-image-strip">
+                  {selected.imagens?.map((imagem) => (
+                    <div key={imagem.id}>
+                      <img src={imagem.imagem_base64} alt="" />
+                      <div>
+                        <button type="button" className="eq-btn secondary" onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</button>
+                        <button type="button" className="eq-btn danger" onClick={() => removeImage(imagem.id)}>Excluir</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <form className="admin-inline-form mt-3" onSubmit={addImages}>
+                  <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
+                  <button className="eq-btn secondary" type="submit">Adicionar imagens</button>
+                </form>
+              </section>
+
+              <section>
+                <h3>Fechadura</h3>
+                <form className="admin-key-grid" onSubmit={saveLock}>
+                  {[0, 1, 2, 3].map((index) => (
+                    <input key={index} className="form-control" name={`chave_${index}`} maxLength={12} defaultValue={chaves[index] ?? ""} placeholder={`Chave ${index + 1}`} />
+                  ))}
+                  <button className="eq-btn secondary" type="submit">Salvar chaves</button>
+                </form>
+              </section>
+
+              <section>
+                <h3>Bloqueios</h3>
+                <form className="admin-block-form" onSubmit={addBlock}>
+                  <select className="form-select" name="tipo" defaultValue="dia_inteiro">
+                    <option value="dia_inteiro">Dia inteiro</option>
+                    <option value="intervalo">Intervalo</option>
+                  </select>
+                  <input className="form-control" name="data_inicio" type="date" required />
+                  <input className="form-control" name="data_fim" type="date" required />
+                  <input className="form-control" name="hora_inicio" type="time" />
+                  <input className="form-control" name="hora_fim" type="time" />
+                  <input className="form-control" name="motivo" placeholder="Motivo" />
+                  <button className="eq-btn secondary" type="submit">Bloquear</button>
+                </form>
+                <div className="admin-block-list">
+                  {bloqueios.map((bloqueio: BloqueioSala) => (
+                    <div key={bloqueio.id}>
+                      <span>{bloqueio.data_inicio} ate {bloqueio.data_fim}</span>
+                      <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
+                      <button type="button" className="eq-btn danger" onClick={() => removeBlock(bloqueio.id)}>Remover</button>
+                    </div>
+                  ))}
+                  {!bloqueios.length && <p className="mb-0">Nenhum bloqueio cadastrado.</p>}
+                </div>
+              </section>
+            </div>
+
+            {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function RoomFields({
+  sala,
+  conveniencias,
+  selectedConveniencias = new Set<number>(),
+}: {
+  sala?: Sala;
+  conveniencias: Conveniencia[];
+  selectedConveniencias?: Set<number>;
+}) {
+  const endereco = sala?.endereco;
+  return (
+    <>
+      <input type="hidden" name="endereco_id" value={endereco?.id ?? ""} />
+      <div className="admin-form-grid">
+        <label>
+          <span>Nome</span>
+          <input className="form-control" name="nome" defaultValue={sala?.nome ?? ""} required />
+        </label>
+        <label>
+          <span>Status</span>
+          <select className="form-select" name="status" defaultValue={sala?.status ?? "disponivel"}>
+            <option value="disponivel">Disponivel</option>
+            <option value="indisponivel">Indisponivel</option>
+            <option value="manutencao">Manutencao</option>
+          </select>
+        </label>
+        <label>
+          <span>Valor por hora</span>
+          <input className="form-control" name="valor" type="number" step="0.01" defaultValue={sala?.valor ?? ""} required />
+        </label>
+        <label>
+          <span>Metragem</span>
+          <input className="form-control" name="metragem" defaultValue={sala?.metragem ?? ""} required />
+        </label>
+        <label className="admin-form-wide">
+          <span>Descricao</span>
+          <textarea className="form-control" name="descricao" rows={3} defaultValue={sala?.descricao ?? ""} required />
+        </label>
+      </div>
+
+      <div className="admin-form-grid mt-3">
+        <label>
+          <span>Rua</span>
+          <input className="form-control" name="rua" defaultValue={endereco?.rua ?? ""} required />
+        </label>
+        <label>
+          <span>Numero</span>
+          <input className="form-control" name="numero" defaultValue={endereco?.numero ?? ""} required />
+        </label>
+        <label>
+          <span>Bairro</span>
+          <input className="form-control" name="bairro" defaultValue={endereco?.bairro ?? ""} required />
+        </label>
+        <label>
+          <span>Cidade</span>
+          <input className="form-control" name="cidade" defaultValue={endereco?.cidade ?? ""} required />
+        </label>
+        <label>
+          <span>Estado</span>
+          <input className="form-control" name="estado" defaultValue={endereco?.estado ?? ""} required />
+        </label>
+        <label>
+          <span>CEP</span>
+          <input className="form-control" name="cep" defaultValue={endereco?.cep ?? ""} required />
+        </label>
+        <label className="admin-form-wide">
+          <span>Complemento</span>
+          <input className="form-control" name="complemento" defaultValue={endereco?.complemento ?? ""} />
+        </label>
+      </div>
+
+      <div className="admin-convenience-list mt-3">
+        {conveniencias.map((item) => (
+          <label key={item.id}>
+            <input name={`conveniencia_${item.id}`} type="checkbox" defaultChecked={selectedConveniencias.has(item.id)} />
+            <span>{item.nome}</span>
+          </label>
+        ))}
+      </div>
+
+      {!sala && (
+        <label className="d-block mt-3">
+          <span className="form-label">Imagens</span>
+          <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
+        </label>
+      )}
+    </>
+  );
+}

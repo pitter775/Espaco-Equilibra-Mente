@@ -4,5 +4,6 @@ import { listReservas } from "@/lib/data";
 
 export async function GET() {
   await requireAdmin();
-  return NextResponse.json(await listReservas());
+  const reservas = await listReservas();
+  return NextResponse.json({ reservas, quantidade: reservas.length });
 }
