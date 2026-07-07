@@ -32,9 +32,12 @@ yarn-error.log*
 dev-server.*.log
 prod-server.*.log
 home-check.png
+backup.sql
+dump-railway-*.sql
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel

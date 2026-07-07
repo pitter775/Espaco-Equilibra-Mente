@@ -23,7 +23,7 @@ create index if not exists enderecos_enderecavel_idx
   on public.enderecos (enderecavel_id, enderecavel_type);
 
 create table if not exists public.users (
-  id uuid primary key references auth.users(id) on delete cascade,
+  id text primary key,
   name varchar(255) not null,
   email varchar(255) not null unique,
   email_verified_at timestamptz,
@@ -94,7 +94,7 @@ create table if not exists public.salas (
 
 create table if not exists public.reservas (
   id bigserial primary key,
-  usuario_id uuid not null references public.users(id) on delete cascade,
+  usuario_id text not null references public.users(id) on delete cascade,
   sala_id bigint not null references public.salas(id) on delete cascade,
   data_reserva date not null,
   hora_inicio time not null,
@@ -109,7 +109,7 @@ create table if not exists public.reservas (
 create table if not exists public.transacoes (
   id bigserial primary key,
   external_id varchar(255),
-  usuario_id uuid not null references public.users(id) on delete cascade,
+  usuario_id text not null references public.users(id) on delete cascade,
   sala_id bigint not null references public.salas(id) on delete cascade,
   pagbank_order_id varchar(255),
   reference_id varchar(255),
@@ -190,7 +190,7 @@ create table if not exists public.fechaduras (
 
 create table if not exists public.contratos_usuarios (
   id bigserial primary key,
-  user_id uuid not null references public.users(id) on delete cascade,
+  user_id text not null references public.users(id) on delete cascade,
   versao_contrato varchar(255) not null default 'v1.0 - 2025-05-16',
   aceito_em timestamptz not null,
   created_at timestamptz default now(),
@@ -207,7 +207,7 @@ create table if not exists public.contracts (
 
 create table if not exists public.atividades (
   id bigserial primary key,
-  id_usuario uuid references public.users(id) on delete set null,
+  id_usuario text references public.users(id) on delete set null,
   descricao varchar(255) not null,
   hora_inicio time not null,
   hora_fim time not null,
@@ -225,7 +225,7 @@ create table if not exists public.bloqueios_salas (
   tipo varchar(255) not null default 'dia_inteiro',
   motivo text,
   ativo boolean not null default true,
-  created_by uuid references public.users(id) on delete set null,
+  created_by text references public.users(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -267,19 +267,36 @@ create policy "Public read sala_conveniencias" on public.sala_conveniencias for 
 create policy "Public read enderecos" on public.enderecos for select using (true);
 
 create policy "Users read own profile" on public.users
-  for select using (auth.uid() = id);
+  for select using (auth.uid()::text = id);
 
 create policy "Users update own profile" on public.users
-  for update using (auth.uid() = id);
+  for update using (auth.uid()::text = id);
 
 create policy "Users read own reservas" on public.reservas
-  for select using (auth.uid() = usuario_id);
+  for select using (auth.uid()::text = usuario_id);
 
 create policy "Users insert own reservas" on public.reservas
-  for insert with check (auth.uid() = usuario_id);
+  for insert with check (auth.uid()::text = usuario_id);
 
 create policy "Users update own reservas" on public.reservas
-  for update using (auth.uid() = usuario_id);
+  for update using (auth.uid()::text = usuario_id);
 
 create policy "Newsletter public insert" on public.newsletters
   for insert with check (true);
+
+grant usage on schema public to anon, authenticated, service_role;
+grant all privileges on all tables in schema public to service_role;
+grant all privileges on all sequences in schema public to service_role;
+
+grant select on public.salas to anon, authenticated;
+grant select on public.imagens_salas to anon, authenticated;
+grant select on public.conveniencias to anon, authenticated;
+grant select on public.sala_conveniencias to anon, authenticated;
+grant select on public.enderecos to anon, authenticated;
+grant insert on public.newsletters to anon, authenticated;
+grant select, insert, update on public.users to authenticated;
+grant select, insert, update on public.reservas to authenticated;
+grant select on public.bloqueios_salas to authenticated;
+
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on sequences to service_role;

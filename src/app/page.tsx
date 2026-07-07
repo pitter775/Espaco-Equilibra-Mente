@@ -11,34 +11,93 @@ const especialistas = [
     foto: "/assets/img/team/rose.jpeg",
     whatsapp: "5511986428238",
     texto:
-      "Psicologa clinica com mais de 10 anos de experiencia na abordagem psicanalitica, fundadora do Espaco EquilibraMente.",
+      "Psicóloga clínica com formação em Psicologia e Pós-Graduação em Terapia de Relacionamentos. Com mais de 10 anos de experiência na abordagem psicanalítica, é fundadora do Espaço EquilibraMente, um ambiente dedicado à saúde mental. Oferece atendimento personalizado e especializado em psicologia clínica, promovendo o bem-estar e o equilíbrio emocional de seus pacientes.",
   },
   {
     nome: "Jicileia Oliveira",
     foto: "/assets/img/team/ji.jpg",
     whatsapp: "5511944751511",
     texto:
-      "Psicologa clinica com mais de 9 anos de experiencia, pos-graduada em Neuropsicanalise e fundadora do Espaco EquilibraMente.",
+      "Psicóloga clínica com mais de 9 anos de experiência, atuando com abordagem psicanalítica. Pós-graduada em Neuropsicanálise, integra conhecimentos da psicanálise e da neurociência para um cuidado mais profundo e individualizado. Especializada em prevenção ao suicídio, ansiedade e depressão. Fundadora do Espaço EquilibraMente, um ambiente voltado ao acolhimento e à saúde emocional com ética, escuta e sensibilidade.",
   },
   {
     nome: "Cristina Azevedo",
     foto: "/assets/img/team/cristina.jpg",
     whatsapp: "5511915654166",
     texto:
-      "Psicologa clinica com experiencia em Terapia Cognitivo-Comportamental, avaliacoes e intervencoes personalizadas.",
+      "Psicóloga Clínica com mais de 5 anos de experiência em Terapia Cognitivo-Comportamental. Pós-graduanda em Neuropsicologia. Trabalha com avaliações e intervenções personalizadas.",
   },
   {
     nome: "Djane",
     foto: "/assets/img/team/djane.jpg",
     whatsapp: "5511972396456",
     texto:
-      "Psicopedagoga e Neuropsicopedagoga especializada no atendimento a criancas, jovens e adultos.",
+      "Psicopedagoga e Neuropsicopedagoga especializada no atendimento a crianças, jovens e adultos com TDAH, TEA e dificuldades de aprendizagem. Oferece avaliação, intervenção e orientação educacional personalizada.",
+  },
+];
+
+const passos = [
+  { icon: "/assets/img/icons/mesa.png", text: "Escolha um dos nossos consultórios disponíveis" },
+  { icon: "/assets/img/icons/calendar.png", text: "Reserve os horários disponíveis" },
+  { icon: "/assets/img/icons/cadastro.png", text: "Cadastre-se e pague com segurança" },
+  { icon: "/assets/img/icons/mapa.png", text: "Vá até o consultório na data reservada" },
+];
+
+const profissionais = [
+  { icon: "/assets/img/icons/pisicologo.png", label: "Psicólogos" },
+  { icon: "/assets/img/icons/pisic.png", label: "Psiquiatras" },
+  { icon: "/assets/img/icons/tera.png", label: "Terapeutas" },
+  { icon: "/assets/img/icons/fisioterapia.png", label: "Fisioterapeutas" },
+  { icon: "/assets/img/icons/nutricionista.png", label: "Nutricionistas" },
+  { icon: "/assets/img/icons/medico.png", label: "Médicos de diversas especialidades" },
+];
+
+const perguntas = [
+  {
+    pergunta: "Como faço para reservar uma sala?",
+    resposta: 'Para reservar uma sala, basta acessar nossa página, escolher a unidade desejada e selecionar a opção "Reservar".',
+  },
+  {
+    pergunta: "Quais são os métodos de pagamento aceitos?",
+    resposta: "Aceitamos pagamentos via cartão de crédito, boleto bancário e transferência PIX.",
+  },
+  {
+    pergunta: "Posso cancelar minha reserva?",
+    resposta: "Sim, é possível cancelar sua reserva com até 24 horas de antecedência para reembolso total.",
+  },
+];
+
+const galeria = [
+  "/assets/img/salas/sala12.jfif",
+  "/assets/img/salas/sala13.jfif",
+  "/assets/img/salas/sala14.jfif",
+];
+
+const depoimentos = [
+  {
+    nome: "Luiza Martins",
+    cargo: "Nutricionista",
+    texto:
+      "A localização estratégica e o ambiente organizado me ajudam a fidelizar meus clientes. Recomendo para qualquer profissional da área da saúde.",
+  },
+  {
+    nome: "Juliana Torres",
+    cargo: "Psicopedagoga",
+    texto:
+      "As salas atendem perfeitamente às minhas necessidades. Conforto e privacidade para os atendimentos são pontos fortes do espaço.",
+  },
+  {
+    nome: "Dr. Ricardo Almeida",
+    cargo: "Psicólogo",
+    texto:
+      "As salas são perfeitas para atender meus pacientes. O ambiente é acolhedor e profissional, exatamente o que eu precisava para oferecer um serviço de qualidade.",
   },
 ];
 
 export default async function Home() {
   const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
-  const salasVisiveis = salas.length ? salas : mockSalas;
+  const salasBase = salas.length ? salas : mockSalas;
+  const salasVisiveis = salasBase.length === 3 ? [...salasBase, { ...salasBase[0], id: salasBase[0].id }] : salasBase;
 
   return (
     <div className="legacy-page">
@@ -62,11 +121,72 @@ export default async function Home() {
       <section id="about" className="public-rooms">
         <div className="container">
           <div className="contentg">
-            <h3>Escolha <span>a melhor opcao</span></h3>
-            <p>Espacos planejados para inspirar e proporcionar bem-estar, com conforto e praticidade.</p>
+            <h3>Escolha <span>a melhor opção</span></h3>
+            <p>Espaços planejados para inspirar e proporcionar bem-estar, com conforto e praticidade.</p>
+          </div>
+          <div className="room-arrows" aria-hidden="true">
+            <span>‹</span>
+            <span>›</span>
           </div>
           <div className="rooms-grid">
-            {salasVisiveis.map((sala) => <RoomCard sala={sala} key={sala.id} />)}
+            {salasVisiveis.map((sala, index) => <RoomCard sala={sala} key={`${sala.id}-${index}`} />)}
+          </div>
+        </div>
+      </section>
+
+      <section id="comofunciona" className="how-section">
+        <div className="container how-grid">
+          <div className="how-title">
+            <h2>Como funciona nossa plataforma <span>para alugar as salas.</span></h2>
+          </div>
+          <div className="steps-grid">
+            {passos.map((passo) => (
+              <div className="step-card" key={passo.text}>
+                <img src={passo.icon} alt="" />
+                <p>{passo.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="atendimento" className="audience-heading">
+        <div className="container">
+          <div className="contentg">
+            <h3>Ofereça o melhor atendimento <span>para seus pacientes</span></h3>
+          </div>
+        </div>
+      </section>
+
+      <section id="profissionais" className="professionals-section">
+        <div className="container professionals-wrap">
+          <div className="professionals-image" />
+          <div className="professionals-card">
+            <p>Atenda seus clientes em um ambiente confortável, sofisticado e privado. Nosso espaço é ideal para profissionais liberais da área da saúde, incluindo:</p>
+            <ul>
+              {profissionais.map((item) => (
+                <li key={item.label}>
+                  <img src={item.icon} alt="" />
+                  <span>{item.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="faq-section">
+        <div className="container">
+          <div className="contentg">
+            <h3>Algumas das perguntas<span> frequentes</span></h3>
+          </div>
+          <div className="faq-list">
+            {perguntas.map((item) => (
+              <details className="faq-item" key={item.pergunta}>
+                <summary>{item.pergunta}<span>+</span></summary>
+                <p>{item.resposta}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
@@ -74,13 +194,42 @@ export default async function Home() {
       <section id="quemsomos" className="public-about">
         <div className="container">
           <div className="contentg">
-            <h3>Um pouco <span>Sobre nos</span></h3>
+            <h3>Um pouco <span>Sobre nós</span></h3>
             <div className="about-text text-left mt-4">
-              <p>Em um mundo cada vez mais acelerado e exigente, cuidar da saude emocional tornou-se uma prioridade. Foi com esse proposito que as psicologas clinicas Rosiane Camelo e Jicileia Oliveira fundaram o Espaco EquilibraMente: um ambiente pensado com carinho para acolher profissionais da saude mental e seus pacientes.</p>
-              <p>O espaco oferece salas aconchegantes, silenciosas e bem equipadas, disponiveis para locacao por hora, proporcionando uma estrutura de qualidade para atendimentos presenciais ou online. Nosso objetivo e garantir um ambiente onde o bem-estar, a privacidade e a qualidade no atendimento caminhem lado a lado.</p>
-              <p>Aqui, cada detalhe foi pensado para que voce possa cuidar de quem cuida.</p>
+              <p>Em um mundo cada vez mais acelerado e exigente, cuidar da saúde emocional tornou-se uma prioridade. Foi com esse propósito que as psicólogas clínicas <strong>Rosiane Camelo</strong> e <strong>Jiciléia Oliveira</strong> fundaram o <strong>Espaço EquilibraMente</strong>, um ambiente pensado com carinho para acolher profissionais da saúde mental e seus pacientes.</p>
+              <p>O Espaço oferece salas aconchegantes, silenciosas e bem equipadas, disponíveis para locação por hora, proporcionando uma estrutura de qualidade para atendimentos presenciais ou online. Nosso objetivo é garantir um ambiente onde o bem-estar, a privacidade e a qualidade no atendimento caminham lado a lado.</p>
+              <p>Aqui, cada detalhe foi pensado para que você possa cuidar de quem cuida.</p>
+            </div>
+            <div className="gallery-tabs">
+              <span>Sala 1</span>
+              <span>Sala 2</span>
+              <span>Sala 3</span>
+            </div>
+            <div className="about-gallery">
+              {galeria.map((src) => (
+                <img src={src} alt="Sala EquilibraMente" key={src} />
+              ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="sobre" className="testimonials-section">
+        <div className="container">
+          <div className="contentg">
+            <h3>O que dizem das <span> nossas salas</span></h3>
+            <p>Nossos espaços foram cuidadosamente planejados para atender às necessidades de profissionais das mais diversas áreas, como psicólogos, terapeutas, coaches, e muitos outros. Veja o que alguns de nossos parceiros têm a dizer sobre suas experiências:</p>
+          </div>
+          <div className="testimonials-grid">
+            {depoimentos.map((item) => (
+              <article className="testimonial-card" key={item.nome}>
+                <p><span>“</span>{item.texto}<span>”</span></p>
+                <strong>{item.nome}</strong>
+                <small>{item.cargo}</small>
+              </article>
+            ))}
+          </div>
+          <div className="testimonial-dots"><span /><span /></div>
         </div>
       </section>
 
@@ -88,7 +237,7 @@ export default async function Home() {
         <div className="container">
           <div className="contentg">
             <h3>Nosso time de <span>Especialistas</span></h3>
-            <p>Profissionais experientes comprometidas com cuidado emocional e qualidade no atendimento.</p>
+            <p>Nosso time é formado por profissionais experientes comprometidas com o cuidado emocional, garantindo qualidade no atendimento e cuidado com cada detalhe.</p>
           </div>
           {especialistas.map((item, index) => (
             <div className={`specialist-row ${index % 2 ? "reverse" : ""}`} key={item.nome}>
@@ -106,15 +255,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="contato" style={{ background: "#fafafa", padding: "50px 0" }}>
+      <section id="contato" className="contact-section">
         <div className="container text-center">
           <div className="contentg mb-4">
             <h3>Fale <span>Conosco</span></h3>
-            <p>Entre em contato pelo WhatsApp ou acompanhe nosso Instagram.</p>
+            <p>Entre em contato com nosso time através do WhatsApp ou siga nosso Instagram para acompanhar as novidades.</p>
           </div>
-          <a href="https://www.instagram.com/espaco_equilibramente" target="_blank" className="about-btn">
-            @espaco_equilibramente
-          </a>
+          <div className="contact-actions">
+            <a href="https://wa.me/5511986428238" target="_blank" className="about-btn">
+              <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
+              Rosiane - (11) 98642-8238
+            </a>
+            <a href="https://wa.me/5511944751511" target="_blank" className="about-btn">
+              <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
+              Jicileia - (11) 94475-1511
+            </a>
+            <a href="https://www.instagram.com/espaco_equilibramente" target="_blank" className="about-btn">
+              <img src="/assets/img/icons/instagram.png" alt="" style={{ height: 18 }} />
+              @espaco_equilibramente
+            </a>
+          </div>
         </div>
       </section>
       <SiteFooter />

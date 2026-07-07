@@ -25,6 +25,10 @@ body {
   font-family: "Poppins", Arial, Helvetica, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 a {
   text-decoration: none;
 }
@@ -123,7 +127,26 @@ a {
 
 .public-rooms {
   background: #f8f8f8;
-  padding: 48px 0 44px;
+  padding: 48px 0 36px;
+}
+
+.room-arrows {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.room-arrows span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: #216c2e;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .rooms-grid {
@@ -202,11 +225,167 @@ a {
   font-size: 11px;
 }
 
-.public-about {
-  min-height: 540px;
-  background: #f3f2f0;
+.how-section {
+  background: #f8f8f8;
+  padding: 34px 0 42px;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(0, 1.7fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.how-title h2 {
+  margin: 0;
+  color: #333;
+  font-size: 21px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.how-title span {
+  color: #216c2e;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.step-card {
+  min-height: 118px;
+  border-radius: 4px;
+  background: #fff;
+  padding: 18px 14px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(28, 42, 25, 0.06);
+}
+
+.step-card img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.step-card p {
+  margin: 0;
+  color: #4f554f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.audience-heading {
+  background: #f8f8f8;
+  padding: 34px 0 24px;
+}
+
+.professionals-section {
+  background: #f8f8f8;
+  padding: 0 0 54px;
+}
+
+.professionals-wrap {
+  position: relative;
+  min-height: 410px;
+}
+
+.professionals-image {
+  position: absolute;
+  left: 6%;
+  top: 20px;
+  width: 52%;
+  height: 360px;
+  border-radius: 4px;
+  background: url("/assets/img/960x0.jpg") center center / cover no-repeat;
+}
+
+.professionals-card {
+  position: absolute;
+  right: 6%;
+  top: 62px;
+  z-index: 2;
+  width: 45%;
+  border-radius: 4px;
+  background: #fff;
+  padding: 32px 34px;
+  box-shadow: 0 8px 26px rgba(31, 44, 29, 0.12);
+}
+
+.professionals-card p {
+  margin: 0 0 18px;
+  color: #4f554f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.professionals-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.professionals-card li {
   display: flex;
   align-items: center;
+  gap: 11px;
+  margin-bottom: 12px;
+  color: #3d463d;
+  font-size: 15px;
+}
+
+.professionals-card img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.faq-section {
+  background: #f8f8f8;
+  padding: 18px 0 44px;
+}
+
+.faq-list {
+  max-width: 1040px;
+  margin: 24px auto 0;
+}
+
+.faq-item {
+  margin-bottom: 11px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(31, 44, 29, 0.08);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 15px 18px;
+  color: #444;
+  font-size: 14px;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 0 18px 16px;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.public-about {
+  background: #f3f2f0;
+  padding: 68px 0 72px;
 }
 
 .public-about .about-text {
@@ -217,9 +396,113 @@ a {
   line-height: 1.8;
 }
 
+.gallery-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0 24px;
+}
+
+.gallery-tabs span {
+  min-width: 68px;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #216c2e;
+  padding: 7px 15px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.about-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.about-gallery img {
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.testimonials-section {
+  background: #fafafa;
+  padding: 58px 0 62px;
+}
+
+.testimonials-section .contentg {
+  max-width: 920px;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  max-width: 980px;
+  margin: 34px auto 0;
+}
+
+.testimonial-card {
+  min-height: 186px;
+  border-radius: 4px;
+  background: #fff;
+  padding: 24px 26px 22px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(28, 42, 25, 0.08);
+}
+
+.testimonial-card p {
+  min-height: 92px;
+  margin: 0 0 16px;
+  color: #4f554f;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.testimonial-card p span {
+  color: #216c2e;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.testimonial-card strong {
+  display: block;
+  color: #303830;
+  font-size: 14px;
+}
+
+.testimonial-card small {
+  display: block;
+  color: #677167;
+  font-size: 12px;
+}
+
+.testimonial-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 26px;
+}
+
+.testimonial-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #b5beb5;
+}
+
+.testimonial-dots span:first-child {
+  background: #216c2e;
+}
+
 .specialists-section {
   background: #f3f3f3;
-  padding: 80px 0 90px;
+  padding: 70px 0 88px;
 }
 
 .specialist-row {
@@ -228,7 +511,14 @@ a {
   gap: 80px;
   align-items: center;
   max-width: 980px;
-  margin: 54px auto;
+  margin: 58px auto;
+  padding-bottom: 46px;
+  border-bottom: 1px solid #dedede;
+}
+
+.specialist-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .specialist-row.reverse {
@@ -259,9 +549,55 @@ a {
   line-height: 1.7;
 }
 
+.contact-section {
+  background: #fafafa;
+  padding: 50px 0 54px;
+}
+
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: center;
+  gap: 18px;
+}
+
+.contact-actions .about-btn {
+  min-width: 260px;
+}
+
 @media (max-width: 991px) {
   .rooms-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .how-grid,
+  .steps-grid,
+  .testimonials-grid,
+  .about-gallery,
+  .contact-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .how-title {
+    text-align: center;
+  }
+
+  .professionals-wrap {
+    min-height: auto;
+  }
+
+  .professionals-image,
+  .professionals-card {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .professionals-card {
+    width: 92%;
+    margin: -70px auto 0;
   }
 
   .specialist-row,
@@ -282,5 +618,14 @@ a {
 
   .public-hero {
     min-height: 520px;
+  }
+
+  .public-hero-content p {
+    padding: 0 18px;
+  }
+
+  .contact-actions .about-btn {
+    min-width: 0;
+    width: 100%;
   }
 }

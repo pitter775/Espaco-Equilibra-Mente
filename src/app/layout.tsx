@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -39,11 +38,6 @@ export default function RootLayout({
         <link href="/assets/css/style.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
         {children}
-        <Script src="/assets/vendor/jquery/jquery.min.js" strategy="beforeInteractive" />
-        <Script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js" strategy="afterInteractive" />
-        <Script src="/assets/vendor/owl.carousel/owl.carousel.min.js" strategy="afterInteractive" />
-        <Script src="/assets/vendor/aos/aos.js" strategy="afterInteractive" />
-        <Script src="/assets/js/main.js" strategy="afterInteractive" />
       </body>
     </html>
   );
