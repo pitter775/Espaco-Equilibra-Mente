@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
+import { getSupabaseServer, isSupabaseConfigured } from "./supabase";
 import type { AppUser, Reserva, Sala } from "./types";
 
 const salaSelect = `
@@ -13,7 +13,7 @@ export async function listSalas(): Promise<Sala[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseServer()
     .from("salas")
     .select(salaSelect)
     .order("id", { ascending: true });
@@ -30,7 +30,7 @@ export async function getSala(id: string | number): Promise<Sala | null> {
   noStore();
   if (!isSupabaseConfigured()) return null;
 
-  const { data, error } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseServer()
     .from("salas")
     .select(salaSelect)
     .eq("id", Number(id))
@@ -47,7 +47,7 @@ export async function getSala(id: string | number): Promise<Sala | null> {
 export async function getProfile(userId: string): Promise<AppUser | null> {
   if (!isSupabaseConfigured()) return null;
 
-  const { data, error } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseServer()
     .from("users")
     .select("*")
     .eq("id", userId)
@@ -65,7 +65,7 @@ export async function listReservasByUser(userId: string): Promise<Reserva[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseServer()
     .from("reservas")
     .select("*, sala:salas(*)")
     .eq("usuario_id", userId)
@@ -83,7 +83,7 @@ export async function listReservas(): Promise<Reserva[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseServer()
     .from("reservas")
     .select("*, sala:salas(*), usuario:users(id,name,email,telefone,photo)")
     .order("data_reserva", { ascending: false });
