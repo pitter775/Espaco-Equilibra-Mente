@@ -1,65 +1,123 @@
-import Image from "next/image";
+import { RoomCard } from "@/components/site/RoomCard";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { getCurrentUser } from "@/lib/auth";
+import { listSalas } from "@/lib/data";
+import { mockSalas } from "@/lib/mock";
 
-export default function Home() {
+const especialistas = [
+  {
+    nome: "Rosiane Camelo",
+    foto: "/assets/img/team/rose.jpeg",
+    whatsapp: "5511986428238",
+    texto:
+      "Psicologa clinica com mais de 10 anos de experiencia na abordagem psicanalitica, fundadora do Espaco EquilibraMente.",
+  },
+  {
+    nome: "Jicileia Oliveira",
+    foto: "/assets/img/team/ji.jpg",
+    whatsapp: "5511944751511",
+    texto:
+      "Psicologa clinica com mais de 9 anos de experiencia, pos-graduada em Neuropsicanalise e fundadora do Espaco EquilibraMente.",
+  },
+  {
+    nome: "Cristina Azevedo",
+    foto: "/assets/img/team/cristina.jpg",
+    whatsapp: "5511915654166",
+    texto:
+      "Psicologa clinica com experiencia em Terapia Cognitivo-Comportamental, avaliacoes e intervencoes personalizadas.",
+  },
+  {
+    nome: "Djane",
+    foto: "/assets/img/team/djane.jpg",
+    whatsapp: "5511972396456",
+    texto:
+      "Psicopedagoga e Neuropsicopedagoga especializada no atendimento a criancas, jovens e adultos.",
+  },
+];
+
+export default async function Home() {
+  const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
+  const salasVisiveis = salas.length ? salas : mockSalas;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+    <div className="legacy-page">
+      <SiteHeader user={user} />
+      <section id="inicio" className="public-hero">
+        <div className="public-hero-content">
+          <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="public-hero-logo" />
+          <p style={{ fontSize: 25 }}>Espaco Coworking para Profissionais da Saude</p>
+          <p style={{ fontSize: 20 }}>Consolacao - SP <br />Rua Dona Antonia de Queiros</p>
+          <a href="https://wa.me/5511979691269?text=Ola%2C%20gostaria%20de%20saber%20mais%20sobre%20as%20salas." target="_blank" className="about-btn">
+            <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} /> Chamar no Whats
           </a>
         </div>
-      </main>
+        <div className="slides">
+          {["sala1.jfif", "sala2.jfif", "sala3.jfif", "sala4.jfif"].map((image, index) => (
+            <div key={image} className={`slide ${index === 0 ? "active" : ""}`} style={{ backgroundImage: `url('/assets/img/salas/${image}')` }} />
+          ))}
+        </div>
+      </section>
+
+      <section id="about" className="public-rooms">
+        <div className="container">
+          <div className="contentg">
+            <h3>Escolha <span>a melhor opcao</span></h3>
+            <p>Espacos planejados para inspirar e proporcionar bem-estar, com conforto e praticidade.</p>
+          </div>
+          <div className="rooms-grid">
+            {salasVisiveis.map((sala) => <RoomCard sala={sala} key={sala.id} />)}
+          </div>
+        </div>
+      </section>
+
+      <section id="quemsomos" className="public-about">
+        <div className="container">
+          <div className="contentg">
+            <h3>Um pouco <span>Sobre nos</span></h3>
+            <div className="about-text text-left mt-4">
+              <p>Em um mundo cada vez mais acelerado e exigente, cuidar da saude emocional tornou-se uma prioridade. Foi com esse proposito que as psicologas clinicas Rosiane Camelo e Jicileia Oliveira fundaram o Espaco EquilibraMente: um ambiente pensado com carinho para acolher profissionais da saude mental e seus pacientes.</p>
+              <p>O espaco oferece salas aconchegantes, silenciosas e bem equipadas, disponiveis para locacao por hora, proporcionando uma estrutura de qualidade para atendimentos presenciais ou online. Nosso objetivo e garantir um ambiente onde o bem-estar, a privacidade e a qualidade no atendimento caminhem lado a lado.</p>
+              <p>Aqui, cada detalhe foi pensado para que voce possa cuidar de quem cuida.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="team" className="specialists-section">
+        <div className="container">
+          <div className="contentg">
+            <h3>Nosso time de <span>Especialistas</span></h3>
+            <p>Profissionais experientes comprometidas com cuidado emocional e qualidade no atendimento.</p>
+          </div>
+          {especialistas.map((item, index) => (
+            <div className={`specialist-row ${index % 2 ? "reverse" : ""}`} key={item.nome}>
+              <img src={item.foto} className="specialist-photo" alt={item.nome} />
+              <div className="specialist-copy">
+                <h4>{item.nome}</h4>
+                <p>{item.texto}</p>
+                <a href={`https://wa.me/${item.whatsapp}`} target="_blank" style={{ color: "inherit" }}>
+                  <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20, marginRight: 5 }} />
+                  <strong>{item.whatsapp.replace("55", "+55 ")}</strong>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="contato" style={{ background: "#fafafa", padding: "50px 0" }}>
+        <div className="container text-center">
+          <div className="contentg mb-4">
+            <h3>Fale <span>Conosco</span></h3>
+            <p>Entre em contato pelo WhatsApp ou acompanhe nosso Instagram.</p>
+          </div>
+          <a href="https://www.instagram.com/espaco_equilibramente" target="_blank" className="about-btn">
+            @espaco_equilibramente
+          </a>
+        </div>
+      </section>
+      <SiteFooter />
     </div>
   );
 }

@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +22,265 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.legacy-page {
+  color: #444;
+  background: #fafafa;
+}
+
+.legacy-page .about-btn,
+.eq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 0;
+  background: #216c2e;
+  color: #fff !important;
+  padding: 11px 20px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(33, 108, 46, 0.18);
+}
+
+.eq-btn.secondary {
+  background: #eef4ec;
+  color: #216c2e !important;
+  box-shadow: none;
+}
+
+.eq-card {
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(28, 42, 25, 0.08);
+}
+
+.contentg {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.contentg h3 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.contentg h3 span {
+  color: #216c2e;
+}
+
+.contentg p {
+  color: #555;
+  font-size: 15px;
+}
+
+.public-hero {
+  position: relative;
+  width: 100%;
+  min-height: 575px;
+  overflow: hidden;
+  background: url("/assets/img/salas/sala1.jfif") center center / cover no-repeat;
+}
+
+.public-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  z-index: 1;
+}
+
+.public-hero .slides {
+  display: none;
+}
+
+.public-hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  padding-top: 72px;
+}
+
+.public-hero-logo {
+  width: 260px;
+  max-width: 70vw;
+  filter: brightness(0) invert(1);
+  margin-bottom: 18px;
+}
+
+.public-rooms {
+  background: #f8f8f8;
+  padding: 48px 0 44px;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 26px;
+}
+
+.room-card-public {
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 26px rgba(31, 44, 29, 0.12);
+}
+
+.room-card-public .room-image {
+  position: relative;
+  height: 165px;
+  background-size: cover;
+  background-position: center;
+}
+
+.room-card-public .badge-open {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 999px;
+  background: #eef7ec;
+  color: #216c2e;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.room-card-public .room-body {
+  padding: 12px 14px 14px;
+}
+
+.room-card-public h4 {
+  margin: 0 0 6px;
+  color: #263126;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.room-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #6f796f;
+  font-size: 11px;
+  min-height: 20px;
+}
+
+.room-price-line {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.room-price-line strong {
+  color: #1f2e20;
+  font-size: 18px;
+}
+
+.room-price-line small {
+  color: #667166;
+}
+
+.room-price-line .about-btn {
+  min-width: 98px;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.public-about {
+  min-height: 540px;
+  background: #f3f2f0;
+  display: flex;
+  align-items: center;
+}
+
+.public-about .about-text {
+  max-width: 980px;
+  margin: 0 auto;
+  color: #4f554f;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.specialists-section {
+  background: #f3f3f3;
+  padding: 80px 0 90px;
+}
+
+.specialist-row {
+  display: grid;
+  grid-template-columns: 1fr 1.7fr;
+  gap: 80px;
+  align-items: center;
+  max-width: 980px;
+  margin: 54px auto;
+}
+
+.specialist-row.reverse {
+  grid-template-columns: 1.7fr 1fr;
+}
+
+.specialist-row.reverse .specialist-photo {
+  order: 2;
+}
+
+.specialist-photo {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+.specialist-copy h4 {
+  color: #303830;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.specialist-copy p {
+  color: #4e554e;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 991px) {
+  .rooms-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .specialist-row,
+  .specialist-row.reverse {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .specialist-row.reverse .specialist-photo {
+    order: 0;
+  }
+}
+
+@media (max-width: 575px) {
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-hero {
+    min-height: 520px;
+  }
 }

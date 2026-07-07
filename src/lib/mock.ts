@@ -1,0 +1,48 @@
+import type { Sala } from "./types";
+
+export const mockSalas: Sala[] = [
+  {
+    id: 1,
+    nome: "Sala 1",
+    valor: 35,
+    metragem: 45,
+    status: "disponivel",
+    descricao: "<p>Sala aconchegante para atendimentos presenciais, com ambiente silencioso e estrutura profissional.</p>",
+    imagens: [{ id: 1, sala_id: 1, imagem_base64: "/assets/img/salas/sala1.jfif", principal: true }],
+    conveniencias: [{ id: 1, nome: "Ambiente acolhedor", icone: "fa-solid fa-check" }],
+    endereco: { id: 1, rua: "Rua Dona Antonia de Queiros", numero: "504", bairro: "Consolacao", cidade: "Sao Paulo", estado: "SP", cep: "01307-013" },
+  },
+  {
+    id: 2,
+    nome: "Sala 2",
+    valor: 35,
+    metragem: 35,
+    status: "disponivel",
+    descricao: "<p>Sala planejada para psicologos, terapeutas e profissionais da saude.</p>",
+    imagens: [{ id: 2, sala_id: 2, imagem_base64: "/assets/img/salas/sala2.jfif", principal: true }],
+    conveniencias: [{ id: 2, nome: "Conforto e privacidade", icone: "fa-solid fa-lock" }],
+    endereco: { id: 2, rua: "Rua Dona Antonia de Queiros", numero: "504", bairro: "Consolacao", cidade: "Sao Paulo", estado: "SP", cep: "01307-013" },
+  },
+  {
+    id: 3,
+    nome: "Sala 3",
+    valor: 34,
+    metragem: 54,
+    status: "disponivel",
+    descricao: "<p>Espaco amplo, confortavel e bem localizado para atendimentos por hora.</p>",
+    imagens: [{ id: 3, sala_id: 3, imagem_base64: "/assets/img/salas/sala3.jfif", principal: true }],
+    conveniencias: [{ id: 3, nome: "Excelente localizacao", icone: "fa-solid fa-location-dot" }],
+    endereco: { id: 3, rua: "Rua Dona Antonia de Queiros", numero: "504", bairro: "Consolacao", cidade: "Sao Paulo", estado: "SP", cep: "01307-013" },
+  },
+  {
+    id: 4,
+    nome: "Sala 4",
+    valor: 35,
+    metragem: 45,
+    status: "disponivel",
+    descricao: "<p>Ambiente moderno e reservado, ideal para consultas e sessoes terapeuticas.</p>",
+    imagens: [{ id: 4, sala_id: 4, imagem_base64: "/assets/img/salas/sala4.jfif", principal: true }],
+    conveniencias: [{ id: 4, nome: "Ambiente equipado", icone: "fa-solid fa-couch" }],
+    endereco: { id: 4, rua: "Rua Dona Antonia de Queiros", numero: "504", bairro: "Consolacao", cidade: "Sao Paulo", estado: "SP", cep: "01307-013" },
+  },
+];
