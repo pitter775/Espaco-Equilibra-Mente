@@ -29,7 +29,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
         </div>
         <nav className="nav-menu d-none d-lg-block">
           <ul>
-            <li className="active"><Link href="/#inicio">Inicio</Link></li>
+            <li><Link href="/#inicio">Inicio</Link></li>
             <li><Link href="/#about">Salas</Link></li>
             <li><Link href="/#quemsomos">Sobre Nos</Link></li>
             <li><Link href="/#team">Especialistas</Link></li>

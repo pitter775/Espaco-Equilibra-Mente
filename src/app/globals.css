@@ -1446,6 +1446,89 @@ body.auth-modal-open {
   font-size: 11px;
 }
 
+.room-detail-page {
+  margin-top: 78px;
+  background: #f8f8f8;
+}
+
+.room-detail-heading {
+  margin: 24px auto 28px;
+}
+
+.room-detail-heading h3 {
+  font-size: 22px;
+}
+
+.status-sala-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 980px;
+  margin: 0 auto 24px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-sala-banner.indisponivel {
+  border: 1px solid #f2caca;
+  background: #fff1f1;
+  color: #b24c4c;
+}
+
+.room-detail-content-band {
+  background: #fff;
+  padding: 28px 0 64px;
+}
+
+.room-detail-copy {
+  color: #4f554f;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.room-detail-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.room-detail-divider {
+  margin: 38px 0;
+  border: 0;
+  border-top: 1px solid #e3e7e1;
+}
+
+.room-conveniences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.room-convenience-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 12px;
+}
+
+.room-price-card {
+  margin-top: -38px;
+}
+
+.room-price-card p {
+  margin: 0 0 18px;
+}
+
+.room-price-card span {
+  color: #333;
+  font-size: 15px;
+}
+
+.room-price-card .fa-ruler-combined {
+  color: #76aa66;
+}
+
 .room-detail-gallery {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 210px;
@@ -1992,6 +2075,15 @@ body.auth-modal-open {
 
   .room-detail-gallery {
     grid-template-columns: 1fr;
+  }
+
+  .room-price-card {
+    margin-top: 0;
+  }
+
+  .status-sala-banner {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .room-detail-main img {

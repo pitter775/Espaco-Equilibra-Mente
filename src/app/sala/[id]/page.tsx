@@ -28,22 +28,33 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="legacy-page">
       <SiteHeader user={user} />
-      <main id="main" style={{ marginTop: 90 }}>
+      <main id="main" className="room-detail-page">
         <section className="sala-detalhes pb-0">
           <div className="container">
             <div className="row">
-              <div className="col-lg-8">
+              <div className="col-lg-12">
                 <RoomDetailGallery images={imagens} roomName={sala.nome} />
-                <div className="contentg mt-4 text-left">
+                <div className="contentg room-detail-heading">
                   <h3>Sobre a <span>{sala.nome}</span></h3>
                 </div>
                 {indisponivel && (
-                  <div className="alert alert-warning">Esta sala esta temporariamente indisponivel para novas reservas.</div>
+                  <div className="status-sala-banner indisponivel">
+                    <span>Esta sala esta temporariamente indisponivel para novas reservas.</span>
+                    <span>Voce ainda pode consultar os detalhes.</span>
+                  </div>
                 )}
-                <div dangerouslySetInnerHTML={{ __html: sala.descricao ?? "" }} />
-                <div className="d-flex flex-wrap mt-4">
+              </div>
+            </div>
+          </div>
+          <div className="room-detail-content-band">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-8 mb-5 mt-3">
+                  <div className="room-detail-copy" dangerouslySetInnerHTML={{ __html: sala.descricao ?? "" }} />
+                  <hr className="room-detail-divider" />
+                  <div className="room-conveniences">
                   {sala.conveniencias?.length ? sala.conveniencias.map((item) => (
-                    <div className="eq-card m-2 p-2" key={item.id}>
+                    <div className="eq-card room-convenience-card" key={item.id}>
                       <i className={`${item.icone ?? "fa fa-check"} mr-2`} style={{ color: "#76aa66" }} />
                       <span style={{ fontSize: 13, color: "#777" }}>{item.nome}</span>
                     </div>
@@ -51,11 +62,14 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
               <div className="col-lg-4">
-                <div className="eq-card p-4 mb-3">
+                <div className="eq-card p-4 mb-3 room-price-card">
                   <div className="d-flex justify-content-between align-items-center">
                     <p style={{ fontSize: 25, color: "#000" }}>{money(sala.valor)}/h</p>
-                    <span>{sala.metragem ?? "-"} m2</span>
+                    <span><i className="fa-solid fa-ruler-combined mr-2" />{sala.metragem ?? "-"} m2</span>
                   </div>
+                  {!user && !indisponivel && (
+                    <AuthModalTrigger label="Horarios disponiveis" className="eq-btn w-100" salaId={sala.id} />
+                  )}
                 </div>
                 {user ? (
                   <ReservationSelector
@@ -64,9 +78,9 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                     userApproved={user.status_aprovacao === "aprovado" || user.tipo_usuario === "admin"}
                     disabled={indisponivel}
                   />
-                ) : (
-                  <AuthModalTrigger label="Entrar para reservar" className="eq-btn w-100" salaId={sala.id} />
-                )}
+                ) : indisponivel ? (
+                  <button className="eq-btn secondary w-100" type="button" disabled>Sala indisponivel no momento</button>
+                ) : null}
                 <div className="eq-card p-4 mt-3 room-map-card">
                   <p><i className="fa-solid fa-map-marker-alt mr-2" />{enderecoTexto}</p>
                   <iframe width="100%" height="300" style={{ border: 0 }} loading="lazy" allowFullScreen src={`https://www.google.com/maps?q=${encodeURIComponent(enderecoMapa)}&output=embed`} />
@@ -79,6 +93,7 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </section>
       </main>
