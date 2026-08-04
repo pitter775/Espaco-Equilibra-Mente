@@ -4,6 +4,16 @@ import { useMemo, useState } from "react";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { AppUser } from "@/lib/types";
 
+type Mode = "details" | "create" | "edit";
+type ApiResult = {
+  data?: AppUser;
+  email?: {
+    sent?: boolean;
+    skipped?: boolean;
+    error?: string;
+  } | null;
+};
+
 function statusLabel(status?: string | null) {
   const value = status || "pendente";
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -11,23 +21,44 @@ function statusLabel(status?: string | null) {
 
 function statusClass(status?: string | null) {
   const value = String(status ?? "").toLowerCase();
-  if (value === "aprovado") return "success";
-  if (value === "reprovado") return "danger";
+  if (value === "aprovado" || value === "ativo") return "success";
+  if (value === "reprovado" || value === "inativo") return "danger";
   return "warning";
 }
 
 function userInitials(name?: string | null) {
-  return String(name || "U")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((item) => item[0])
-    .join("")
-    .toUpperCase();
+  return String(name || "U").split(" ").filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
+}
+
+function payloadFromForm(form: HTMLFormElement) {
+  const data = new FormData(form);
+  return {
+    fullname: data.get("fullname"),
+    email: data.get("email"),
+    perfil: data.get("perfil"),
+    cpf: data.get("cpf"),
+    sexo: data.get("sexo"),
+    idade: data.get("idade"),
+    photo: data.get("photo"),
+    telefone: data.get("telefone"),
+    status: data.get("status"),
+    registro_profissional: data.get("registro_profissional"),
+    tipo_registro_profissional: data.get("tipo_registro_profissional"),
+    senha: data.get("senha"),
+    endereco_id: data.get("endereco_id"),
+    endereco_rua: data.get("endereco_rua"),
+    endereco_numero: data.get("endereco_numero"),
+    endereco_complemento: data.get("endereco_complemento"),
+    endereco_bairro: data.get("endereco_bairro"),
+    endereco_cidade: data.get("endereco_cidade"),
+    endereco_estado: data.get("endereco_estado"),
+    endereco_cep: data.get("endereco_cep"),
+  };
 }
 
 export function AdminUsersPanel({ users }: { users: AppUser[] }) {
   const [selected, setSelected] = useState<AppUser | null>(null);
+  const [mode, setMode] = useState<Mode>("details");
   const [filter, setFilter] = useState("todos");
   const [query, setQuery] = useState("");
   const [localUsers, setLocalUsers] = useState(users);
@@ -47,25 +78,84 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
     return matchesStatus && text.includes(query.toLowerCase());
   });
 
-  async function updateApproval(user: AppUser, status: "aprovado" | "reprovado") {
-    setLoading(status);
+  function openUser(user: AppUser) {
+    setSelected(user);
+    setMode("details");
     setMessage("");
-    const response = await fetch(`/api/admin/usuarios/${user.id}`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ status_aprovacao: status }),
+  }
+
+  function openCreate() {
+    setSelected(null);
+    setMode("create");
+    setMessage("");
+  }
+
+  async function submitJson(url: string, method: string, body?: unknown) {
+    setLoading(method);
+    setMessage("");
+    const response = await fetch(url, {
+      method,
+      headers: body ? { "content-type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
     });
     const data = await response.json();
+    setLoading("");
     if (!response.ok || !data.success) {
-      setMessage(data.message || "Nao foi possivel atualizar o cadastro.");
-      setLoading("");
-      return;
+      setMessage(data.message || "Nao foi possivel salvar.");
+      return null;
     }
+    return data as ApiResult;
+  }
 
+  async function createUser(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const result = await submitJson("/api/admin/usuarios", "POST", payloadFromForm(event.currentTarget));
+    const created = result?.data;
+    if (!created) return;
+    setLocalUsers((current) => [created, ...current]);
+    setSelected(created);
+    setMode("details");
+    setMessage("Usuario criado com sucesso.");
+  }
+
+  async function updateUser(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    const result = await submitJson(`/api/admin/usuarios/${selected.id}`, "PUT", payloadFromForm(event.currentTarget));
+    const updated = result?.data;
+    if (!updated) return;
+    setLocalUsers((current) => current.map((item) => item.id === updated.id ? updated : item));
+    setSelected(updated);
+    setMode("details");
+    setMessage("Usuario atualizado com sucesso.");
+  }
+
+  async function updateApproval(user: AppUser, status: "aprovado" | "reprovado") {
+    const result = await submitJson(`/api/admin/usuarios/${user.id}`, "PUT", { status_aprovacao: status });
+    const updated = result?.data;
+    if (!updated) return;
     setLocalUsers((current) => current.map((item) => item.id === user.id ? { ...item, status_aprovacao: status } : item));
     setSelected((current) => current ? { ...current, status_aprovacao: status } : current);
-    setMessage(status === "aprovado" ? "Cadastro aprovado com sucesso." : "Cadastro reprovado com sucesso.");
-    setLoading("");
+    const emailMessage = result?.email?.sent ? " E-mail enviado." : result?.email?.error ? ` E-mail pendente: ${result.email.error}` : "";
+    setMessage(`${status === "aprovado" ? "Cadastro aprovado com sucesso." : "Cadastro reprovado com sucesso."}${emailMessage}`);
+  }
+
+  async function toggleStatus(user: AppUser) {
+    const result = await submitJson(`/api/admin/usuarios/${user.id}`, "PUT", { toggleStatus: true });
+    const updated = result?.data;
+    if (!updated) return;
+    setLocalUsers((current) => current.map((item) => item.id === user.id ? updated : item));
+    setSelected(updated);
+    setMessage("Status do usuario atualizado.");
+  }
+
+  async function deleteUser(user: AppUser) {
+    if (!confirm("Deseja realmente excluir este usuario?")) return;
+    const result = await submitJson(`/api/admin/usuarios/${user.id}`, "DELETE");
+    if (result === null) return;
+    setLocalUsers((current) => current.filter((item) => item.id !== user.id));
+    setSelected(null);
+    setMessage("Usuario excluido com sucesso.");
   }
 
   return (
@@ -88,16 +178,17 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
               </button>
             ))}
           </div>
+          <button className="eq-btn" type="button" onClick={openCreate}>Criar usuario</button>
         </div>
 
         <div className="admin-user-grid">
           {filtered.map((user) => (
-            <button className="admin-user-card" key={user.id} type="button" onClick={() => { setSelected(user); setMessage(""); }}>
+            <button className="admin-user-card" key={user.id} type="button" onClick={() => openUser(user)}>
               <div className="admin-avatar">{user.photo ? <img src={user.photo} alt="" /> : userInitials(user.name)}</div>
               <div>
                 <strong>{user.name}</strong>
                 <span>{user.email}</span>
-                <small>{user.telefone || "Sem telefone"} · {user.tipo_usuario || "cliente"}</small>
+                <small>{user.telefone || "Sem telefone"} - {user.tipo_usuario || "cliente"} - {user.status || "ativo"}</small>
               </div>
               <em className={`eq-status eq-status-${statusClass(user.status_aprovacao)}`}>{statusLabel(user.status_aprovacao)}</em>
             </button>
@@ -105,58 +196,109 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
         </div>
 
         {!filtered.length && <p className="text-center mb-0 p-4">Nenhum usuario encontrado.</p>}
+        {message && !selected && mode !== "create" && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
       </div>
 
-      {selected && (
+      {(selected || mode === "create") && (
         <div className="eq-modal-backdrop" role="dialog" aria-modal="true">
           <div className="eq-modal eq-card admin-user-modal">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div>
-                <p className="admin-kicker mb-1">Revisar cadastro</p>
-                <h2 className="h4 mb-0">{selected.name}</h2>
+                <p className="admin-kicker mb-1">{mode === "create" ? "Criar usuario" : mode === "edit" ? "Editar usuario" : "Revisar cadastro"}</p>
+                <h2 className="h4 mb-0">{selected?.name || "Novo usuario"}</h2>
               </div>
-              <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+              <button className="eq-icon-btn" type="button" onClick={() => { setSelected(null); setMode("details"); }} aria-label="Fechar">x</button>
             </div>
 
-            <div className="admin-user-detail">
-              <section>
-                <h3>Dados cadastrais</h3>
-                <p><strong>Email:</strong> {selected.email}</p>
-                <p><strong>Telefone:</strong> {selected.telefone || "-"}</p>
-                <p><strong>CPF:</strong> {selected.cpf || "-"}</p>
-                <p><strong>Sexo:</strong> {selected.sexo || "-"} <strong className="ml-2">Idade:</strong> {selected.idade || "-"}</p>
-                <p><strong>Registro:</strong> {selected.registro_profissional || "-"} ({selected.tipo_registro_profissional || "-"})</p>
-                <p><strong>Endereco:</strong> {selected.endereco ? `${selected.endereco.rua}, ${selected.endereco.numero} - ${selected.endereco.bairro}, ${selected.endereco.cidade}/${selected.endereco.estado}` : "-"}</p>
-              </section>
+            {mode === "details" && selected && (
+              <>
+                <div className="admin-user-detail">
+                  <section>
+                    <h3>Dados cadastrais</h3>
+                    <p><strong>Email:</strong> {selected.email}</p>
+                    <p><strong>Telefone:</strong> {selected.telefone || "-"}</p>
+                    <p><strong>CPF:</strong> {selected.cpf || "-"}</p>
+                    <p><strong>Perfil:</strong> {selected.tipo_usuario || "cliente"} <strong>Status:</strong> {selected.status || "ativo"}</p>
+                    <p><strong>Sexo:</strong> {selected.sexo || "-"} <strong>Idade:</strong> {selected.idade || "-"}</p>
+                    <p><strong>Registro:</strong> {selected.registro_profissional || "-"} ({selected.tipo_registro_profissional || "-"})</p>
+                    <p><strong>Endereco:</strong> {selected.endereco ? `${selected.endereco.rua}, ${selected.endereco.numero} - ${selected.endereco.bairro}, ${selected.endereco.cidade}/${selected.endereco.estado}` : "-"}</p>
+                  </section>
 
-              <section>
-                <h3>Documento</h3>
-                <p><strong>Tipo:</strong> {selected.documento_tipo || "-"}</p>
-                {selected.documento_caminho ? (
-                  <div className="admin-document-box">
-                    <span>{selected.documento_caminho}</span>
-                    <small>Arquivo registrado no cadastro. O download depende do storage final.</small>
+                  <section>
+                    <h3>Documento</h3>
+                    <p><strong>Tipo:</strong> {selected.documento_tipo || "-"}</p>
+                    {selected.documento_caminho ? (
+                      <div className="admin-document-box">
+                        <span>{selected.documento_caminho}</span>
+                        <a className="eq-btn secondary" href={selected.documento_caminho} target="_blank" rel="noreferrer">Abrir documento</a>
+                      </div>
+                    ) : <p>Nenhum documento registrado.</p>}
+                  </section>
+                </div>
+
+                <section className="admin-approval-box">
+                  <div>
+                    <span>Status atual</span>
+                    <strong className={`eq-status eq-status-${statusClass(selected.status_aprovacao)}`}>{statusLabel(selected.status_aprovacao)}</strong>
                   </div>
-                ) : (
-                  <p>Nenhum documento registrado.</p>
-                )}
-              </section>
-            </div>
+                  <div className="d-flex flex-wrap" style={{ gap: 10 }}>
+                    <button className="eq-btn" type="button" disabled={loading === "PUT"} onClick={() => updateApproval(selected, "aprovado")}>Aprovar</button>
+                    <button className="eq-btn danger" type="button" disabled={loading === "PUT"} onClick={() => updateApproval(selected, "reprovado")}>Reprovar</button>
+                    <button className="eq-btn secondary" type="button" onClick={() => setMode("edit")}>Editar</button>
+                    <button className="eq-btn secondary" type="button" disabled={loading === "PUT"} onClick={() => toggleStatus(selected)}>{selected.status === "ativo" ? "Inativar" : "Ativar"}</button>
+                    <button className="eq-btn danger" type="button" disabled={loading === "DELETE"} onClick={() => deleteUser(selected)}>Excluir</button>
+                  </div>
+                </section>
+              </>
+            )}
 
-            <section className="admin-approval-box">
-              <div>
-                <span>Status atual</span>
-                <strong className={`eq-status eq-status-${statusClass(selected.status_aprovacao)}`}>{statusLabel(selected.status_aprovacao)}</strong>
-              </div>
-              <div className="d-flex" style={{ gap: 10 }}>
-                <button className="eq-btn" type="button" disabled={loading === "aprovado"} onClick={() => updateApproval(selected, "aprovado")}>Aprovar</button>
-                <button className="eq-btn danger" type="button" disabled={loading === "reprovado"} onClick={() => updateApproval(selected, "reprovado")}>Reprovar</button>
-              </div>
-            </section>
+            {(mode === "create" || (mode === "edit" && selected)) && (
+              <form className="admin-user-form" onSubmit={mode === "create" ? createUser : updateUser}>
+                <UserFields user={selected ?? undefined} requirePassword={mode === "create"} />
+                <div className="admin-modal-actions">
+                  {mode === "edit" && <button className="eq-btn secondary" type="button" onClick={() => setMode("details")}>Cancelar</button>}
+                  <button className="eq-btn" type="submit" disabled={Boolean(loading)}>{mode === "create" ? "Criar usuario" : "Salvar alteracoes"}</button>
+                </div>
+              </form>
+            )}
+
             {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+function UserFields({ user, requirePassword }: { user?: AppUser; requirePassword?: boolean }) {
+  const endereco = user?.endereco;
+  return (
+    <>
+      <input type="hidden" name="endereco_id" value={endereco?.id ?? ""} />
+      <div className="admin-form-grid">
+        <label><span>Nome</span><input className="form-control" name="fullname" defaultValue={user?.name ?? ""} required /></label>
+        <label><span>Email</span><input className="form-control" name="email" type="email" defaultValue={user?.email ?? ""} required /></label>
+        <label><span>Perfil</span><select className="form-select" name="perfil" defaultValue={user?.tipo_usuario ?? "cliente"}><option value="cliente">Cliente</option><option value="admin">Admin</option></select></label>
+        <label><span>Status</span><select className="form-select" name="status" defaultValue={user?.status ?? "ativo"}><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></label>
+        <label><span>Telefone</span><input className="form-control" name="telefone" defaultValue={user?.telefone ?? ""} /></label>
+        <label><span>CPF</span><input className="form-control" name="cpf" defaultValue={user?.cpf ?? ""} /></label>
+        <label><span>Sexo</span><input className="form-control" name="sexo" defaultValue={user?.sexo ?? ""} /></label>
+        <label><span>Idade</span><input className="form-control" name="idade" type="number" defaultValue={user?.idade ?? ""} /></label>
+        <label><span>Foto URL</span><input className="form-control" name="photo" defaultValue={user?.photo ?? ""} /></label>
+        <label><span>Registro</span><input className="form-control" name="registro_profissional" defaultValue={user?.registro_profissional ?? ""} /></label>
+        <label><span>Tipo registro</span><input className="form-control" name="tipo_registro_profissional" defaultValue={user?.tipo_registro_profissional ?? ""} /></label>
+        <label><span>Senha {requirePassword ? "" : "(opcional)"}</span><input className="form-control" name="senha" type="password" minLength={8} required={requirePassword} /></label>
+      </div>
+
+      <div className="admin-form-grid mt-3">
+        <label><span>Rua</span><input className="form-control" name="endereco_rua" defaultValue={endereco?.rua ?? ""} /></label>
+        <label><span>Numero</span><input className="form-control" name="endereco_numero" defaultValue={endereco?.numero ?? ""} /></label>
+        <label><span>Bairro</span><input className="form-control" name="endereco_bairro" defaultValue={endereco?.bairro ?? ""} /></label>
+        <label><span>Cidade</span><input className="form-control" name="endereco_cidade" defaultValue={endereco?.cidade ?? ""} /></label>
+        <label><span>Estado</span><input className="form-control" name="endereco_estado" defaultValue={endereco?.estado ?? ""} /></label>
+        <label><span>CEP</span><input className="form-control" name="endereco_cep" defaultValue={endereco?.cep ?? ""} /></label>
+        <label className="admin-form-wide"><span>Complemento</span><input className="form-control" name="endereco_complemento" defaultValue={endereco?.complemento ?? ""} /></label>
+      </div>
     </>
   );
 }

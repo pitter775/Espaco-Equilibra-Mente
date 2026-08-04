@@ -26,6 +26,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
                 <Link href="/login">Entre</Link>
               )}
             </li>
+            {user && <li><Link href="/profile">Perfil</Link></li>}
           </ul>
         </nav>
       </div>

@@ -2,6 +2,11 @@
 
 1. Crie o projeto na Vercel apontando para este repositorio.
 2. Configure as variaveis de ambiente de `.env.example`.
+   - Projeto Supabase atual: `dhghpvkxtaunqqtjwait`.
+   - `NEXT_PUBLIC_SUPABASE_URL`: URL do projeto Supabase.
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: publishable key do projeto.
+   - `SUPABASE_SERVICE_ROLE_KEY`: secret/service-role key do mesmo projeto. Sem ela, rotas admin e fluxos server-side de reserva podem falhar.
+   - `DATABASE_URL` e senha do banco ficam apenas para importacao/manutencao local; nao precisam ser expostas no front.
 3. Use Node.js 20.9 ou superior.
 4. Build command: `npm run build`.
 5. Output: padrao do Next.js.
@@ -11,4 +16,4 @@
    - `/pagamento/pendente`
    - `/api/mercadopago/webhook`
 
-O banco deve ser Supabase Postgres. A carga do schema/dados deve ser feita depois que o ambiente Supabase estiver pronto.
+O banco deve ser Supabase Postgres. A carga do schema/dados pode ser refeita localmente com `node scripts/import-mysql-dump.js` depois de atualizar `DATABASE_URL` no `.env.local`.

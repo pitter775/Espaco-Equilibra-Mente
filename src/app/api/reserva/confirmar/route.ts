@@ -46,7 +46,7 @@ async function existeConflitoReserva(salaId: number, horario: ReservaHorario) {
   return (data ?? []).some((reserva) => {
     const inicio = String(reserva.hora_inicio).slice(0, 5);
     const fim = String(reserva.hora_fim).slice(0, 5);
-    return (inicio >= horario.hora_inicio && inicio <= horario.hora_fim) || (fim >= horario.hora_inicio && fim <= horario.hora_fim);
+    return horario.hora_inicio < fim && horario.hora_fim > inicio;
   });
 }
 

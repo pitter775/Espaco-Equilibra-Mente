@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { getCurrentUser } from "@/lib/auth";
 import { getProfileByEmail } from "@/lib/data";
 import { getSupabaseAdmin, getSupabaseAnon } from "@/lib/supabase";
+
+const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+
+function safeFileName(name: string) {
+  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+}
 
 export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
@@ -16,6 +24,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (!(documento instanceof File) || !documento.name) {
+    return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
+  }
+
+  if (documento.size > MAX_DOCUMENT_SIZE || !ALLOWED_DOCUMENT_TYPES.includes(documento.type)) {
     return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
   }
 
@@ -49,6 +61,17 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  let documentoUrl = "";
+  try {
+    const blob = await put(`cadastro/${userId}/${Date.now()}-${safeFileName(documento.name)}`, documento, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+    documentoUrl = blob.url;
+  } catch {
+    return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
+  }
+
   const endereco = {
     enderecavel_id: Number.isFinite(Number(userId)) ? Number(userId) : null,
     enderecavel_type: "App\\Models\\User",
@@ -78,7 +101,7 @@ export async function POST(request: NextRequest) {
       cadastro_completo: true,
       endereco_id: enderecoCriado?.id ?? null,
       documento_tipo: String(form.get("documento_tipo") ?? ""),
-      documento_caminho: `logs/cadastro/${documento.name}`,
+      documento_caminho: documentoUrl,
       status_aprovacao: "pendente",
     })
     .eq("id", userId);

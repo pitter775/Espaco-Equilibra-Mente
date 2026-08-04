@@ -900,6 +900,79 @@ a {
   box-shadow: 0 8px 24px rgba(28, 42, 25, 0.08);
 }
 
+.profile-page {
+  min-height: 72vh;
+  padding: 140px 0 64px;
+  background:
+    linear-gradient(180deg, rgba(238, 246, 235, 0.88), rgba(255, 255, 255, 0.96)),
+    url("/assets/img/sala1.png") center/cover fixed;
+}
+
+.profile-heading {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.profile-heading h1,
+.profile-approved h1 {
+  margin: 0 0 8px;
+  color: #1f351f;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.profile-heading span,
+.profile-card p,
+.profile-approved p {
+  color: #5d695e;
+  line-height: 1.7;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.profile-card {
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+}
+
+.profile-card h2 {
+  margin: 0;
+  color: #203522;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.profile-card p {
+  margin: 0;
+}
+
+.profile-card label {
+  display: grid;
+  gap: 6px;
+}
+
+.profile-card label span {
+  color: #203522;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.profile-danger {
+  border: 1px solid rgba(207, 62, 50, 0.22);
+}
+
+.profile-approved {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 36px;
+  text-align: center;
+}
+
 .contentg {
   text-align: center;
   margin: 0 auto;

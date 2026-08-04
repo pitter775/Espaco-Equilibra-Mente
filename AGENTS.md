@@ -41,18 +41,27 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Next: `/login/google` inicia OAuth Supabase, `/login/google/callback` troca `code` por sessao, cria/reaproveita usuario por e-mail, salva cookies `sb-access-token`/`sb-refresh-token` e manda cadastro incompleto para `/completar-cadastro`.
   - `src/lib/auth.ts` busca perfil por ID e depois por e-mail para compatibilidade com IDs numericos herdados do Laravel e UUIDs do Supabase Auth.
   - Cadastro manual tambem usa `/completar-cadastro`; `/register` redireciona para essa tela.
-  - `src/app/api/auth/completar-cadastro/route.ts` atualiza os campos do usuario, cria endereco e deixa `status_aprovacao="pendente"`, seguindo o processo de aprovacao do Laravel.
+  - `src/app/api/auth/completar-cadastro/route.ts` atualiza os campos do usuario, cria endereco, sobe o documento no Vercel Blob e deixa `status_aprovacao="pendente"`, seguindo o processo de aprovacao do Laravel.
+  - Storage final escolhido: Vercel Blob via `@vercel/blob`. Configurar `BLOB_READ_WRITE_TOKEN` no ambiente da Vercel para upload real de documentos.
 - Area do cliente foi replicada da fonte Laravel:
   - Fonte: `app/Http/Controllers/cliente/ReservaClienteController.php` e `resources/views/cliente/minhas-reservas.blade.php`.
   - Next: `src/app/cliente/reservas/page.tsx` usa `listReservaGroupsByUser` e `ClientReservations`.
+  - `/cliente` redireciona para `/cliente/reservas`; a Blade `cliente/dashboard.blade.php` era apenas uma tela simples de teste.
   - `src/lib/data.ts::listReservaGroupsByUser` replica manutencao on-demand: cancela pendentes antigas com mais de 30 minutos, marca transacoes pendentes como canceladas, remove canceladas antigas com mais de 4 meses e agrupa por `sala_id + data_reserva`.
   - `src/components/site/ClientReservations.tsx` mostra tabela agrupada, modal de detalhes, imagem/endereco/horarios/total, pagamento pendente, cancelamento no sistema e cancelamento por WhatsApp para confirmadas.
   - `src/app/api/cliente/reserva/[id]/chave/route.ts` replica `verChave`, validando dono da reserva.
   - `src/app/api/reserva/cancelar/route.ts` agora valida login, dono da reserva e status pendente antes de cancelar, como no Laravel.
+- Perfil do usuario foi replicado da fonte Laravel Breeze:
+  - Fonte: `resources/views/profile/edit.blade.php` e partials `update-profile-information-form`, `update-password-form`, `delete-user-form`.
+  - Next: `/profile` permite atualizar nome/e-mail, trocar senha validando senha atual e excluir conta. API: `/api/profile`.
+  - Usuarios legados numericos sem conta Supabase Auth podem atualizar perfil, mas senha/exclusao exigem Auth UUID.
 - Admin de usuarios/aprovacao foi iniciado e padronizado:
   - Fonte: `app/Http/Controllers/admin/UsuarioController.php`, `resources/views/admin/usuarios/index.blade.php` e `resources/views/admin/usuarios/ver-aprovacao.blade.php`.
-  - Next: `src/app/admin/usuarios/page.tsx` usa `AdminUsersPanel` com cards, busca, filtros por aprovacao, modal de detalhes, dados cadastrais, documento registrado e acoes aprovar/reprovar.
-  - `src/app/api/admin/usuarios/[id]/route.ts` atualiza `status_aprovacao`, replicando `aprovarUsuario`/`reprovarUsuario` sem envio de e-mail por enquanto.
+  - Next: `src/app/admin/usuarios/page.tsx` usa `AdminUsersPanel` com cards, busca, filtros por aprovacao, modal de detalhes, dados cadastrais, documento registrado, aprovar/reprovar, criar, editar, ativar/inativar e excluir.
+  - APIs `/api/admin/usuarios` e `/api/admin/usuarios/[id]` replicam `listar`, `cadastrar`, `atualizar`, `deletar`, `detalhes`, `toggleStatus`, `aprovarUsuario` e `reprovarUsuario` no limite do Next/Supabase.
+  - Criacao administrativa cria tambem usuario no Supabase Auth quando senha e informada. Usuarios legados numericos continuam apenas na tabela `users`.
+  - `src/lib/email.ts` envia e-mail real via Resend quando o admin aprova/reprova usuario. Configurar `RESEND_API_KEY`, `RESEND_FROM_EMAIL` e `NEXT_PUBLIC_SITE_URL` na Vercel.
+  - E-mail de aprovacao aponta para `/cadastro-aprovado/[id]`, que replica `resources/views/emails/usuario-aprovado.blade.php` com guard de status aprovado.
   - Padrao visual compartilhado criado em `src/components/admin/AdminPageChrome.tsx` (`AdminPageHero`, `AdminMetrics`) e usado no dashboard/usuarios.
 - Admin de reservas foi padronizado e replicado:
   - Fonte: `app/Http/Controllers/admin/ReservaController.php`, `resources/views/admin/reservas/index.blade.php` e `public/app-assets/js/scripts/pages/app-reservas-list.js`.
@@ -69,15 +78,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Next contrato: `src/app/contrato/page.tsx` busca o contrato mais recente e salva uma nova versao em `contracts`, como o Laravel.
   - Fonte fechadura: `app/Http/Controllers/admin/FechaduraController.php` e `resources/views/admin/fechadura.blade.php`.
   - Next fechadura: `src/app/admin/fechadura/page.tsx` usa `AdminLocksPanel`, lista salas com imagem, quatro chaves, bloqueio visual de chave em uso e reaproveita `/api/admin/salas/[id]/fechadura`.
-- Para Google em producao, configurar no Supabase Auth o redirect `https://www.espacoequilibramente.com.br/login/google/callback`. Para pagamento real, preencher `MERCADO_PAGO_ACCESS_TOKEN`.
-- Validacao feita nesta etapa: `npm run lint` passou com warnings de `<img>`/CSS; `npm run build` passou; checagem Playwright em `http://localhost:3002/contrato` e `/admin/fechadura` redirecionou para `/login` sem erros de console quando nao havia sessao admin.
+- Para Google em producao, configurar no Supabase Auth o redirect `https://www.espacoequilibramente.com.br/login/google/callback`. Para pagamento real, preencher `MERCADO_PAGO_ACCESS_TOKEN`. Para documentos de cadastro, preencher `BLOB_READ_WRITE_TOKEN`. Para e-mails, preencher `RESEND_API_KEY`, `RESEND_FROM_EMAIL` e `NEXT_PUBLIC_SITE_URL`.
+- Validacao feita nesta etapa: `npm run lint` passou com warnings de `<img>`/CSS; `npm run build` passou; checagem Playwright em `http://localhost:3002/contrato` e `/admin/fechadura` redirecionou para `/login` sem erros de console quando nao havia sessao admin. Depois do CRUD de usuarios e Vercel Blob, lint/build foram repetidos.
 - Checklist tecnico da replica. O que ja da para considerar ticado:
   - [x] Base Next/Supabase com dados importados do dump.
   - [x] Home publica e detalhes de sala.
   - [x] Login Google, callback e cadastro manual/completar cadastro.
   - [x] Fluxo principal de reserva ate checkout Mercado Pago.
   - [x] Area do cliente com minhas reservas, cancelamento, pagar novamente e chave.
+  - [x] Perfil do usuario e tela publica de cadastro aprovado.
   - [x] Admin visual padronizado com dashboard, usuarios/aprovacao e salas completas.
+  - [x] Admin usuarios replicado com CRUD, toggle status e aprovacao/reprovacao.
+  - [x] E-mail real de aprovacao/reprovacao preparado via Resend.
   - [x] Admin de salas replicado com endereco, conveniencias, imagens, bloqueios e fechadura.
   - [x] Admin de reservas replicado com filtros, detalhes, link de sala e cancelamento.
   - [x] Dashboard administrativo replicado com metricas da fonte.
@@ -85,7 +97,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - [x] Contrato administrativo replicado com versionamento por nova linha em `contracts`.
   - [x] Fechadura dedicada replicada e reaproveitando a API de chaves de sala.
 - Restante tecnico, sempre conferindo Laravel antes de implementar:
-  - [ ] Usuarios: falta envio real de email na aprovacao/reprovacao, download/visualizacao real do documento e CRUD administrativo completo (`cadastrar`, `atualizar`, `deletar`, `toggleStatus`, `detalhes`) seguindo `UsuarioController`.
-  - [ ] Pagamento/producao: preencher `MERCADO_PAGO_ACCESS_TOKEN`, testar webhook/status real e configurar Google redirect no Supabase para `https://www.espacoequilibramente.com.br/login/google/callback`.
+  - [ ] Pagamento/producao: preencher `MERCADO_PAGO_ACCESS_TOKEN`, `BLOB_READ_WRITE_TOKEN`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_SITE_URL`, testar webhook/status real e configurar Google redirect no Supabase para `https://www.espacoequilibramente.com.br/login/google/callback`.
   - [ ] Validacao final: rodada logada como admin/cliente, teste de reserva real em homologacao, lint/build final e revisao visual mobile/desktop.
 - Nao commitar `.env.local`, `backup.sql`, nem `dump-railway-*.sql`.
