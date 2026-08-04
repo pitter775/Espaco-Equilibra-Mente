@@ -22,8 +22,6 @@ export async function POST(request: NextRequest) {
   const reserva = {
     sala_id: parsed.data.sala_id,
     sala_nome: sala.nome,
-    sala_metragem: sala.metragem,
-    sala_imagem: sala.imagens?.find((image) => image.principal)?.imagem_base64 ?? sala.imagens?.[0]?.imagem_base64 ?? null,
     horarios: parsed.data.horarios,
     valor_total: parsed.data.horarios.length * Number(sala.valor),
   };

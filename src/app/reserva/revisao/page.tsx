@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ConfirmReservationButton } from "@/components/site/ConfirmReservationButton";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
+import { getSala } from "@/lib/data";
 import { money } from "@/lib/format";
 
 const regulationItems = [
@@ -40,14 +41,15 @@ export default async function RevisaoPage() {
   const cookieStore = await cookies();
   const raw = cookieStore.get("eqm-reserva")?.value;
   if (!raw) redirect("/");
-  const user = await getCurrentUser();
   const reserva = JSON.parse(raw) as {
+    sala_id: number;
     sala_nome: string;
-    sala_metragem?: string | number | null;
-    sala_imagem?: string | null;
     valor_total: number;
     horarios: { data_reserva: string; hora_inicio: string; hora_fim: string }[];
   };
+  const [user, sala] = await Promise.all([getCurrentUser(), getSala(reserva.sala_id)]);
+  const salaImagem = sala?.imagens?.find((image) => image.principal)?.imagem_base64 ?? sala?.imagens?.[0]?.imagem_base64 ?? null;
+  const salaMetragem = sala?.metragem ?? null;
 
   return (
     <div className="legacy-page">
@@ -56,7 +58,7 @@ export default async function RevisaoPage() {
         <div className="container reservation-review-container">
           <div className="reservation-review-hero">
             <div className="reservation-review-photo">
-              {reserva.sala_imagem ? <img src={reserva.sala_imagem} alt={reserva.sala_nome} /> : <span>Imagem da sala</span>}
+              {salaImagem ? <img src={salaImagem} alt={reserva.sala_nome} /> : <span>Imagem da sala</span>}
             </div>
             <div className="reservation-review-heading">
               <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" />
@@ -75,10 +77,10 @@ export default async function RevisaoPage() {
               <span>Periodo</span>
               <strong>{reserva.horarios.length} horario(s)</strong>
             </div>
-            {reserva.sala_metragem && (
+            {salaMetragem && (
               <div>
                 <span>Espaco</span>
-                <strong>{reserva.sala_metragem} m2</strong>
+                <strong>{salaMetragem} m2</strong>
               </div>
             )}
             <div>
