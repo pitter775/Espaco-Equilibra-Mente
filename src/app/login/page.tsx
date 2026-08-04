@@ -7,6 +7,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <main className="legacy-page d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
       <form className="eq-card p-4" method="post" action="/api/auth/login" style={{ width: 420, maxWidth: "92vw" }}>
+        <input type="hidden" name="redirect_to" value={sala_id ? `/sala/${sala_id}` : "/"} />
         <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="img-fluid mb-3" />
         <h1 className="h4 mb-3">Entrar</h1>
         <label className="form-label">E-mail</label>

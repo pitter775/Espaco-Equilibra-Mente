@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { AuthModalTrigger } from "./AuthModalTrigger";
 import type { AppUser } from "@/lib/types";
 
 export function SiteHeader({ user }: { user: AppUser | null }) {
@@ -39,7 +40,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
                   {user.tipo_usuario === "admin" ? "Gestao" : "Minhas Reservas"}
                 </Link>
               ) : (
-                <Link href="/login">Entre</Link>
+                <AuthModalTrigger label="Entre" className="auth-nav-trigger" />
               )}
             </li>
             {user && <li><Link href="/profile">Perfil</Link></li>}

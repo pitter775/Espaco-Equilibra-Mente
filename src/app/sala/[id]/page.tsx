@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ReservationSelector } from "@/components/site/ReservationSelector";
+import { AuthModalTrigger } from "@/components/site/AuthModalTrigger";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
@@ -62,7 +63,7 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                     disabled={indisponivel}
                   />
                 ) : (
-                  <a href={`/login?sala_id=${sala.id}`} className="eq-btn w-100">Entrar para reservar</a>
+                  <AuthModalTrigger label="Entrar para reservar" className="eq-btn w-100" salaId={sala.id} />
                 )}
                 {endereco && (
                   <div className="eq-card p-4 mt-3">
