@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { getSupabaseServer, isSupabaseConfigured } from "./supabase";
+import { getSupabasePublic, getSupabaseServer, isSupabaseConfigured } from "./supabase";
 import type { AppUser, Conveniencia, Reserva, Sala, Transacao } from "./types";
 
 const salaSelect = `
@@ -15,7 +15,7 @@ export async function listSalas(): Promise<Sala[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseServer()
+  const { data, error } = await getSupabasePublic()
     .from("salas")
     .select(salaSelect)
     .order("id", { ascending: true });
@@ -32,7 +32,7 @@ export async function getSala(id: string | number): Promise<Sala | null> {
   noStore();
   if (!isSupabaseConfigured()) return null;
 
-  const { data, error } = await getSupabaseServer()
+  const { data, error } = await getSupabasePublic()
     .from("salas")
     .select(salaSelect)
     .eq("id", Number(id))
@@ -50,7 +50,7 @@ export async function listConveniencias(): Promise<Conveniencia[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseServer()
+  const { data, error } = await getSupabasePublic()
     .from("conveniencias")
     .select("*")
     .order("nome", { ascending: true });
