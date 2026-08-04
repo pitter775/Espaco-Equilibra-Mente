@@ -2094,7 +2094,7 @@ body.auth-modal-open {
 
 .reservation-review-page {
   min-height: 100vh;
-  padding: 118px 0 72px;
+  padding: 104px 0 72px;
   background: #f7f8f5;
 }
 
@@ -2102,9 +2102,55 @@ body.auth-modal-open {
   max-width: 1120px;
 }
 
+.reservation-review-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.75fr);
+  gap: 22px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+.reservation-review-photo,
 .reservation-review-heading {
-  margin-bottom: 28px;
+  min-height: 250px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 18px 46px rgba(32, 53, 34, 0.08);
+}
+
+.reservation-review-photo {
+  background: #e8ece6;
+}
+
+.reservation-review-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reservation-review-photo span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: #687568;
+  font-weight: 700;
+}
+
+.reservation-review-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  padding: 28px;
+  background: #ffffff;
   text-align: center;
+}
+
+.reservation-review-heading img {
+  width: min(240px, 78%);
+  margin-bottom: 14px;
 }
 
 .reservation-review-heading span {
@@ -2125,6 +2171,37 @@ body.auth-modal-open {
 .reservation-review-heading p {
   margin: 0;
   color: #59645a;
+}
+
+.reservation-review-room-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  background: #dfe8dd;
+  box-shadow: 0 14px 36px rgba(32, 53, 34, 0.06);
+}
+
+.reservation-review-room-strip > div {
+  padding: 18px 20px;
+  background: #ffffff;
+}
+
+.reservation-review-room-strip span {
+  display: block;
+  margin-bottom: 5px;
+  color: #6d7b70;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reservation-review-room-strip strong {
+  color: #203522;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .reservation-review-layout {
@@ -2344,8 +2421,13 @@ body.auth-modal-open {
 }
 
 @media (max-width: 900px) {
+  .reservation-review-hero,
   .reservation-review-layout {
     grid-template-columns: 1fr;
+  }
+
+  .reservation-review-room-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2356,6 +2438,15 @@ body.auth-modal-open {
 
   .reservation-review-heading h1 {
     font-size: 27px;
+  }
+
+  .reservation-review-photo,
+  .reservation-review-heading {
+    min-height: 210px;
+  }
+
+  .reservation-review-room-strip {
+    grid-template-columns: 1fr;
   }
 
   .reservation-review-card,

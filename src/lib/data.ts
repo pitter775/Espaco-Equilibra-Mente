@@ -228,17 +228,63 @@ export async function listReservas(): Promise<Reserva[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseAdmin()
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
     .from("reservas")
     .select("*, sala:salas(*, imagens:imagens_salas(*), endereco:enderecos(*)), usuario:users(id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario,endereco:enderecos(*))")
     .order("data_reserva", { ascending: false });
 
+  if (!error && data?.length) {
+    return data as Reserva[];
+  }
+
   if (error) {
-    console.error("Erro ao listar reservas:", error.message);
+    console.error("Erro ao listar reservas com relacionamentos:", error.message);
+  }
+
+  const { data: reservasSimples, error: reservasError } = await supabase
+    .from("reservas")
+    .select("*")
+    .order("data_reserva", { ascending: false });
+
+  if (reservasError) {
+    console.error("Erro ao listar reservas:", reservasError.message);
     return [];
   }
 
-  return (data ?? []) as Reserva[];
+  const reservas = (reservasSimples ?? []) as Reserva[];
+  if (!reservas.length) return [];
+
+  const salaIds = Array.from(new Set(reservas.map((reserva) => reserva.sala_id).filter(Boolean)));
+  const usuarioIds = Array.from(new Set(reservas.map((reserva) => String(reserva.usuario_id)).filter(Boolean)));
+
+  const [{ data: salas }, { data: usuarios, error: usuariosError }] = await Promise.all([
+    salaIds.length
+      ? supabase
+          .from("salas")
+          .select("*, imagens:imagens_salas(*), endereco:enderecos(*)")
+          .in("id", salaIds)
+      : Promise.resolve({ data: [] }),
+    usuarioIds.length
+      ? supabase
+          .from("users")
+          .select("id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario")
+          .in("id", usuarioIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (usuariosError) {
+    console.error("Erro ao hidratar usuarios das reservas:", usuariosError.message);
+  }
+
+  const salasPorId = new Map((salas ?? []).map((sala) => [Number(sala.id), sala as Sala]));
+  const usuariosPorId = new Map((usuarios ?? []).map((usuario) => [String(usuario.id), usuario as AppUser]));
+
+  return reservas.map((reserva) => ({
+    ...reserva,
+    sala: salasPorId.get(Number(reserva.sala_id)) ?? null,
+    usuario: usuariosPorId.get(String(reserva.usuario_id)) ?? null,
+  }));
 }
 
 export async function listLockedKeys(): Promise<string[]> {
