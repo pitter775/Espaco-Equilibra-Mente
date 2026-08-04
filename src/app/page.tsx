@@ -2,6 +2,7 @@ import { RoomCard } from "@/components/site/RoomCard";
 import { AboutGallery } from "@/components/site/AboutGallery";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteMotion } from "@/components/site/SiteMotion";
 import { getCurrentUser } from "@/lib/auth";
 import { listSalas } from "@/lib/data";
 import { mockSalas } from "@/lib/mock";
@@ -97,6 +98,7 @@ export default async function Home() {
   return (
     <div className="legacy-page">
       <SiteHeader user={user} />
+      <SiteMotion />
       <section id="inicio" className="public-hero">
         <div className="public-hero-content">
           <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="public-hero-logo" />

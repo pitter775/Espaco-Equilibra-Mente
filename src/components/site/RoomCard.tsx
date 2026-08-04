@@ -1,14 +1,41 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import type { Sala } from "@/lib/types";
 
 export function RoomCard({ sala }: { sala: Sala }) {
-  const imagens = sala.imagens?.length ? sala.imagens : [{ imagem_base64: "/assets/img/salas/sala1.jfif" }];
-  const primeiraImagem = imagens[0]?.imagem_base64 || "/assets/img/salas/sala1.jfif";
+  const imagens = useMemo(
+    () =>
+      (sala.imagens?.length ? [...sala.imagens] : [{ imagem_base64: "/assets/img/salas/sala1.jfif", principal: true }])
+        .sort((a, b) => Number(Boolean(b.principal)) - Number(Boolean(a.principal)))
+        .map((imagem) => imagem.imagem_base64)
+        .filter(Boolean),
+    [sala.imagens]
+  );
+  const [activeImage, setActiveImage] = useState(0);
   const indisponivel = sala.status === "indisponivel";
+
+  useEffect(() => {
+    if (imagens.length < 2) return;
+    const delay = 3200 + (Number(sala.id) % 4) * 350;
+    const timer = window.setInterval(() => {
+      setActiveImage((current) => (current + 1) % imagens.length);
+    }, delay);
+
+    return () => window.clearInterval(timer);
+  }, [imagens.length, sala.id]);
 
   return (
     <div className={`room-card-public ${indisponivel ? "indisponivel" : ""}`}>
-      <div className="room-image" style={{ backgroundImage: `url('${primeiraImagem}')` }}>
+      <div className="room-image">
+        {imagens.map((imagem, index) => (
+          <span
+            className={`room-image-slide ${index === activeImage ? "active" : ""}`}
+            style={{ backgroundImage: `url('${imagem}')` }}
+            key={`${imagem}-${index}`}
+          />
+        ))}
         <span className="badge-open">{indisponivel ? "Indisponivel" : "Disponivel"}</span>
       </div>
       <div className="room-body">
