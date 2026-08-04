@@ -1,5 +1,5 @@
 import { listReservas, listSalas } from "./data";
-import { getSupabaseServer, isSupabaseConfigured } from "./supabase";
+import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
 import type { Reserva, Sala } from "./types";
 
 export type DashboardReserva = Reserva & {
@@ -56,7 +56,7 @@ function shiftMonths(date: Date, months: number) {
 
 async function countClientes() {
   if (!isSupabaseConfigured()) return 0;
-  const { count, error } = await getSupabaseServer()
+  const { count, error } = await getSupabaseAdmin()
     .from("users")
     .select("id", { count: "exact", head: true })
     .eq("tipo_usuario", "cliente");

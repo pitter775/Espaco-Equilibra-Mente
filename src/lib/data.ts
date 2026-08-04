@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { getSupabasePublic, getSupabaseServer, isSupabaseConfigured } from "./supabase";
+import { getSupabaseAdmin, getSupabasePublic, getSupabaseServer, isSupabaseConfigured } from "./supabase";
 import type { AppUser, Conveniencia, Reserva, Sala, Transacao } from "./types";
 
 const salaSelect = `
@@ -101,7 +101,7 @@ export async function listReservasByUser(userId: string): Promise<Reserva[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseServer()
+  const { data, error } = await getSupabaseAdmin()
     .from("reservas")
     .select("*, sala:salas(*)")
     .eq("usuario_id", userId)
@@ -132,7 +132,7 @@ export async function listReservaGroupsByUser(userId: string): Promise<ReservaCl
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const supabase = getSupabaseServer();
+  const supabase = getSupabaseAdmin();
   const limiteCancelamento = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   const limiteExclusao = new Date();
   limiteExclusao.setMonth(limiteExclusao.getMonth() - 4);
@@ -228,7 +228,7 @@ export async function listReservas(): Promise<Reserva[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabaseServer()
+  const { data, error } = await getSupabaseAdmin()
     .from("reservas")
     .select("*, sala:salas(*, imagens:imagens_salas(*), endereco:enderecos(*)), usuario:users(id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario,endereco:enderecos(*))")
     .order("data_reserva", { ascending: false });

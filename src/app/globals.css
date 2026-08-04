@@ -117,6 +117,67 @@ a {
   font-weight: 700;
 }
 
+.admin-shell {
+  min-height: 100vh;
+  background: #f5f7f3;
+}
+
+.admin-shell-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #29402d, #213424);
+  padding: 24px 18px;
+  box-shadow: 12px 0 28px rgba(31, 45, 31, 0.08);
+}
+
+.admin-sidebar-logo {
+  display: block;
+  width: 178px;
+  max-width: 100%;
+  margin: 0 auto 22px;
+}
+
+.admin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.admin-sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.admin-sidebar-nav i {
+  width: 18px;
+  color: #b9d5b2;
+  text-align: center;
+}
+
+.admin-shell-content {
+  flex: 1;
+  padding: 32px;
+}
+
 .admin-hero {
   position: relative;
   display: flex;
@@ -126,7 +187,7 @@ a {
   margin-bottom: 20px;
   overflow: hidden;
   border-radius: 8px;
-  background: linear-gradient(135deg, #203522, #4f7f3f);
+  background: linear-gradient(135deg, #385f38, #6f9860);
   color: #fff;
   padding: 28px 32px;
 }
@@ -150,7 +211,7 @@ a {
   width: 92px;
   height: 92px;
   border-radius: 999px;
-  border: 14px solid rgba(255, 255, 255, 0.18);
+  border: 14px solid rgba(255, 255, 255, 0.2);
   animation: adminPulse 2.8s ease-in-out infinite;
 }
 
