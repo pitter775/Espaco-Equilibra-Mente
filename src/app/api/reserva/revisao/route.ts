@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSala } from "@/lib/data";
@@ -26,9 +25,9 @@ export async function POST(request: NextRequest) {
       horarios: parsed.data.horarios,
       valor_total: parsed.data.horarios.length * Number(sala.valor),
     };
-    const cookieStore = await cookies();
-    cookieStore.set("eqm-reserva", encodeURIComponent(JSON.stringify(reserva)), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 30 });
-    return NextResponse.json({ redirect: "/reserva/revisao" });
+    const response = NextResponse.json({ redirect: "/reserva/revisao" });
+    response.cookies.set("eqm-reserva", encodeURIComponent(JSON.stringify(reserva)), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 30 });
+    return response;
   } catch (error) {
     console.error("Erro ao preparar revisao da reserva:", error);
     return NextResponse.json({ error: "Nao foi possivel preparar a revisao da reserva." }, { status: 500 });
