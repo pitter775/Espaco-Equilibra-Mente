@@ -84,7 +84,7 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
               <button type="submit" className="eq-btn w-100">Entrar</button>
             </form>
 
-            <a href={googleHref} className="eq-btn secondary auth-google">
+            <a href={googleHref} className="auth-google">
               <img src="/assets/img/icons/google.png" alt="" />
               Login com Google
             </a>
