@@ -265,6 +265,8 @@ create policy "Public read imagens_salas" on public.imagens_salas for select usi
 create policy "Public read conveniencias" on public.conveniencias for select using (true);
 create policy "Public read sala_conveniencias" on public.sala_conveniencias for select using (true);
 create policy "Public read enderecos" on public.enderecos for select using (true);
+create policy "Public read bloqueios_salas" on public.bloqueios_salas for select using (true);
+create policy "Public read fechaduras" on public.fechaduras for select using (true);
 
 create policy "Users read own profile" on public.users
   for select using (auth.uid()::text = id);
@@ -293,10 +295,11 @@ grant select on public.imagens_salas to anon, authenticated;
 grant select on public.conveniencias to anon, authenticated;
 grant select on public.sala_conveniencias to anon, authenticated;
 grant select on public.enderecos to anon, authenticated;
+grant select on public.bloqueios_salas to anon, authenticated;
+grant select on public.fechaduras to anon, authenticated;
 grant insert on public.newsletters to anon, authenticated;
 grant select, insert, update on public.users to authenticated;
 grant select, insert, update on public.reservas to authenticated;
-grant select on public.bloqueios_salas to authenticated;
 
 alter default privileges in schema public grant all on tables to service_role;
 alter default privileges in schema public grant all on sequences to service_role;

@@ -995,7 +995,7 @@ a {
 
 #header {
   position: fixed;
-  top: 10px;
+  top: 0;
   right: 0;
   left: 0;
   z-index: 997;
@@ -1008,7 +1008,7 @@ a {
 
 #header .container {
   display: flex !important;
-  width: min(980px, calc(100% - 32px));
+  width: min(1060px, calc(100% - 32px));
   height: 76px;
   align-items: center !important;
   justify-content: center;
@@ -1021,19 +1021,19 @@ a {
 }
 
 #header.header-scrolled {
-  top: 10px;
+  top: 0;
   height: 68px;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
+  backdrop-filter: blur(12px);
 }
 
 #header.header-scrolled .container {
   height: 68px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.96) !important;
-  box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
-  backdrop-filter: blur(12px);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 #header .logo {
@@ -1874,16 +1874,16 @@ body.auth-modal-open {
 
 @media (max-width: 991px) {
   #header {
-    top: 10px;
+    top: 0;
   }
 
   #header .container,
   #header.header-scrolled .container {
-    width: min(94vw, 680px);
+    width: 100%;
     min-height: 52px;
     overflow-x: auto;
     justify-content: flex-start;
-    border-radius: 8px;
+    border-radius: 0;
   }
 
   #header .nav-menu {
