@@ -20,14 +20,6 @@ const revealSelector = [
 
 export function SiteMotion() {
   useEffect(() => {
-    const header = document.getElementById("header");
-    const updateHeader = () => {
-      header?.classList.toggle("header-scrolled", window.scrollY > 24);
-    };
-
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-
     const elements = Array.from(document.querySelectorAll<HTMLElement>(revealSelector));
     elements.forEach((element, index) => {
       element.classList.add("reveal-on-scroll");
@@ -48,7 +40,6 @@ export function SiteMotion() {
     elements.forEach((element) => observer.observe(element));
 
     return () => {
-      window.removeEventListener("scroll", updateHeader);
       observer.disconnect();
     };
   }, []);

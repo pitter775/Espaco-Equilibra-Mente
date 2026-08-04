@@ -995,36 +995,45 @@ a {
 
 #header {
   position: fixed;
-  top: 18px;
+  top: 10px;
   right: 0;
   left: 0;
   z-index: 997;
-  height: auto;
-  padding: 0;
-  background: transparent;
+  height: 76px;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   transition: top 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
 }
 
 #header .container {
   display: flex !important;
-  width: min(720px, calc(100% - 32px));
-  min-height: 58px;
+  width: min(980px, calc(100% - 32px));
+  height: 76px;
   align-items: center !important;
   justify-content: center;
-  padding: 0 22px;
-  border-radius: 999px;
-  transition: background 0.28s ease, box-shadow 0.28s ease, backdrop-filter 0.28s ease, width 0.28s ease;
+  margin: 0 auto;
+  padding: 0 18px !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: height 0.28s ease;
 }
 
 #header.header-scrolled {
-  top: 12px;
+  top: 10px;
+  height: 68px;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 #header.header-scrolled .container {
-  width: min(780px, calc(100% - 32px));
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 14px 38px rgba(26, 31, 34, 0.12);
-  backdrop-filter: blur(14px);
+  height: 68px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
+  backdrop-filter: blur(12px);
 }
 
 #header .logo {
@@ -1039,9 +1048,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 22px;
+  gap: 28px;
   margin: 0;
-  padding: 0;
+  padding: 0 !important;
 }
 
 #header .nav-menu > ul > li {
@@ -1051,8 +1060,11 @@ a {
 
 #header .nav-menu a {
   position: relative;
-  padding: 17px 0;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 !important;
+  color: #fff !important;
   font-size: 15px;
   font-weight: 700;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.24);
@@ -1060,7 +1072,7 @@ a {
 }
 
 #header.header-scrolled .nav-menu a {
-  color: #233123;
+  color: #233123 !important;
   text-shadow: none;
 }
 
@@ -1068,7 +1080,7 @@ a {
   content: "";
   position: absolute;
   right: 0;
-  bottom: 10px;
+  bottom: 1px;
   left: 0;
   height: 2px;
   border-radius: 999px;
@@ -1086,12 +1098,12 @@ a {
 
 #header .nav-menu li.active > a,
 #header .nav-menu a:hover {
-  color: #fff;
+  color: #fff !important;
 }
 
 #header.header-scrolled .nav-menu li.active > a,
 #header.header-scrolled .nav-menu a:hover {
-  color: #216c2e;
+  color: #216c2e !important;
 }
 
 .public-hero {
@@ -1706,7 +1718,7 @@ a {
     min-height: 52px;
     overflow-x: auto;
     justify-content: flex-start;
-    border-radius: 26px;
+    border-radius: 8px;
   }
 
   #header .nav-menu {

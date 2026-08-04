@@ -1,7 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
 import type { AppUser } from "@/lib/types";
 
 export function SiteHeader({ user }: { user: AppUser | null }) {
+  useEffect(() => {
+    const header = document.getElementById("header");
+    const updateHeader = () => {
+      const forceSolid = window.location.pathname !== "/";
+      header?.classList.toggle("header-scrolled", forceSolid || window.scrollY > 24);
+    };
+
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
+
   return (
     <header id="header" className="fixed-top header-transparent">
       <div className="container d-flex align-items-center hero-content">
