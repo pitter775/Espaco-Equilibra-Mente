@@ -41,7 +41,7 @@ export default async function RevisaoPage() {
   const cookieStore = await cookies();
   const raw = cookieStore.get("eqm-reserva")?.value;
   if (!raw) redirect("/");
-  const reserva = JSON.parse(raw) as {
+  const reserva = JSON.parse(raw.startsWith("%7B") ? decodeURIComponent(raw) : raw) as {
     sala_id: number;
     sala_nome: string;
     valor_total: number;
