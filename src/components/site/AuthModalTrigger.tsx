@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
+import { PasswordField } from "./PasswordField";
 
 type AuthModalTriggerProps = {
   label: string;
@@ -12,7 +13,6 @@ type AuthModalTriggerProps = {
 export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerProps) {
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const titleId = useId();
   const redirectTo = salaId ? `/sala/${salaId}` : "/";
   const googleHref = salaId ? `/login/google?sala_id=${salaId}` : "/login/google";
@@ -80,16 +80,7 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
               </label>
               <label>
                 <span>Senha</span>
-                <div className="auth-password-field">
-                  <input type={showPassword ? "text" : "password"} name="password" autoComplete="current-password" required />
-                  <button
-                    type="button"
-                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                    onClick={() => setShowPassword((value) => !value)}
-                  >
-                    <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"} aria-hidden="true" />
-                  </button>
-                </div>
+                <PasswordField />
               </label>
               <button type="submit" className="eq-btn w-100">Entrar</button>
             </form>

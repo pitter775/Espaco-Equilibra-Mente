@@ -1256,18 +1256,32 @@ body.auth-modal-open {
   outline: none;
 }
 
-.auth-modal-backdrop .auth-password-field {
+.password-field {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.auth-modal-backdrop .auth-password-field input {
-  padding-right: 46px;
+.password-field input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  border: 1px solid #d9dfd7;
+  border-radius: 6px;
+  background: #fbfcfb;
+  padding: 12px 46px 12px 13px;
+  color: #203522;
+  outline: none;
 }
 
-.auth-modal-backdrop .auth-password-field button {
+.password-field input:focus {
+  border-color: #216c2e;
+  box-shadow: 0 0 0 3px rgba(33, 108, 46, 0.12);
+}
+
+.password-field button {
   position: absolute;
   right: 8px;
   display: grid;
@@ -1281,8 +1295,16 @@ body.auth-modal-open {
   cursor: pointer;
 }
 
-.auth-modal-backdrop .auth-password-field button:hover {
+.password-field button:hover {
   background: #eef6ec;
+}
+
+.auth-modal-backdrop .password-field input {
+  padding-right: 46px;
+}
+
+.login-password-field input {
+  margin-bottom: 0;
 }
 
 .auth-modal-backdrop .auth-modal-form input:focus {
