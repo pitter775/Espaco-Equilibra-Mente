@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
+import { ContractAcceptance } from "@/components/site/ContractAcceptance";
 import { getCurrentUser } from "@/lib/auth";
+import { getLatestContract } from "@/lib/data";
 
 type GoogleData = {
   name?: string;
@@ -23,6 +25,7 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
   const user = await getCurrentUser();
   const cookieStore = await cookies();
   const googleData = JSON.parse(cookieStore.get("eqm-google-data")?.value ?? "{}") as GoogleData;
+  const contract = await getLatestContract();
   const params = await searchParams;
   const error = params?.erro ? errorMessages[params.erro] : "";
   const name = googleData.name ?? user?.name ?? "";
@@ -132,19 +135,7 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
             </div>
           </div>
 
-          <div className="contract-acceptance-box mt-3 mb-4">
-            <div>
-              <strong>Contrato de uso do Espaco Equilibra Mente</strong>
-              <p>
-                Ao concluir o cadastro, voce declara que leu e concorda com as regras de uso das salas, politica de
-                cancelamento e responsabilidades do profissional.
-              </p>
-            </div>
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" id="aceitaContrato" name="aceita_contrato" required />
-              <label className="form-check-label" htmlFor="aceitaContrato">Eu li e aceito os termos do contrato.</label>
-            </div>
-          </div>
+          <ContractAcceptance version={contract?.versao} content={contract?.conteudo} />
 
           <button className="eq-btn" type="submit">Salvar</button>
         </form>
