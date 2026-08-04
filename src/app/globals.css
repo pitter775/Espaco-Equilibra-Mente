@@ -1158,9 +1158,10 @@ body.auth-modal-open {
 
 .auth-modal-backdrop .auth-modal {
   position: relative;
-  width: min(430px, 94vw);
+  width: min(410px, calc(100vw - 36px));
   max-height: calc(100vh - 36px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 8px;
   background: #fff;
   padding: 30px 32px 28px !important;
@@ -1222,6 +1223,7 @@ body.auth-modal-open {
   display: grid;
   gap: 13px;
   width: 100%;
+  min-width: 0;
 }
 
 .auth-modal-backdrop .auth-modal-form label {
@@ -1243,6 +1245,8 @@ body.auth-modal-open {
 .auth-modal-backdrop .auth-modal-form input {
   display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: 48px;
   border: 1px solid #d9dfd7;
   border-radius: 6px;
@@ -1270,6 +1274,8 @@ body.auth-modal-open {
   display: inline-flex;
   min-height: 48px;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   margin-top: 12px;
   align-items: center;
   justify-content: center;
@@ -1277,7 +1283,7 @@ body.auth-modal-open {
   border: 1px solid #e0eadc;
   border-radius: 999px;
   background: #f2f8f0;
-  color: #203522;
+  color: #203522 !important;
   font-size: 15px;
   font-weight: 800;
   text-decoration: none;
@@ -1305,11 +1311,14 @@ body.auth-modal-open {
   margin-top: 16px;
   font-size: 13px;
   font-weight: 700;
+  min-width: 0;
 }
 
 .auth-modal-backdrop .auth-modal-links a {
-  color: #216c2e;
+  color: #216c2e !important;
   text-decoration: none;
+  text-shadow: none !important;
+  white-space: nowrap;
 }
 
 .auth-modal-backdrop .auth-modal-links a:hover {
@@ -1343,6 +1352,7 @@ body.auth-modal-open {
 .auth-modal-backdrop .auth-modal .eq-btn {
   min-height: 48px;
   border-radius: 999px;
+  max-width: 100%;
 }
 
 .manual-register-page {

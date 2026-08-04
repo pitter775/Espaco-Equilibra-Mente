@@ -14,11 +14,11 @@ async function createSupabaseAuthFromLegacyUser(email: string, password: string)
     .ilike("email", email)
     .maybeSingle();
 
-  if (!profile?.password) return false;
+  if (!profile?.password) return null;
 
   const legacyHash = String(profile.password).replace(/^\$2y\$/, "$2a$");
   const passwordMatches = await bcrypt.compare(password, legacyHash).catch(() => false);
-  if (!passwordMatches) return false;
+  if (!passwordMatches) return null;
 
   const { error } = await supabase.auth.admin.createUser({
     email: profile.email,
@@ -31,7 +31,7 @@ async function createSupabaseAuthFromLegacyUser(email: string, password: string)
     },
   });
 
-  return !error || error.message.toLowerCase().includes("already");
+  return !error || error.message.toLowerCase().includes("already") ? String(profile.id) : null;
 }
 
 export async function POST(request: NextRequest) {
@@ -44,11 +44,17 @@ export async function POST(request: NextRequest) {
   let { data, error } = await signIn(email, password);
 
   if (error || !data.session) {
-    const migrated = await createSupabaseAuthFromLegacyUser(email, password);
-    if (migrated) {
+    const legacyUserId = await createSupabaseAuthFromLegacyUser(email, password);
+    if (legacyUserId) {
       const retry = await signIn(email, password);
       data = retry.data;
       error = retry.error;
+
+      if (retry.error || !retry.data.session) {
+        const response = NextResponse.redirect(new URL(safeRedirect, request.url));
+        response.cookies.set("eqm-legacy-user-id", legacyUserId, { httpOnly: true, sameSite: "lax", path: "/" });
+        return response;
+      }
     }
   }
 
@@ -58,6 +64,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(failedUrl);
   }
   const response = NextResponse.redirect(new URL(safeRedirect, request.url));
+  response.cookies.delete("eqm-legacy-user-id");
   response.cookies.set("sb-access-token", data.session.access_token, { httpOnly: true, sameSite: "lax", path: "/" });
   response.cookies.set("sb-refresh-token", data.session.refresh_token, { httpOnly: true, sameSite: "lax", path: "/" });
   return response;

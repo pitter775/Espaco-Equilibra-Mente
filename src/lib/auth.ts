@@ -7,6 +7,10 @@ import type { AppUser } from "./types";
 export async function getCurrentUser(): Promise<AppUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("sb-access-token")?.value;
+  const legacyUserId = cookieStore.get("eqm-legacy-user-id")?.value;
+  if (!token && legacyUserId) {
+    return getProfile(legacyUserId);
+  }
   if (!token) return null;
 
   try {
