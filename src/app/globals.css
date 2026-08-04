@@ -1284,6 +1284,7 @@ body.auth-modal-open {
   border-radius: 999px;
   background: #f2f8f0;
   color: #203522 !important;
+  text-shadow: none !important;
   font-size: 15px;
   font-weight: 800;
   text-decoration: none;
@@ -1294,6 +1295,7 @@ body.auth-modal-open {
   border-color: #cfe0c8;
   background: #eaf4e8;
   color: #203522;
+  text-shadow: none !important;
   text-decoration: none;
   transform: translateY(-1px);
 }
@@ -1315,16 +1317,34 @@ body.auth-modal-open {
 }
 
 .auth-modal-backdrop .auth-modal-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 0 !important;
+  background: transparent !important;
   color: #216c2e !important;
   text-decoration: none;
   text-shadow: none !important;
   white-space: nowrap;
+  opacity: 1 !important;
 }
 
 .auth-modal-backdrop .auth-modal-links a:hover {
-  color: #174d21;
+  color: #174d21 !important;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.auth-modal-backdrop .auth-google,
+.auth-modal-backdrop .auth-google:visited,
+.auth-modal-backdrop .auth-modal-links a,
+.auth-modal-backdrop .auth-modal-links a:visited {
+  color: #203522 !important;
+}
+
+.auth-modal-backdrop .auth-modal-links a,
+.auth-modal-backdrop .auth-modal-links a:visited {
+  color: #216c2e !important;
 }
 
 @media (max-width: 520px) {
