@@ -1165,6 +1165,14 @@ a {
   margin-top: 26px;
 }
 
+.rooms-empty {
+  max-width: 620px;
+  margin: 24px auto 0;
+  color: #6c756c;
+  text-align: center;
+  font-size: 14px;
+}
+
 .room-card-public {
   overflow: hidden;
   border-radius: 8px;

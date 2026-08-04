@@ -5,7 +5,6 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteMotion } from "@/components/site/SiteMotion";
 import { getCurrentUser } from "@/lib/auth";
 import { listSalas } from "@/lib/data";
-import { mockSalas } from "@/lib/mock";
 
 const especialistas = [
   {
@@ -92,8 +91,6 @@ const depoimentos = [
 
 export default async function Home() {
   const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
-  const salasBase = salas.length ? salas : mockSalas;
-  const salasVisiveis = salasBase.length === 3 ? [...salasBase, { ...salasBase[0], id: salasBase[0].id }] : salasBase;
 
   return (
     <div className="legacy-page">
@@ -126,8 +123,11 @@ export default async function Home() {
             <span>›</span>
           </div>
           <div className="rooms-grid">
-            {salasVisiveis.map((sala, index) => <RoomCard sala={sala} key={`${sala.id}-${index}`} />)}
+            {salas.map((sala) => <RoomCard sala={sala} key={sala.id} />)}
           </div>
+          {!salas.length && (
+            <p className="rooms-empty">Nenhuma sala disponivel no momento. Verifique a conexao com o Supabase.</p>
+          )}
         </div>
       </section>
 

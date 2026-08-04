@@ -5,12 +5,10 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
 import { getSala } from "@/lib/data";
 import { money } from "@/lib/format";
-import { mockSalas } from "@/lib/mock";
 
 export default async function SalaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [salaReal, user] = await Promise.all([getSala(id), getCurrentUser()]);
-  const sala = salaReal ?? mockSalas.find((item) => item.id === Number(id)) ?? null;
+  const [sala, user] = await Promise.all([getSala(id), getCurrentUser()]);
   if (!sala) notFound();
 
   const imagens = sala.imagens?.length ? sala.imagens.map((item) => item.imagem_base64) : ["/assets/img/salas/sala1.jfif"];
