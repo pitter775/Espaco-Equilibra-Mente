@@ -9,7 +9,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
   useEffect(() => {
     const header = document.getElementById("header");
     const updateHeader = () => {
-      const forceSolid = window.location.pathname !== "/";
+      const forceSolid = window.location.pathname !== "/" && !window.location.pathname.startsWith("/sala/");
       header?.classList.toggle("header-scrolled", forceSolid || window.scrollY > 24);
     };
 

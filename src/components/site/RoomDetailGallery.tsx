@@ -5,18 +5,28 @@ import { useState } from "react";
 export function RoomDetailGallery({ images, roomName }: { images: string[]; roomName: string }) {
   const safeImages = images.length ? images : ["/assets/img/salas/sala1.jfif"];
   const [activeImage, setActiveImage] = useState(safeImages[0]);
+  const [transitioning, setTransitioning] = useState(false);
+
+  function selectImage(image: string) {
+    if (image === activeImage) return;
+    setTransitioning(true);
+    window.setTimeout(() => {
+      setActiveImage(image);
+      window.setTimeout(() => setTransitioning(false), 40);
+    }, 120);
+  }
 
   return (
     <div className="room-detail-gallery">
       <div className="room-detail-main">
-        <img src={activeImage} alt={roomName} />
+        <img className={transitioning ? "is-transitioning" : ""} src={activeImage} alt={roomName} />
       </div>
       <div className="room-detail-thumbs">
         {safeImages.slice(0, 5).map((image, index) => (
           <button
             type="button"
             className={image === activeImage ? "active" : ""}
-            onClick={() => setActiveImage(image)}
+            onClick={() => selectImage(image)}
             key={`${image}-${index}`}
             aria-label={`Ver imagem ${index + 1} de ${roomName}`}
           >
