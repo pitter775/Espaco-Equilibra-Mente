@@ -1,4 +1,5 @@
 import { RoomCard } from "@/components/site/RoomCard";
+import { AboutGallery } from "@/components/site/AboutGallery";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
@@ -65,12 +66,6 @@ const perguntas = [
     pergunta: "Posso cancelar minha reserva?",
     resposta: "Sim, é possível cancelar sua reserva com até 24 horas de antecedência para reembolso total.",
   },
-];
-
-const galeria = [
-  "/assets/img/salas/sala12.jfif",
-  "/assets/img/salas/sala13.jfif",
-  "/assets/img/salas/sala14.jfif",
 ];
 
 const depoimentos = [
@@ -200,16 +195,7 @@ export default async function Home() {
               <p>O Espaço oferece salas aconchegantes, silenciosas e bem equipadas, disponíveis para locação por hora, proporcionando uma estrutura de qualidade para atendimentos presenciais ou online. Nosso objetivo é garantir um ambiente onde o bem-estar, a privacidade e a qualidade no atendimento caminham lado a lado.</p>
               <p>Aqui, cada detalhe foi pensado para que você possa cuidar de quem cuida.</p>
             </div>
-            <div className="gallery-tabs">
-              <span>Sala 1</span>
-              <span>Sala 2</span>
-              <span>Sala 3</span>
-            </div>
-            <div className="about-gallery">
-              {galeria.map((src) => (
-                <img src={src} alt="Sala EquilibraMente" key={src} />
-              ))}
-            </div>
+            <AboutGallery />
           </div>
         </div>
       </section>

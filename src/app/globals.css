@@ -1308,18 +1308,30 @@ a {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin: 20px 0 24px;
+  margin: 24px 0 28px;
 }
 
-.gallery-tabs span {
-  min-width: 68px;
+.gallery-tabs button {
+  min-width: 76px;
+  border: 0;
   border-radius: 999px;
   background: #eef4ec;
   color: #216c2e;
-  padding: 7px 15px;
+  padding: 9px 18px;
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(22, 83, 39, 0);
+  transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.gallery-tabs button:hover,
+.gallery-tabs button.active {
+  background: #0d702a;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(13, 112, 42, 0.18);
 }
 
 .about-gallery {
@@ -1328,13 +1340,73 @@ a {
   gap: 24px;
   max-width: 980px;
   margin: 0 auto;
+  animation: galleryFade 0.34s ease both;
+}
+
+.about-gallery.image-count-2 {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  max-width: 720px;
+}
+
+.about-gallery.image-count-1 {
+  grid-template-columns: minmax(260px, 520px);
+  justify-content: center;
+}
+
+.about-gallery-item {
+  position: relative;
+  overflow: hidden;
+  min-height: 185px;
+  margin: 0;
+  border-radius: 4px;
+  background: #e7e2dc;
+  box-shadow: 0 16px 28px rgba(26, 31, 34, 0.08);
+  animation: galleryItemIn 0.42s ease both;
+}
+
+.about-gallery-item:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.about-gallery-item:nth-child(3) {
+  animation-delay: 0.1s;
 }
 
 .about-gallery img {
   width: 100%;
   height: 185px;
   object-fit: cover;
-  border-radius: 2px;
+  display: block;
+  transform: scale(1.01);
+  transition: transform 0.45s ease;
+}
+
+.about-gallery-item:hover img {
+  transform: scale(1.045);
+}
+
+@keyframes galleryFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes galleryItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .testimonials-section {
@@ -1482,6 +1554,8 @@ a {
   .steps-grid,
   .testimonials-grid,
   .about-gallery,
+  .about-gallery.image-count-2,
+  .about-gallery.image-count-1,
   .contact-actions {
     grid-template-columns: 1fr;
   }
