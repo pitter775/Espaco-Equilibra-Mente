@@ -12,6 +12,7 @@ type AuthModalTriggerProps = {
 export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerProps) {
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const titleId = useId();
   const redirectTo = salaId ? `/sala/${salaId}` : "/";
   const googleHref = salaId ? `/login/google?sala_id=${salaId}` : "/login/google";
@@ -79,14 +80,23 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
               </label>
               <label>
                 <span>Senha</span>
-                <input type="password" name="password" autoComplete="current-password" required />
+                <div className="auth-password-field">
+                  <input type={showPassword ? "text" : "password"} name="password" autoComplete="current-password" required />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    onClick={() => setShowPassword((value) => !value)}
+                  >
+                    <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"} aria-hidden="true" />
+                  </button>
+                </div>
               </label>
               <button type="submit" className="eq-btn w-100">Entrar</button>
             </form>
 
             <a href={googleHref} className="auth-google">
               <img src="/assets/img/icons/google.png" alt="" />
-              Login com Google
+              <span>Login com Google</span>
             </a>
 
             <div className="auth-modal-links">

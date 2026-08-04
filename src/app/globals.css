@@ -1256,6 +1256,35 @@ body.auth-modal-open {
   outline: none;
 }
 
+.auth-modal-backdrop .auth-password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.auth-modal-backdrop .auth-password-field input {
+  padding-right: 46px;
+}
+
+.auth-modal-backdrop .auth-password-field button {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #216c2e;
+  cursor: pointer;
+}
+
+.auth-modal-backdrop .auth-password-field button:hover {
+  background: #eef6ec;
+}
+
 .auth-modal-backdrop .auth-modal-form input:focus {
   border-color: #216c2e;
   box-shadow: 0 0 0 3px rgba(33, 108, 46, 0.12);
@@ -1304,6 +1333,11 @@ body.auth-modal-open {
   display: block;
   width: 22px;
   height: 22px;
+}
+
+.auth-modal-backdrop .auth-google span {
+  color: #203522 !important;
+  text-shadow: none !important;
 }
 
 .auth-modal-backdrop .auth-modal-links {
