@@ -22,6 +22,13 @@ export function ReservationSelector({
   const [selected, setSelected] = useState<Selected[]>([]);
   const [loading, setLoading] = useState(false);
   const total = useMemo(() => selected.length * valor, [selected.length, valor]);
+  const selectedOrdered = useMemo(
+    () => [...selected].sort((a, b) => `${a.data_reserva}${a.hora_inicio}`.localeCompare(`${b.data_reserva}${b.hora_inicio}`)),
+    [selected],
+  );
+  const selectedDateLabel = date
+    ? new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })
+    : "Selecione a data";
 
   async function loadSlots(value: string) {
     setDate(value);
@@ -70,12 +77,35 @@ export function ReservationSelector({
 
   return (
     <div className="eq-card p-4 reservation-card">
-      <h3>Horarios disponiveis</h3>
-      <label className="d-block mb-2">Escolha uma data</label>
-      <input className="form-control" type="date" min={new Date().toISOString().slice(0, 10)} value={date} onChange={(event) => loadSlots(event.target.value)} />
-      <div className="mt-3" style={{ minHeight: 120 }}>
-        {loading && <p>Carregando agenda do dia...</p>}
-        {!loading && !date && <p>Aguardando selecionar a data para exibir os horarios...</p>}
+      <div className="reservation-card-heading">
+        <div>
+          <span>Agenda</span>
+          <h3>Horarios disponiveis</h3>
+        </div>
+        <small>{selected.length ? `${selected.length} selecionado(s)` : "Por hora"}</small>
+      </div>
+
+      <label className="reservation-date-label" htmlFor={`reservation-date-${salaId}`}>Escolha uma data</label>
+      <div className="reservation-date-field">
+        <input
+          id={`reservation-date-${salaId}`}
+          className="form-control"
+          type="date"
+          min={new Date().toISOString().slice(0, 10)}
+          value={date}
+          onChange={(event) => loadSlots(event.target.value)}
+        />
+      </div>
+
+      <div className="reservation-legend">
+        <span><i className="is-free"></i> Livre</span>
+        <span><i className="is-selected"></i> Selecionado</span>
+        <span><i className="is-busy"></i> Reservado</span>
+      </div>
+
+      <div className="reservation-slots-area">
+        {loading && <p className="reservation-muted">Carregando agenda do dia...</p>}
+        {!loading && !date && <p className="reservation-muted">Selecione uma data para ver a disponibilidade.</p>}
         {!loading && date && (
           <div className="horarios-grid">
             {slots.map((slot) => {
@@ -89,14 +119,31 @@ export function ReservationSelector({
                   title={slot.mensagem}
                   onClick={() => toggle(slot)}
                 >
-                  {slot.inicio.slice(0, 2)}hs - {slot.fim.slice(0, 2)}hs
+                  <span>{slot.inicio.slice(0, 2)}h</span>
+                  <small>{slot.fim.slice(0, 2)}h</small>
                 </button>
               );
             })}
           </div>
         )}
       </div>
-      <div className="d-flex justify-content-between align-items-center mt-4">
+
+      <div className={`reservation-summary-box ${selected.length ? "is-active" : ""}`}>
+        <div>
+          <span>{selectedDateLabel}</span>
+          <strong>{selected.length ? `${selected.length} horario(s)` : "Nenhum horario escolhido"}</strong>
+        </div>
+        <div className="reservation-selected-list">
+          {selectedOrdered.slice(0, 3).map((item) => (
+            <small key={`${item.data_reserva}-${item.hora_inicio}`}>
+              {item.hora_inicio.slice(0, 5)} as {item.hora_fim.slice(0, 5)}
+            </small>
+          ))}
+          {selectedOrdered.length > 3 && <small>+ {selectedOrdered.length - 3} horario(s)</small>}
+        </div>
+      </div>
+
+      <div className="reservation-actions">
         <strong>Total: {money(total)}</strong>
         <button className="eq-btn" type="button" onClick={review}>Reservar</button>
       </div>
