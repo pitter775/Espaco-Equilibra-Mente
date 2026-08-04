@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ReservationSelector } from "@/components/site/ReservationSelector";
 import { AuthModalTrigger } from "@/components/site/AuthModalTrigger";
+import { RoomDetailGallery } from "@/components/site/RoomDetailGallery";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
@@ -24,14 +25,7 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
           <div className="container">
             <div className="row">
               <div className="col-lg-8">
-                <img src={imagens[0]} className="img-fluid rounded w-100" style={{ maxHeight: 450, objectFit: "cover" }} alt={sala.nome} />
-                <div className="row mt-2">
-                  {imagens.slice(1, 5).map((imagem) => (
-                    <div className="col-3" key={imagem}>
-                      <img src={imagem} className="img-fluid rounded w-100" style={{ height: 90, objectFit: "cover" }} alt={sala.nome} />
-                    </div>
-                  ))}
-                </div>
+                <RoomDetailGallery images={imagens} roomName={sala.nome} />
                 <div className="contentg mt-4 text-left">
                   <h3>Sobre a <span>{sala.nome}</span></h3>
                 </div>
