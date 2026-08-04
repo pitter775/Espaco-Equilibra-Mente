@@ -69,7 +69,8 @@ export function ReservationSelector({
   }
 
   return (
-    <div className="eq-card p-4">
+    <div className="eq-card p-4 reservation-card">
+      <h3>Horarios disponiveis</h3>
       <label className="d-block mb-2">Escolha uma data</label>
       <input className="form-control" type="date" min={new Date().toISOString().slice(0, 10)} value={date} onChange={(event) => loadSlots(event.target.value)} />
       <div className="mt-3" style={{ minHeight: 120 }}>

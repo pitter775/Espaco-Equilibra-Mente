@@ -1500,6 +1500,32 @@ body.auth-modal-open {
   object-fit: cover;
 }
 
+.reservation-card h3 {
+  margin: 0 0 14px;
+  color: #203522;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.room-map-card p,
+.room-secure-card p {
+  color: #4f5a4f;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.room-map-card iframe {
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #eef0ec;
+}
+
+.room-secure-card a {
+  color: #216c2e;
+  font-weight: 700;
+}
+
 .how-section {
   background: #f8f8f8;
   padding: 72px 0 78px;

@@ -14,7 +14,15 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
   if (!sala) notFound();
 
   const imagens = sala.imagens?.length ? sala.imagens.map((item) => item.imagem_base64) : ["/assets/img/salas/sala1.jfif"];
-  const endereco = sala.endereco;
+  const endereco = sala.endereco ?? {
+    rua: "Rua Dona Antonia de Queiros",
+    numero: "504",
+    bairro: "Consolacao",
+    cidade: "Sao Paulo",
+    estado: "SP",
+  };
+  const enderecoTexto = `${endereco.rua}, ${endereco.numero}, ${endereco.bairro} - ${endereco.cidade}, ${endereco.estado}`;
+  const enderecoMapa = `${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}, ${endereco.estado}`;
   const indisponivel = sala.status === "indisponivel";
 
   return (
@@ -59,12 +67,16 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                 ) : (
                   <AuthModalTrigger label="Entrar para reservar" className="eq-btn w-100" salaId={sala.id} />
                 )}
-                {endereco && (
-                  <div className="eq-card p-4 mt-3">
-                    <p><i className="fa-solid fa-map-marker-alt mr-2" />{endereco.rua}, {endereco.numero}, {endereco.bairro} - {endereco.cidade}, {endereco.estado}</p>
-                    <iframe width="100%" height="260" style={{ border: 0 }} loading="lazy" src={`https://www.google.com/maps?q=${encodeURIComponent(`${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}, ${endereco.estado}`)}&output=embed`} />
-                  </div>
-                )}
+                <div className="eq-card p-4 mt-3 room-map-card">
+                  <p><i className="fa-solid fa-map-marker-alt mr-2" />{enderecoTexto}</p>
+                  <iframe width="100%" height="300" style={{ border: 0 }} loading="lazy" allowFullScreen src={`https://www.google.com/maps?q=${encodeURIComponent(enderecoMapa)}&output=embed`} />
+                </div>
+                <div className="eq-card p-4 mt-3 room-secure-card">
+                  <p className="text-success mb-2"><i className="fas fa-lock mr-2" />Este e um ambiente seguro!</p>
+                  <p className="mb-0">
+                    Trabalhamos constantemente para proteger sua seguranca e privacidade. <a href="/politica-privacidade">Saiba mais</a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
