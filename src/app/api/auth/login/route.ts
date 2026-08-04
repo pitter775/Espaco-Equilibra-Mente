@@ -20,7 +20,7 @@ async function createSupabaseAuthFromLegacyUser(email: string, password: string)
   const passwordMatches = await bcrypt.compare(password, legacyHash).catch(() => false);
   if (!passwordMatches) return null;
 
-  const { error } = await supabase.auth.admin.createUser({
+  await supabase.auth.admin.createUser({
     email: profile.email,
     password,
     email_confirm: true,
@@ -31,7 +31,7 @@ async function createSupabaseAuthFromLegacyUser(email: string, password: string)
     },
   });
 
-  return !error || error.message.toLowerCase().includes("already") ? String(profile.id) : null;
+  return String(profile.id);
 }
 
 export async function POST(request: NextRequest) {
