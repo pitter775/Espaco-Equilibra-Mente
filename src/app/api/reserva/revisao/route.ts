@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("Erro ao preparar revisao da reserva:", error);
-    const details = error instanceof Error ? error.message : "Erro desconhecido";
-    return NextResponse.json({ error: "Nao foi possivel preparar a revisao da reserva.", details }, { status: 500 });
+    return NextResponse.json({ error: "Nao foi possivel preparar a revisao da reserva." }, { status: 500 });
   }
 }
