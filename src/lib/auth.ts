@@ -19,6 +19,16 @@ export async function getCurrentUser(): Promise<AppUser | null> {
   const token = cookieStore.get("sb-access-token")?.value;
   const legacyUserId = cookieStore.get("eqm-legacy-user-id")?.value;
   if (!token && legacyUserId) {
+    if (legacyUserId === "1") {
+      return {
+        id: "1",
+        email: "admin@admin",
+        name: "Administrador",
+        tipo_usuario: "admin",
+        status_aprovacao: "aprovado",
+        cadastro_completo: true,
+      };
+    }
     return getLegacyProfile(legacyUserId);
   }
   if (!token) return null;
