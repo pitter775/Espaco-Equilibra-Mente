@@ -69,7 +69,7 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
             <form method="post" action="/api/auth/login" className="auth-modal-form">
               {authError && (
                 <div className="auth-modal-error">
-                  Nao foi possivel entrar. Confira e-mail e senha. Usuarios antigos importados do Laravel podem precisar de novo cadastro no Supabase Auth.
+                  Login nao realizado. Confira o e-mail e a senha.
                 </div>
               )}
               <input type="hidden" name="redirect_to" value={redirectTo} />

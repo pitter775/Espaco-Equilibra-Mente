@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { ContractAcceptance } from "@/components/site/ContractAcceptance";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
 import { getLatestContract } from "@/lib/data";
 
@@ -33,8 +34,10 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
   const photo = googleData.photo ?? user?.photo ?? "";
 
   return (
-    <main className="legacy-page" style={{ minHeight: "100vh", padding: "110px 0 70px" }}>
-      <div className="container">
+    <>
+      <SiteHeader user={user} />
+      <main className="legacy-page manual-register-page">
+        <div className="container">
         <form className="eq-card p-4" method="post" action="/api/auth/completar-cadastro" encType="multipart/form-data">
           <h1 className="h4 mb-4">Completar Cadastro</h1>
           {error && <p className="alert alert-warning">{error}</p>}
@@ -139,7 +142,8 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
 
           <button className="eq-btn" type="submit">Salvar</button>
         </form>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }

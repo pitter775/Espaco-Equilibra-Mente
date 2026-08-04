@@ -1156,24 +1156,24 @@ body.auth-modal-open {
   animation: authBackdropIn 0.22s ease both;
 }
 
-.auth-modal {
+.auth-modal-backdrop .auth-modal {
   position: relative;
   width: min(430px, 94vw);
   max-height: calc(100vh - 36px);
   overflow: auto;
   border-radius: 8px;
   background: #fff;
-  padding: 28px 30px 26px;
+  padding: 30px 32px 28px !important;
   box-shadow: 0 28px 70px rgba(13, 20, 14, 0.28);
   animation: authModalIn 0.28s ease both;
 }
 
-.auth-modal,
-.auth-modal * {
+.auth-modal-backdrop .auth-modal,
+.auth-modal-backdrop .auth-modal * {
   box-sizing: border-box;
 }
 
-.auth-modal-close {
+.auth-modal-backdrop .auth-modal-close {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -1190,12 +1190,12 @@ body.auth-modal-open {
   cursor: pointer;
 }
 
-.auth-modal-brand {
+.auth-modal-backdrop .auth-modal-brand {
   margin-bottom: 20px;
   text-align: center;
 }
 
-.auth-modal-brand img {
+.auth-modal-backdrop .auth-modal-brand img {
   display: block;
   width: auto;
   height: 86px;
@@ -1204,7 +1204,7 @@ body.auth-modal-open {
   object-fit: contain;
 }
 
-.auth-modal-brand h2 {
+.auth-modal-backdrop .auth-modal-brand h2 {
   margin: 0 0 6px;
   color: #203522;
   font-size: 25px;
@@ -1212,24 +1212,27 @@ body.auth-modal-open {
   font-weight: 800;
 }
 
-.auth-modal-brand p {
+.auth-modal-backdrop .auth-modal-brand p {
   margin: 0;
   color: #697169;
   font-size: 14px;
 }
 
-.auth-modal-form {
+.auth-modal-backdrop .auth-modal-form {
   display: grid;
   gap: 13px;
+  width: 100%;
 }
 
-.auth-modal-form label {
+.auth-modal-backdrop .auth-modal-form label {
   display: grid;
   gap: 6px;
-  margin: 0;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.auth-modal-form span {
+.auth-modal-backdrop .auth-modal-form span {
   display: block;
   color: #263126;
   font-size: 13px;
@@ -1237,7 +1240,7 @@ body.auth-modal-open {
   line-height: 1.2;
 }
 
-.auth-modal-form input {
+.auth-modal-backdrop .auth-modal-form input {
   display: block;
   width: 100%;
   height: 48px;
@@ -1249,12 +1252,12 @@ body.auth-modal-open {
   outline: none;
 }
 
-.auth-modal-form input:focus {
+.auth-modal-backdrop .auth-modal-form input:focus {
   border-color: #216c2e;
   box-shadow: 0 0 0 3px rgba(33, 108, 46, 0.12);
 }
 
-.auth-modal-error {
+.auth-modal-backdrop .auth-modal-error {
   border-radius: 6px;
   background: #fff1ed;
   color: #9f372b;
@@ -1263,7 +1266,7 @@ body.auth-modal-open {
   line-height: 1.4;
 }
 
-.auth-google {
+.auth-modal-backdrop .auth-google {
   display: inline-flex;
   min-height: 48px;
   width: 100%;
@@ -1281,7 +1284,7 @@ body.auth-modal-open {
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
-.auth-google:hover {
+.auth-modal-backdrop .auth-google:hover {
   border-color: #cfe0c8;
   background: #eaf4e8;
   color: #203522;
@@ -1289,13 +1292,13 @@ body.auth-modal-open {
   transform: translateY(-1px);
 }
 
-.auth-google img {
+.auth-modal-backdrop .auth-google img {
   display: block;
   width: 22px;
   height: 22px;
 }
 
-.auth-modal-links {
+.auth-modal-backdrop .auth-modal-links {
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -1304,37 +1307,47 @@ body.auth-modal-open {
   font-weight: 700;
 }
 
-.auth-modal-links a {
+.auth-modal-backdrop .auth-modal-links a {
   color: #216c2e;
   text-decoration: none;
 }
 
-.auth-modal-links a:hover {
+.auth-modal-backdrop .auth-modal-links a:hover {
   color: #174d21;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 @media (max-width: 520px) {
-  .auth-modal {
+  .auth-modal-backdrop .auth-modal {
     width: min(390px, 94vw);
     padding: 24px 22px;
   }
 
-  .auth-modal-brand img {
+  .auth-modal-backdrop .auth-modal-brand img {
     height: 76px;
     max-width: 172px;
   }
 
-  .auth-modal-brand h2 {
+  .auth-modal-backdrop .auth-modal-brand h2 {
     font-size: 22px;
   }
 
-  .auth-modal-links {
+  .auth-modal-backdrop .auth-modal-links {
     flex-direction: column;
     align-items: center;
     gap: 8px;
   }
+}
+
+.auth-modal-backdrop .auth-modal .eq-btn {
+  min-height: 48px;
+  border-radius: 999px;
+}
+
+.manual-register-page {
+  min-height: 100vh;
+  padding: 132px 0 70px;
 }
 
 @keyframes authBackdropIn {
