@@ -18,6 +18,11 @@ export async function POST(request: NextRequest) {
   const senha = String(form.get("senha") ?? "");
   const senhaConfirmacao = String(form.get("senha_confirmation") ?? "");
   const documento = form.get("documento");
+  const aceitouContrato = form.get("aceita_contrato") === "on";
+
+  if (!aceitouContrato) {
+    return NextResponse.redirect(new URL("/completar-cadastro?erro=contrato", request.url));
+  }
 
   if (senha.length < 8 || senha !== senhaConfirmacao) {
     return NextResponse.redirect(new URL("/completar-cadastro?erro=senha", request.url));
@@ -105,6 +110,19 @@ export async function POST(request: NextRequest) {
       status_aprovacao: "pendente",
     })
     .eq("id", userId);
+
+  const { data: contrato } = await supabase
+    .from("contracts")
+    .select("versao")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase.from("contratos_usuarios").insert({
+    user_id: userId,
+    versao_contrato: contrato?.versao ?? "v1.0 - 2025-05-16",
+    aceito_em: new Date().toISOString(),
+  });
 
   const response = NextResponse.redirect(new URL(user ? "/" : "/login?cadastro=1", request.url));
   response.cookies.delete("eqm-google-data");

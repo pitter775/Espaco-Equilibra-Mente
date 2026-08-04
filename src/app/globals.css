@@ -1069,6 +1069,7 @@ a {
   font-weight: 700;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.24);
   border: 0 !important;
+  outline: 0 !important;
   border-bottom: 0 !important;
   box-shadow: none !important;
   text-decoration: none !important;
@@ -1081,6 +1082,18 @@ a {
 #header .nav-menu li::after {
   display: none !important;
   content: none !important;
+}
+
+#header .nav-menu a:hover,
+#header .nav-menu li:hover > a,
+#header .nav-menu .active > a,
+#header.header-scrolled .nav-menu a:hover,
+#header.header-scrolled .nav-menu li:hover > a,
+#header.header-scrolled .nav-menu .active > a {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
 }
 
 #header.header-scrolled .nav-menu a {
@@ -1588,6 +1601,189 @@ body.auth-modal-open {
   color: #203522;
   font-size: 18px;
   font-weight: 800;
+}
+
+.reservation-review-page {
+  min-height: 100vh;
+  padding: 118px 0 72px;
+  background: #f7f8f5;
+}
+
+.reservation-review-container {
+  max-width: 1120px;
+}
+
+.reservation-review-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.reservation-review-heading span {
+  color: #216c2e;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.reservation-review-heading h1 {
+  margin: 6px 0 8px;
+  color: #202a22;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.reservation-review-heading p {
+  margin: 0;
+  color: #59645a;
+}
+
+.reservation-review-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.reservation-review-card,
+.reservation-regulation-card {
+  padding: 30px;
+}
+
+.reservation-review-card h2,
+.reservation-regulation-card h2 {
+  margin: 0 0 22px;
+  color: #203522;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.reservation-summary-line,
+.reservation-total-line,
+.reservation-schedule-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.reservation-summary-line,
+.reservation-schedule-item {
+  border-bottom: 1px solid #e8ebe4;
+  padding: 15px 0;
+}
+
+.reservation-summary-line span,
+.reservation-schedule-item span,
+.reservation-total-line span {
+  color: #667166;
+  font-size: 14px;
+}
+
+.reservation-summary-line strong,
+.reservation-schedule-item strong {
+  color: #1f2d22;
+  font-weight: 800;
+  text-align: right;
+}
+
+.reservation-total-line {
+  margin-top: 18px;
+  border-radius: 6px;
+  background: #eef6ee;
+  padding: 18px;
+}
+
+.reservation-total-line strong {
+  color: #0d2712;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.reservation-regulation-scroll {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 12px;
+  color: #4f5a4f;
+  font-size: 15px;
+  line-height: 1.62;
+}
+
+.reservation-regulation-scroll strong {
+  color: #17221a;
+}
+
+.reservation-regulation-note {
+  color: #69746a;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.reservation-regulation-link {
+  display: inline-flex;
+  margin-left: 10px;
+  color: #216c2e;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contract-acceptance-box {
+  border: 1px solid #e1e8de;
+  border-radius: 8px;
+  background: #f5faf3;
+  padding: 18px;
+}
+
+.contract-acceptance-box strong {
+  color: #1e3522;
+}
+
+.contract-acceptance-box p {
+  margin: 6px 0 14px;
+  color: #59645a;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .reservation-review-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .reservation-review-page {
+    padding: 96px 0 48px;
+  }
+
+  .reservation-review-heading h1 {
+    font-size: 27px;
+  }
+
+  .reservation-review-card,
+  .reservation-regulation-card {
+    padding: 22px;
+  }
+
+  .reservation-summary-line,
+  .reservation-total-line,
+  .reservation-schedule-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .reservation-summary-line strong,
+  .reservation-schedule-item strong {
+    text-align: left;
+  }
+
+  .reservation-regulation-link {
+    margin-left: 0;
+    margin-top: 8px;
+  }
 }
 
 .room-map-card p,

@@ -58,8 +58,10 @@ export async function POST(request: NextRequest) {
 
   const form = await request.formData().catch(() => null);
   const metodo = String(form?.get("metodo_pagamento") ?? "mercadopago");
+  const aceitouRegulamento = form?.get("aceito_regulamento") === "1";
   const reservaData = JSON.parse(raw) as { sala_id: number; horarios: { data_reserva: string; hora_inicio: string; hora_fim: string }[] };
   if (!isSupabaseConfigured()) return NextResponse.json({ success: false, message: "Configure o Supabase antes de confirmar reservas." }, { status: 503 });
+  if (!aceitouRegulamento) return NextResponse.json({ success: false, message: "Voce precisa aceitar o regulamento para confirmar a reserva." }, { status: 422 });
 
   const sala = await getSala(reservaData.sala_id);
   if (!sala) return NextResponse.json({ success: false, message: "Sala nao encontrada." }, { status: 404 });

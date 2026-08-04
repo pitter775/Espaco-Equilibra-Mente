@@ -7,10 +7,24 @@ type GoogleData = {
   photo?: string | null;
 };
 
-export default async function CompletarCadastroPage() {
+const errorMessages: Record<string, string> = {
+  senha: "Confira a senha e a confirmacao. A senha precisa ter pelo menos 8 caracteres.",
+  documento: "Envie um documento valido em PDF, JPG ou PNG.",
+  email: "Este e-mail ja esta cadastrado. Faca login ou use outro e-mail.",
+  cadastro: "Nao foi possivel criar seu acesso agora. Tente novamente.",
+  contrato: "Voce precisa aceitar os termos do contrato para concluir o cadastro.",
+};
+
+type PageProps = {
+  searchParams?: Promise<{ erro?: string }>;
+};
+
+export default async function CompletarCadastroPage({ searchParams }: PageProps) {
   const user = await getCurrentUser();
   const cookieStore = await cookies();
   const googleData = JSON.parse(cookieStore.get("eqm-google-data")?.value ?? "{}") as GoogleData;
+  const params = await searchParams;
+  const error = params?.erro ? errorMessages[params.erro] : "";
   const name = googleData.name ?? user?.name ?? "";
   const email = googleData.email ?? user?.email ?? "";
   const photo = googleData.photo ?? user?.photo ?? "";
@@ -20,6 +34,7 @@ export default async function CompletarCadastroPage() {
       <div className="container">
         <form className="eq-card p-4" method="post" action="/api/auth/completar-cadastro" encType="multipart/form-data">
           <h1 className="h4 mb-4">Completar Cadastro</h1>
+          {error && <p className="alert alert-warning">{error}</p>}
           {photo && (
             <div className="mb-3">
               <img src={photo} alt="Foto do Google" style={{ width: 88, height: 88, borderRadius: 8, objectFit: "cover" }} />
@@ -117,9 +132,18 @@ export default async function CompletarCadastroPage() {
             </div>
           </div>
 
-          <div className="form-check mt-3 mb-4">
-            <input className="form-check-input" type="checkbox" id="aceitaContrato" name="aceita_contrato" required />
-            <label className="form-check-label" htmlFor="aceitaContrato">Eu li e aceito os termos do contrato.</label>
+          <div className="contract-acceptance-box mt-3 mb-4">
+            <div>
+              <strong>Contrato de uso do Espaco Equilibra Mente</strong>
+              <p>
+                Ao concluir o cadastro, voce declara que leu e concorda com as regras de uso das salas, politica de
+                cancelamento e responsabilidades do profissional.
+              </p>
+            </div>
+            <div className="form-check">
+              <input className="form-check-input" type="checkbox" id="aceitaContrato" name="aceita_contrato" required />
+              <label className="form-check-label" htmlFor="aceitaContrato">Eu li e aceito os termos do contrato.</label>
+            </div>
           </div>
 
           <button className="eq-btn" type="submit">Salvar</button>

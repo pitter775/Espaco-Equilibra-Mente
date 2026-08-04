@@ -208,7 +208,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
-  border-bottom: 1px solid #556050; /* Cor e espessura da linha */
+  border-bottom: 0; /* Linha removida no Next para manter o menu limpo */
   background: none; /* Remove o background */
   text-decoration: none;
 }
@@ -222,7 +222,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-scrolled .nav-menu a:hover, .header-scrolled .nav-menu .active > a, .header-scrolled .nav-menu li:hover > a {
-  background: rgba(255, 255, 255, 0.2);
+  border-bottom: 0;
+  background: transparent;
 }
 
 .nav-menu .drop-down ul {

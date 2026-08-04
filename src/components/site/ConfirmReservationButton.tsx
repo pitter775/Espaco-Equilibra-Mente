@@ -22,6 +22,7 @@ export function ConfirmReservationButton() {
 
       const formData = new FormData();
       formData.set("metodo_pagamento", "mercadopago");
+      formData.set("aceito_regulamento", "1");
       const response = await fetch("/api/reserva/confirmar", {
         method: "POST",
         body: formData,
@@ -59,12 +60,15 @@ export function ConfirmReservationButton() {
         />
         <label className="form-check-label" htmlFor="aceitoRegras">
           Li e aceito os termos do regulamento de uso das salas.
+          <a href="/assets/REGULAMENTO%20DO%20ESPA%C3%87O%20-%20EQM.pdf" target="_blank" rel="noreferrer" className="reservation-regulation-link">
+            Ver regulamento completo
+          </a>
         </label>
       </div>
       <button className="eq-btn" type="button" disabled={loading} onClick={confirmReservation}>
         {loading ? "Confirmando..." : "Confirmar Reserva"}
       </button>
-      {message && <p className="mt-3 mb-0">{message}</p>}
+      {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
     </div>
   );
 }
