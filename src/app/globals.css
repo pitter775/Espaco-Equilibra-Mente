@@ -3850,7 +3850,7 @@ body.auth-modal-open {
 .contact-section {
   position: relative;
   background: linear-gradient(180deg, #fafafa 0%, #f4f6f2 100%);
-  padding: 56px 0 0;
+  padding: 56px 0 48px;
 }
 
 .contact-section .container {
@@ -3866,7 +3866,6 @@ body.auth-modal-open {
     #fff;
   padding: 30px;
   box-shadow: 0 24px 60px rgba(31, 45, 31, 0.12);
-  transform: translateY(44px);
 }
 
 .contact-section .contentg {
@@ -3929,13 +3928,22 @@ body.auth-modal-open {
   object-fit: contain;
 }
 
+.contact-actions .about-btn:last-child {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  line-height: 1.25;
+}
+
 .site-footer {
   margin-top: 0 !important;
   background: linear-gradient(180deg, #405541, #314634);
 }
 
 .site-footer .footer-top {
-  padding: 92px 0 42px;
+  padding: 46px 0 42px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -4417,7 +4425,6 @@ body.auth-modal-open {
   .contact-section .container.text-center {
     width: min(100% - 28px, 1040px);
     padding: 22px;
-    transform: translateY(34px);
   }
 
   .contact-section .contentg {
@@ -4435,7 +4442,7 @@ body.auth-modal-open {
   }
 
   .site-footer .footer-top {
-    padding: 78px 0 34px;
+    padding: 42px 0 34px;
   }
 
   .site-footer .footer-logo {
