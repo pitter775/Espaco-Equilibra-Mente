@@ -1513,6 +1513,7 @@ a {
 }
 
 #header.header-scrolled .logo,
+#header.header-internal .logo,
 #header.mobile-menu-open .logo {
   opacity: 1;
   pointer-events: auto;
@@ -1520,6 +1521,7 @@ a {
 }
 
 #header.header-scrolled .header-logo-img,
+#header.header-internal .header-logo-img,
 #header.mobile-menu-open .header-logo-img {
   height: 44px;
   opacity: 1;
@@ -3680,7 +3682,13 @@ body.auth-modal-open {
     margin: 0 !important;
   }
 
+  #header:not(.header-internal):not(.header-scrolled):not(.mobile-menu-open) .logo {
+    opacity: 0;
+    pointer-events: none;
+  }
+
   #header.header-scrolled .header-logo-img,
+  #header.header-internal .header-logo-img,
   #header.mobile-menu-open .header-logo-img,
   #header .header-logo-img {
     height: 36px;
