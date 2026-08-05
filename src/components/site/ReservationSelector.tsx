@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { money } from "@/lib/format";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type Slot = { inicio: string; fim: string; status: string; mensagem: string };
 type Selected = { data_reserva: string; hora_inicio: string; hora_fim: string };
@@ -21,6 +22,7 @@ export function ReservationSelector({
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selected, setSelected] = useState<Selected[]>([]);
   const [loading, setLoading] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const total = useMemo(() => selected.length * valor, [selected.length, valor]);
   const selectedOrdered = useMemo(
     () => [...selected].sort((a, b) => `${a.data_reserva}${a.hora_inicio}`.localeCompare(`${b.data_reserva}${b.hora_inicio}`)),
@@ -61,14 +63,19 @@ export function ReservationSelector({
       alert("Selecione pelo menos um horario.");
       return;
     }
-    const response = await fetch("/api/reserva/revisao", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ sala_id: salaId, horarios: selected }),
-    });
-    const data = await response.json();
-    if (data.redirect) window.location.href = data.redirect;
-    else alert(data.error || "Erro ao processar reserva.");
+    setReviewLoading(true);
+    try {
+      const response = await fetch("/api/reserva/revisao", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sala_id: salaId, horarios: selected }),
+      });
+      const data = await response.json();
+      if (data.redirect) window.location.href = data.redirect;
+      else alert(data.error || "Erro ao processar reserva.");
+    } finally {
+      setReviewLoading(false);
+    }
   }
 
   if (disabled) {
@@ -147,7 +154,7 @@ export function ReservationSelector({
 
       <div className="reservation-actions">
         <strong>Total: {money(total)}</strong>
-        <button className="eq-btn" type="button" onClick={review}>Reservar</button>
+        <LoadingButton className="eq-btn" type="button" loading={reviewLoading} loadingLabel="Preparando..." onClick={review}>Reservar</LoadingButton>
       </div>
     </div>
   );

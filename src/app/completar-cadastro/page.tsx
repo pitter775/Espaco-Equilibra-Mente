@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { ContractAcceptance } from "@/components/site/ContractAcceptance";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SubmitButton } from "@/components/ui/LoadingButton";
 import { getCurrentUser } from "@/lib/auth";
 import { getLatestContract } from "@/lib/data";
 
@@ -140,7 +141,7 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
 
           <ContractAcceptance version={contract?.versao} content={contract?.conteudo} />
 
-          <button className="eq-btn" type="submit">Salvar</button>
+          <SubmitButton className="eq-btn" loadingLabel="Salvando...">Salvar</SubmitButton>
         </form>
         </div>
       </main>

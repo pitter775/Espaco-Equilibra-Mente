@@ -54,6 +54,43 @@ a {
   box-shadow: 0 8px 20px rgba(33, 108, 46, 0.18);
 }
 
+.eq-btn.is-loading,
+.about-btn.is-loading,
+.auth-google.is-loading {
+  cursor: wait;
+  opacity: 0.9;
+}
+
+.eq-btn:disabled,
+.eq-btn[aria-disabled="true"] {
+  cursor: wait;
+  opacity: 0.82;
+}
+
+.auth-google.is-loading {
+  pointer-events: none;
+}
+
+.btn-spinner {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: btnSpin 0.72s linear infinite;
+}
+
+.btn-label {
+  min-width: 0;
+}
+
+@keyframes btnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .eq-btn.secondary {
   background: #eef4ec;
   color: #216c2e !important;
@@ -1196,7 +1233,8 @@ a {
   padding: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  transition: top 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
+  border-bottom: 0 !important;
+  transition: top 0.28s ease, background 0.28s ease, box-shadow 0.28s ease, backdrop-filter 0.28s ease;
 }
 
 #header .container {
@@ -1216,9 +1254,11 @@ a {
 #header.header-scrolled {
   top: 0;
   height: 68px;
-  background: rgba(255, 255, 255, 0.96) !important;
-  box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
-  backdrop-filter: blur(12px);
+  border-bottom: 0 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 16px 34px rgba(26, 31, 34, 0.09) !important;
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
 }
 
 #header.header-scrolled .container {
@@ -1331,7 +1371,7 @@ a {
 
 #header .nav-menu li.is-active > a {
   color: #fff !important;
-  box-shadow: inset 0 -2px 0 currentColor !important;
+  box-shadow: none !important;
 }
 
 #header.header-scrolled .nav-menu li.active > a,
@@ -3327,12 +3367,14 @@ body.auth-modal-open {
     background: rgba(255, 255, 255, 0.96) !important;
     box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   #header.mobile-menu-open {
     background: rgba(255, 255, 255, 0.92) !important;
     box-shadow: 0 12px 30px rgba(26, 31, 34, 0.12) !important;
     backdrop-filter: blur(16px) saturate(1.08);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
   }
 
   #header .container,
@@ -3371,15 +3413,16 @@ body.auth-modal-open {
     width: auto;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.62);
+    border: 0 !important;
     border-radius: 8px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.88);
     box-shadow: 0 24px 58px rgba(13, 20, 14, 0.2);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-8px) scale(0.985);
     transition: opacity 0.2s ease, transform 0.2s ease;
-    backdrop-filter: none;
+    backdrop-filter: blur(18px) saturate(1.08);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
   }
 
   #header.mobile-menu-open .nav-menu {

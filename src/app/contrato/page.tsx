@@ -1,6 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { AdminPageHero } from "@/components/admin/AdminPageChrome";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { SubmitButton } from "@/components/ui/LoadingButton";
 import { requireAdmin } from "@/lib/auth";
 import { getLatestContract } from "@/lib/data";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -36,7 +37,7 @@ export default async function ContratoPage() {
           <span>Conteudo do Contrato</span>
           <textarea className="form-control" name="conteudo" rows={16} defaultValue={contrato?.conteudo ?? ""} required />
         </label>
-        <button className="eq-btn" type="submit">Salvar Contrato</button>
+        <SubmitButton className="eq-btn" loadingLabel="Salvando...">Salvar Contrato</SubmitButton>
       </form>
     </AdminShell>
   );

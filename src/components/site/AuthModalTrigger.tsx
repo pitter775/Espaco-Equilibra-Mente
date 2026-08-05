@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { PasswordField } from "./PasswordField";
+import { SubmitButton } from "@/components/ui/LoadingButton";
 
 type AuthModalTriggerProps = {
   label: string;
@@ -15,6 +16,7 @@ type AuthModalTriggerProps = {
 export function AuthModalTrigger({ label, className, salaId, onOpen }: AuthModalTriggerProps) {
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const titleId = useId();
   const redirectTo = salaId ? `/sala/${salaId}#agenda` : "/";
   const googleHref = salaId ? `/login/google?sala_id=${salaId}&anchor=agenda` : "/login/google";
@@ -94,11 +96,12 @@ export function AuthModalTrigger({ label, className, salaId, onOpen }: AuthModal
                 <span>Senha</span>
                 <PasswordField />
               </label>
-              <button type="submit" className="eq-btn w-100">Entrar</button>
+              <SubmitButton className="eq-btn w-100" loadingLabel="Entrando...">Entrar</SubmitButton>
             </form>
 
-            <a href={googleHref} className="auth-google">
+            <a href={googleHref} className={`auth-google ${googleLoading ? "is-loading" : ""}`} onClick={() => setGoogleLoading(true)} aria-busy={googleLoading}>
               <img src="/assets/img/icons/google.png" alt="" />
+              {googleLoading && <span className="btn-spinner" aria-hidden="true" />}
               <span>Login com Google</span>
             </a>
 

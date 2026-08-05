@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { Reserva } from "@/lib/types";
 import { dateBr, money } from "@/lib/format";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 function normalizeStatus(status?: string | null) {
   return String(status ?? "").toUpperCase();
@@ -163,7 +164,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                   <div>
                     <button className="eq-btn secondary" type="button" onClick={() => { setSelected(reserva); setMessage(""); }}>Detalhes</button>
                     <a className="eq-btn secondary" href={reserva.sala?.id ? `/admin/salas?editar=${reserva.sala.id}` : "/admin/salas"}>Sala</a>
-                    {canCancel && <button className="eq-btn danger" type="button" disabled={loading} onClick={() => cancelReservation(reserva)}>Cancelar</button>}
+                    {canCancel && <LoadingButton className="eq-btn danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(reserva)}>Cancelar</LoadingButton>}
                   </div>
                 </div>
               </div>
@@ -218,7 +219,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
             <div className="admin-approval-box">
               <span>{normalizeStatus(selected.status) === "CANCELADA" ? "Esta reserva ja esta cancelada." : "Confira os dados antes de cancelar esta reserva."}</span>
               <div className="d-flex" style={{ gap: 10 }}>
-                {normalizeStatus(selected.status) !== "CANCELADA" && <button className="eq-btn danger" type="button" disabled={loading} onClick={() => cancelReservation(selected)}>Cancelar reserva</button>}
+                {normalizeStatus(selected.status) !== "CANCELADA" && <LoadingButton className="eq-btn danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(selected)}>Cancelar reserva</LoadingButton>}
                 <a className="eq-btn secondary" href={selected.sala?.id ? `/admin/salas?editar=${selected.sala.id}` : "/admin/salas"}>Editar sala</a>
               </div>
             </div>

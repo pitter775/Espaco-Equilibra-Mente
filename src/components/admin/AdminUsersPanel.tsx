@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { AppUser } from "@/lib/types";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type Mode = "details" | "create" | "edit";
 type ApiResult = {
@@ -242,11 +243,11 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
                     <strong className={`eq-status eq-status-${statusClass(selected.status_aprovacao)}`}>{statusLabel(selected.status_aprovacao)}</strong>
                   </div>
                   <div className="d-flex flex-wrap" style={{ gap: 10 }}>
-                    <button className="eq-btn" type="button" disabled={loading === "PUT"} onClick={() => updateApproval(selected, "aprovado")}>Aprovar</button>
-                    <button className="eq-btn danger" type="button" disabled={loading === "PUT"} onClick={() => updateApproval(selected, "reprovado")}>Reprovar</button>
+                    <LoadingButton className="eq-btn" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "aprovado")}>Aprovar</LoadingButton>
+                    <LoadingButton className="eq-btn danger" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "reprovado")}>Reprovar</LoadingButton>
                     <button className="eq-btn secondary" type="button" onClick={() => setMode("edit")}>Editar</button>
-                    <button className="eq-btn secondary" type="button" disabled={loading === "PUT"} onClick={() => toggleStatus(selected)}>{selected.status === "ativo" ? "Inativar" : "Ativar"}</button>
-                    <button className="eq-btn danger" type="button" disabled={loading === "DELETE"} onClick={() => deleteUser(selected)}>Excluir</button>
+                    <LoadingButton className="eq-btn secondary" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => toggleStatus(selected)}>{selected.status === "ativo" ? "Inativar" : "Ativar"}</LoadingButton>
+                    <LoadingButton className="eq-btn danger" type="button" loading={loading === "DELETE"} loadingLabel="Excluindo..." onClick={() => deleteUser(selected)}>Excluir</LoadingButton>
                   </div>
                 </section>
               </>
@@ -257,7 +258,7 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
                 <UserFields user={selected ?? undefined} requirePassword={mode === "create"} />
                 <div className="admin-modal-actions">
                   {mode === "edit" && <button className="eq-btn secondary" type="button" onClick={() => setMode("details")}>Cancelar</button>}
-                  <button className="eq-btn" type="submit" disabled={Boolean(loading)}>{mode === "create" ? "Criar usuario" : "Salvar alteracoes"}</button>
+                  <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">{mode === "create" ? "Criar usuario" : "Salvar alteracoes"}</LoadingButton>
                 </div>
               </form>
             )}

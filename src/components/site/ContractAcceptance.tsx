@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type ContractAcceptanceProps = {
   version?: string;
@@ -81,6 +82,7 @@ function currentContractData() {
 export function ContractAcceptance({ version, content }: ContractAcceptanceProps) {
   const [open, setOpen] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [accepting, setAccepting] = useState(false);
   const [snapshot, setSnapshot] = useState(currentContractData);
   const contractText = content?.trim() || fallbackContract;
 
@@ -97,8 +99,10 @@ export function ContractAcceptance({ version, content }: ContractAcceptanceProps
   }
 
   function acceptContract() {
+    setAccepting(true);
     setAccepted(true);
     setOpen(false);
+    window.setTimeout(() => setAccepting(false), 200);
   }
 
   return (
@@ -137,7 +141,7 @@ export function ContractAcceptance({ version, content }: ContractAcceptanceProps
             </header>
             <div className="contract-modal-body">{preview}</div>
             <footer>
-              <button type="button" className="eq-btn" onClick={acceptContract}>Aceito os termos</button>
+              <LoadingButton type="button" className="eq-btn" loading={accepting} loadingLabel="Confirmando..." onClick={acceptContract}>Aceito os termos</LoadingButton>
               <button type="button" className="contract-cancel-button" onClick={() => setOpen(false)}>Cancelar</button>
             </footer>
           </div>

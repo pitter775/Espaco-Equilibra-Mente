@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { BloqueioSala, Conveniencia, Fechadura, Sala } from "@/lib/types";
 import { money } from "@/lib/format";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type RoomWithRelationArrays = Sala & {
   fechadura?: Fechadura | Fechadura[] | null;
@@ -246,7 +247,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
             <p className="admin-kicker mb-1">Nova sala</p>
             <h2 className="h5 mb-0">Cadastrar sala completa</h2>
           </div>
-          <button className="eq-btn" type="submit" disabled={Boolean(loading)}>Criar sala</button>
+          <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Criando...">Criar sala</LoadingButton>
         </div>
         <RoomFields conveniencias={conveniencias} />
       </form>
@@ -265,7 +266,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
             <form key={`room-${selected.id}`} className="admin-room-form" onSubmit={updateRoom}>
               <RoomFields sala={selected} conveniencias={conveniencias} selectedConveniencias={selectedConveniencias} />
               <div className="admin-modal-actions">
-                <button className="eq-btn" type="submit" disabled={Boolean(loading)}>Salvar sala</button>
+                <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar sala</LoadingButton>
               </div>
             </form>
 
@@ -277,15 +278,15 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     <div key={imagem.id}>
                       <img src={imagem.imagem_base64} alt="" />
                       <div>
-                        <button type="button" className="eq-btn secondary" onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</button>
-                        <button type="button" className="eq-btn danger" onClick={() => removeImage(imagem.id)}>Excluir</button>
+                        <LoadingButton type="button" className="eq-btn secondary" loading={loading === `/api/admin/imagens/${imagem.id}`} onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</LoadingButton>
+                        <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/imagens/${imagem.id}`} loadingLabel="Excluindo..." onClick={() => removeImage(imagem.id)}>Excluir</LoadingButton>
                       </div>
                     </div>
                   ))}
                 </div>
                 <form className="admin-inline-form mt-3" onSubmit={addImages}>
                   <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
-                  <button className="eq-btn secondary" type="submit">Adicionar imagens</button>
+                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Enviando...">Adicionar imagens</LoadingButton>
                 </form>
               </section>
 
@@ -295,7 +296,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                   {[0, 1, 2, 3].map((index) => (
                     <input key={index} className="form-control" name={`chave_${index}`} maxLength={12} defaultValue={chaves[index] ?? ""} placeholder={`Chave ${index + 1}`} />
                   ))}
-                  <button className="eq-btn secondary" type="submit">Salvar chaves</button>
+                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar chaves</LoadingButton>
                 </form>
               </section>
 
@@ -311,14 +312,14 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                   <input className="form-control" name="hora_inicio" type="time" />
                   <input className="form-control" name="hora_fim" type="time" />
                   <input className="form-control" name="motivo" placeholder="Motivo" />
-                  <button className="eq-btn secondary" type="submit">Bloquear</button>
+                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
                 </form>
                 <div className="admin-block-list">
                   {bloqueios.map((bloqueio: BloqueioSala) => (
                     <div key={bloqueio.id}>
                       <span>{bloqueio.data_inicio} ate {bloqueio.data_fim}</span>
                       <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
-                      <button type="button" className="eq-btn danger" onClick={() => removeBlock(bloqueio.id)}>Remover</button>
+                      <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/bloqueios/${bloqueio.id}`} loadingLabel="Removendo..." onClick={() => removeBlock(bloqueio.id)}>Remover</LoadingButton>
                     </div>
                   ))}
                   {!bloqueios.length && <p className="mb-0">Nenhum bloqueio cadastrado.</p>}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ReservaClienteGrupo } from "@/lib/data";
 import { dateBr, money } from "@/lib/format";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 function statusBadge(status: string) {
   const normalized = status.toUpperCase();
@@ -121,7 +122,17 @@ export function ClientReservations({ groups }: { groups: ReservaClienteGrupo[] }
                 <p><strong>Total:</strong> {money((selected.reservas[0].sala?.valor ?? 0) * selected.reservas.length)}</p>
                 {showKeyButton(selected) ? (
                   <div className="mb-3">
-                    {!chave && <button className="eq-btn secondary" type="button" disabled={loading === "chave"} onClick={() => fetchChave(selected.reservas[0].id)}>Ver chave da sala</button>}
+                    {!chave && (
+                      <LoadingButton
+                        className="eq-btn secondary"
+                        type="button"
+                        loading={loading === "chave"}
+                        loadingLabel="Buscando..."
+                        onClick={() => fetchChave(selected.reservas[0].id)}
+                      >
+                        Ver chave da sala
+                      </LoadingButton>
+                    )}
                     {chave && <p className="text-success font-weight-bold">Sua chave de acesso: {chave}</p>}
                   </div>
                 ) : (
@@ -135,7 +146,15 @@ export function ClientReservations({ groups }: { groups: ReservaClienteGrupo[] }
               {selected.reservas[0].status.toUpperCase() === "PENDENTE" && (
                 <>
                   <a className="eq-btn" href={`/api/mercadopago/pagar/${selected.reservas[0].id}`} target="_blank">Concluir pagamento</a>
-                  <button className="eq-btn danger" type="button" disabled={loading === "cancelar"} onClick={() => cancelReserva(selected.reservas[0].id)}>Cancelar (sistema)</button>
+                  <LoadingButton
+                    className="eq-btn danger"
+                    type="button"
+                    loading={loading === "cancelar"}
+                    loadingLabel="Cancelando..."
+                    onClick={() => cancelReserva(selected.reservas[0].id)}
+                  >
+                    Cancelar (sistema)
+                  </LoadingButton>
                 </>
               )}
               {["PAGA", "CONFIRMADA"].includes(selected.reservas[0].status.toUpperCase()) && (

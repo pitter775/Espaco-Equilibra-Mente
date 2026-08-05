@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 export function ConfirmReservationButton() {
   const [accepted, setAccepted] = useState(false);
@@ -65,9 +66,9 @@ export function ConfirmReservationButton() {
           </a>
         </label>
       </div>
-      <button className="eq-btn" type="button" disabled={loading} onClick={confirmReservation}>
-        {loading ? "Confirmando..." : "Confirmar Reserva"}
-      </button>
+      <LoadingButton className="eq-btn" type="button" loading={loading} loadingLabel="Confirmando..." onClick={confirmReservation}>
+        Confirmar Reserva
+      </LoadingButton>
       {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
     </div>
   );

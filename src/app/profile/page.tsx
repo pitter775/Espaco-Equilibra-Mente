@@ -1,5 +1,6 @@
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SubmitButton } from "@/components/ui/LoadingButton";
 import { requireUser } from "@/lib/auth";
 
 const messages: Record<string, string> = {
@@ -46,7 +47,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
                 <span>E-mail</span>
                 <input className="form-control" type="email" name="email" defaultValue={user.email ?? ""} required />
               </label>
-              <button className="eq-btn" type="submit">Salvar</button>
+              <SubmitButton className="eq-btn" loadingLabel="Salvando...">Salvar</SubmitButton>
             </form>
 
             <form className="eq-card profile-card" method="post" action="/api/profile">
@@ -65,7 +66,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
                 <span>Confirmar nova senha</span>
                 <input className="form-control" type="password" name="password_confirmation" minLength={8} autoComplete="new-password" required />
               </label>
-              <button className="eq-btn" type="submit">Atualizar senha</button>
+              <SubmitButton className="eq-btn" loadingLabel="Atualizando...">Atualizar senha</SubmitButton>
             </form>
 
             <form className="eq-card profile-card profile-danger" method="post" action="/api/profile">
@@ -76,7 +77,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
                 <span>Senha</span>
                 <input className="form-control" type="password" name="current_password" autoComplete="current-password" required />
               </label>
-              <button className="eq-btn danger" type="submit">Excluir conta</button>
+              <SubmitButton className="eq-btn danger" loadingLabel="Excluindo...">Excluir conta</SubmitButton>
             </form>
           </div>
         </div>

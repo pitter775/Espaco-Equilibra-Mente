@@ -23,8 +23,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
   useEffect(() => {
     const header = document.getElementById("header");
     const updateHeader = () => {
-      const forceSolid = window.location.pathname !== "/";
-      header?.classList.toggle("header-scrolled", forceSolid || window.scrollY > 24);
+      header?.classList.toggle("header-scrolled", window.scrollY > 24);
     };
 
     updateHeader();

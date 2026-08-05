@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { Fechadura, Sala } from "@/lib/types";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type RoomWithLock = Sala & {
   fechadura?: Fechadura | Fechadura[] | null;
@@ -82,7 +83,7 @@ export function AdminLocksPanel({ salas, lockedKeys }: { salas: RoomWithLock[]; 
                     </label>
                   );
                 })}
-                <button className="eq-btn" type="submit" disabled={loading === sala.id}>Atualizar</button>
+                <LoadingButton className="eq-btn" type="submit" loading={loading === sala.id} loadingLabel="Atualizando...">Atualizar</LoadingButton>
               </div>
             </form>
           );

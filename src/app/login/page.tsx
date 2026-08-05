@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PasswordField } from "@/components/site/PasswordField";
+import { SubmitButton } from "@/components/ui/LoadingButton";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ sala_id?: string; redirect_to?: string }> }) {
   const { sala_id, redirect_to } = await searchParams;
@@ -16,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <input className="form-control mb-3" type="email" name="email" required />
         <label className="form-label">Senha</label>
         <PasswordField className="login-password-field mb-3" />
-        <button className="eq-btn w-100" type="submit">Entrar</button>
+        <SubmitButton className="eq-btn w-100" loadingLabel="Entrando...">Entrar</SubmitButton>
         <a href={googleHref} className="eq-btn secondary w-100 mt-3">
           <img src="/assets/img/icons/google.png" alt="" style={{ width: 22, height: 22 }} />
           Login com Google

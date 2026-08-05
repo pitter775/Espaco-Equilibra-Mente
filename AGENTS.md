@@ -6,6 +6,21 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Handoff EquilibraMente
 
+## Tutorial rapido para o proximo Codex
+
+- Repositorio real: `C:\Projetos\Equilibra-Mente`. O caminho do OneDrive pode aparecer no contexto, mas antes de editar rode `git status --short` e confirme que esta neste repo.
+- Comandos base: `npm run lint`, `npm run build`, `npm run dev -- --port 3002` quando precisar validar no navegador. Se a porta estiver ocupada, use outra.
+- Projeto: Next.js App Router com React 19/Next 16. Antes de mexer em API nova do Next, consulte `node_modules/next/dist/docs/` porque esta versao pode diferir do conhecimento treinado.
+- Fonte de verdade de regra de negocio: Laravel em `C:\xampp81\htdocs\EquilibraMente`. Use apenas para leitura e comparacao. Nao altere o Laravel.
+- Banco: usar Supabase com cuidado. Para operacoes de servidor/admin, prefira helpers existentes em `src/lib/supabase.ts` e evite depender de RLS/anon key para fluxo critico.
+- Cache: antes de criar consultas novas, procure funcoes em `src/lib/data.ts` e tags/revalidate existentes. Evite chamar Supabase em componente client quando a informacao pode vir server-side/cacheada.
+- Visual publico: CSS central em `src/app/globals.css`; componentes do site em `src/components/site`. Preserve o visual premium/mobile-first e valide no celular via viewport Playwright quando mexer em header, galeria, modal ou cards.
+- Admin: reaproveite `AdminShell`, `AdminPageHero`, `AdminMetrics`, `eq-card`, `eq-modal`, `admin-toolbar` e `admin-segments`. Nao crie um estilo novo por tela.
+- Botoes de acao: use `LoadingButton` ou `SubmitButton` de `src/components/ui/LoadingButton.tsx` para evitar clique duplicado e mostrar loading no mobile.
+- Header publico: o topo deve ficar transparente antes do scroll e virar branco translucido com blur quando scrollar. Menus nao devem ter borda inferior.
+- Arquivos temporarios: nao commitar prints/logs como `mobile-*.png`, `dev-*.log`, `.next-gallery-dev.*`, `cookies-test.txt`, dumps ou `.env.local`.
+- Antes de push: rode lint/build, confira `git diff --stat`, stage apenas arquivos do app/documentacao, commit com mensagem objetiva e `git push origin main`.
+
 - Projeto Next.js App Router em `C:\Projetos\Equilibra-Mente`; Laravel fonte da verdade em `C:\xampp81\htdocs\EquilibraMente`.
 - Nao alterar o projeto Laravel original.
 - Regra principal da migracao: nada deve ser inventado. Todo fluxo, regra de negocio, tela e comportamento deve ser conferido primeiro no Laravel e depois replicado/adaptado para Next/Supabase, porque o Laravel nao sera usado na Vercel.
