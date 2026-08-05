@@ -214,7 +214,7 @@ a {
   height: 92px;
   border-radius: 999px;
   border: 14px solid rgba(255, 255, 255, 0.2);
-  animation: adminPulse 2.8s ease-in-out infinite;
+  opacity: 0.72;
 }
 
 @keyframes adminPulse {
@@ -684,6 +684,16 @@ a {
   background: #216c2e;
 }
 
+.admin-chart-bars > div.is-empty span,
+.admin-chart-bars > div.is-empty strong {
+  color: #a0aaa0;
+}
+
+.admin-chart-bars > div.is-empty i {
+  background: #dfe6dd;
+  opacity: 0.75;
+}
+
 .admin-status-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -762,6 +772,49 @@ a {
 .admin-ranking-list small,
 .admin-upcoming-list span {
   color: #697369;
+}
+
+.admin-empty-state {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 150px;
+  padding: 24px 18px;
+  border: 1px solid rgba(33, 108, 46, 0.1);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(237, 247, 234, 0.86), rgba(255, 250, 241, 0.74)),
+    #f8fbf7;
+  text-align: center;
+}
+
+.admin-chart-bars + .admin-empty-state {
+  margin-top: 14px;
+}
+
+.admin-empty-state i {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 999px;
+  background: #fff;
+  color: #216c2e;
+  font-size: 18px;
+  box-shadow: 0 12px 24px rgba(26, 62, 34, 0.08);
+}
+
+.admin-empty-state strong {
+  color: #203522;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.admin-empty-state span {
+  max-width: 280px;
+  color: #697369;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .admin-external-card {
@@ -1728,14 +1781,11 @@ body.auth-modal-open {
   inset: 0;
   background-position: center;
   background-size: cover;
-  opacity: 0;
-  transform: scale(1.035);
-  transition: opacity 0.9s ease, transform 2.8s ease;
+  opacity: 1;
 }
 
 .room-image-slide.active {
   opacity: 1;
-  transform: scale(1);
 }
 
 .room-card-public .badge-open {
@@ -2965,6 +3015,17 @@ body.auth-modal-open {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
 

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export function AdminDebugProbe() {
   useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
     fetch("/api/admin/db-check", { cache: "no-store" })
       .then(async (response) => {
         const payload = await response.json().catch(() => null);

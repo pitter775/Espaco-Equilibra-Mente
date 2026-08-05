@@ -1,4 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
+import { unstable_cache as cache } from "next/cache";
 import { getSupabaseAdmin, getSupabaseServer, isSupabaseConfigured } from "./supabase";
 import type { AppUser, Conveniencia, Reserva, Sala, Transacao } from "./types";
 
@@ -11,21 +12,28 @@ const salaSelect = `
   fechadura:fechaduras(*)
 `;
 
+const listSalasCached = cache(
+  async () => {
+    if (!isSupabaseConfigured()) return [];
+
+    const { data, error } = await getSupabaseServer()
+      .from("salas")
+      .select(salaSelect)
+      .order("id", { ascending: true });
+
+    if (error) {
+      console.error("Erro ao listar salas:", error.message);
+      return [];
+    }
+
+    return (data ?? []) as Sala[];
+  },
+  ["salas-public"],
+  { revalidate: 300, tags: ["salas"] },
+);
+
 export async function listSalas(): Promise<Sala[]> {
-  noStore();
-  if (!isSupabaseConfigured()) return [];
-
-  const { data, error } = await getSupabaseServer()
-    .from("salas")
-    .select(salaSelect)
-    .order("id", { ascending: true });
-
-  if (error) {
-    console.error("Erro ao listar salas:", error.message);
-    return [];
-  }
-
-  return (data ?? []) as Sala[];
+  return listSalasCached();
 }
 
 export async function listSalasAdmin(): Promise<Sala[]> {
@@ -45,39 +53,53 @@ export async function listSalasAdmin(): Promise<Sala[]> {
   return (data ?? []) as Sala[];
 }
 
+const getSalaCached = cache(
+  async (id: string | number) => {
+    if (!isSupabaseConfigured()) return null;
+
+    const { data, error } = await getSupabaseServer()
+      .from("salas")
+      .select(salaSelect)
+      .eq("id", Number(id))
+      .single();
+
+    if (error) {
+      console.error("Erro ao buscar sala:", error.message);
+      return null;
+    }
+
+    return data as Sala;
+  },
+  ["sala-detail"],
+  { revalidate: 300, tags: ["salas"] },
+);
+
 export async function getSala(id: string | number): Promise<Sala | null> {
-  noStore();
-  if (!isSupabaseConfigured()) return null;
-
-  const { data, error } = await getSupabaseServer()
-    .from("salas")
-    .select(salaSelect)
-    .eq("id", Number(id))
-    .single();
-
-  if (error) {
-    console.error("Erro ao buscar sala:", error.message);
-    return null;
-  }
-
-  return data as Sala;
+  return getSalaCached(id);
 }
 
+const listConvenienciasCached = cache(
+  async () => {
+    if (!isSupabaseConfigured()) return [];
+
+    const { data, error } = await getSupabaseServer()
+      .from("conveniencias")
+      .select("*")
+      .order("nome", { ascending: true });
+
+    if (error) {
+      console.error("Erro ao listar conveniencias:", error.message);
+      return [];
+    }
+
+    return (data ?? []) as Conveniencia[];
+  },
+  ["conveniencias"],
+  { revalidate: 900, tags: ["conveniencias"] },
+);
+
 export async function listConveniencias(): Promise<Conveniencia[]> {
-  noStore();
-  if (!isSupabaseConfigured()) return [];
-
-  const { data, error } = await getSupabaseServer()
-    .from("conveniencias")
-    .select("*")
-    .order("nome", { ascending: true });
-
-  if (error) {
-    console.error("Erro ao listar conveniencias:", error.message);
-    return [];
-  }
-
-  return (data ?? []) as Conveniencia[];
+  return listConvenienciasCached();
 }
 
 export async function getProfile(userId: string): Promise<AppUser | null> {
@@ -322,21 +344,28 @@ export async function listLockedKeys(): Promise<string[]> {
   return Array.from(new Set((data ?? []).map((item) => String(item.chave_usada ?? "").trim()).filter(Boolean)));
 }
 
+const getLatestContractCached = cache(
+  async () => {
+    if (!isSupabaseConfigured()) return null;
+
+    const { data, error } = await getSupabaseServer()
+      .from("contracts")
+      .select("id,versao,conteudo,created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao buscar contrato:", error.message);
+      return null;
+    }
+
+    return data;
+  },
+  ["latest-contract"],
+  { revalidate: 900, tags: ["contracts"] },
+);
+
 export async function getLatestContract(): Promise<{ id: number; versao: string; conteudo: string; created_at?: string | null } | null> {
-  noStore();
-  if (!isSupabaseConfigured()) return null;
-
-  const { data, error } = await getSupabaseServer()
-    .from("contracts")
-    .select("id,versao,conteudo,created_at")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Erro ao buscar contrato:", error.message);
-    return null;
-  }
-
-  return data;
+  return getLatestContractCached();
 }

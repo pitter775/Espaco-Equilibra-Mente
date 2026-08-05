@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { getSala } from "@/lib/data";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 function cleanText(value: unknown) {
   return String(value ?? "").trim();
@@ -71,6 +71,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
   }
 
+  revalidateTag("salas", "max");
+  revalidateTag("conveniencias", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
   return NextResponse.json({ success: true, message: "Sala atualizada com sucesso!", data });
@@ -80,6 +82,8 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   await requireAdmin();
   const { id } = await params;
   await getSupabaseAdmin().from("salas").delete().eq("id", Number(id));
+  revalidateTag("salas", "max");
+  revalidateTag("conveniencias", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
   return NextResponse.json({ success: true, message: "Sala excluida com sucesso!" });

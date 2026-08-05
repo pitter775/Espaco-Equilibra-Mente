@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { listSalas } from "@/lib/data";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 function cleanText(value: unknown) {
   return String(value ?? "").trim();
@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
     })));
   }
 
+  revalidateTag("salas", "max");
+  revalidateTag("conveniencias", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
   return NextResponse.json({ success: true, message: "Sala criada com sucesso!", data: sala });

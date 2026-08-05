@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { AdminPageHero } from "@/components/admin/AdminPageChrome";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { requireAdmin } from "@/lib/auth";
@@ -14,6 +14,7 @@ async function saveContract(formData: FormData) {
   if (!versao || !conteudo) return;
 
   await getSupabaseAdmin().from("contracts").insert({ versao, conteudo });
+  revalidateTag("contracts", "max");
   revalidatePath("/contrato");
 }
 

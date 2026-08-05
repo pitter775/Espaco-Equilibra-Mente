@@ -63,7 +63,9 @@ export async function GET() {
     },
   };
 
-  console.info("[admin-db-check]", payload);
+  if (process.env.NODE_ENV !== "production") {
+    console.info("[admin-db-check]", payload);
+  }
 
   return NextResponse.json(payload);
 }

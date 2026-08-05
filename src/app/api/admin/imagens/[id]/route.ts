@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -19,6 +19,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const { error } = await supabase.from("imagens_salas").update({ principal: Boolean(body.principal) }).eq("id", imagemId);
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
 
+  revalidateTag("salas", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
   return NextResponse.json({ success: true, message: "Imagem definida como principal!" });
@@ -30,6 +31,7 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   const { error } = await getSupabaseAdmin().from("imagens_salas").delete().eq("id", Number(id));
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
 
+  revalidateTag("salas", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
   return NextResponse.json({ success: true, message: "Imagem excluida com sucesso." });
