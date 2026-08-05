@@ -3,7 +3,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { requireAdmin } from "@/lib/auth";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  await requireAdmin();
+  const user = await requireAdmin();
 
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminShell user={user}>{children}</AdminShell>;
 }

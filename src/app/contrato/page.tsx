@@ -20,11 +20,11 @@ async function saveContract(formData: FormData) {
 }
 
 export default async function ContratoPage() {
-  await requireAdmin();
+  const user = await requireAdmin();
   const contrato = await getLatestContract();
 
   return (
-    <AdminShell>
+    <AdminShell user={user}>
       <AdminPageHero eyebrow="Contrato" title="Editar Contrato">
         <p className="mb-0">Cria uma nova versao do contrato, seguindo o `ContratoController` do Laravel.</p>
       </AdminPageHero>

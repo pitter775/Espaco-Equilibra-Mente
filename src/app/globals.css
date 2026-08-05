@@ -166,7 +166,13 @@ a {
 }
 
 .admin-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 260px;
+  height: 100vh;
   min-height: 100vh;
   background: linear-gradient(180deg, #29402d, #213424);
   padding: 24px 18px;
@@ -239,6 +245,59 @@ a {
 .admin-sidebar-nav a:has(.admin-nav-loader.is-pending) {
   background: rgba(255, 255, 255, 0.13);
   color: #fff;
+}
+
+.admin-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  margin-top: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  color: #fff;
+}
+
+.admin-sidebar-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(185, 213, 178, 0.18);
+  color: #dcebd8;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-sidebar-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-sidebar-user strong,
+.admin-sidebar-user span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-sidebar-user strong {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-sidebar-user span {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 11px;
 }
 
 .admin-filter-transition {
@@ -1592,6 +1651,7 @@ a {
     top: 0;
     z-index: 20;
     width: 100%;
+    height: auto;
     min-height: 0;
     padding: 12px 14px 10px;
     box-shadow: 0 12px 28px rgba(31, 45, 31, 0.14);
@@ -1625,6 +1685,10 @@ a {
 
   .admin-sidebar-nav a span {
     white-space: nowrap;
+  }
+
+  .admin-sidebar-user {
+    display: none;
   }
 
   .admin-shell-content {
