@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ReservationSelector } from "@/components/site/ReservationSelector";
 import { AuthModalTrigger } from "@/components/site/AuthModalTrigger";
@@ -7,6 +8,70 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
 import { getSala } from "@/lib/data";
 import { money } from "@/lib/format";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://espaco-equilibra-mente.vercel.app";
+const fallbackImage = "/assets/img/equilibramente.jpeg";
+
+function stripHtml(value?: string | null) {
+  return String(value ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function publicImageUrl(value?: string | null) {
+  if (!value) return fallbackImage;
+  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  if (value.startsWith("/")) return value;
+  return fallbackImage;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const sala = await getSala(id);
+  if (!sala) {
+    return {
+      title: "Sala nao encontrada",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const description =
+    stripHtml(sala.descricao).slice(0, 155) ||
+    `Reserve ${sala.nome} no Espaco Equilibra Mente, coworking para profissionais da saude em Sao Paulo.`;
+  const image = publicImageUrl(sala.imagens?.find((item) => item.principal)?.imagem_base64 ?? sala.imagens?.[0]?.imagem_base64);
+  const canonical = `/sala/${sala.id}`;
+  const title = `${sala.nome} para atendimento por hora`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      locale: "pt_BR",
+      url: new URL(canonical, siteUrl).toString(),
+      title,
+      description,
+      images: [
+        {
+          url: image,
+          width: image === fallbackImage ? 1600 : undefined,
+          height: image === fallbackImage ? 900 : undefined,
+          alt: `${sala.nome} - Espaco Equilibra Mente`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
 
 export default async function SalaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
