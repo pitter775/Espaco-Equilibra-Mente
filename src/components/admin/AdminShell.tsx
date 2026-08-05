@@ -9,7 +9,7 @@ const links = [
   ["/admin/reservas", "Reservas", "fa-solid fa-calendar-check"],
   ["/admin/analitico", "Analitico", "fa-solid fa-chart-pie"],
   ["/admin/fechadura", "Fechadura", "fa-solid fa-key"],
-  ["/contrato", "Contrato", "fa-solid fa-file-signature"],
+  ["/admin/contrato", "Contrato", "fa-solid fa-file-signature"],
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {

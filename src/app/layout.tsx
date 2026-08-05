@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { RouteProgress } from "@/components/ui/RouteProgress";
-import { Suspense } from "react";
 import "./globals.css";
 
 const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://espaco-equilibra-mente.vercel.app");
@@ -127,9 +125,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        <Suspense fallback={null}>
-          <RouteProgress />
-        </Suspense>
         {children}
       </body>
     </html>
