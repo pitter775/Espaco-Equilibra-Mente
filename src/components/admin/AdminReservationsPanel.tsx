@@ -119,21 +119,39 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
         { label: "Canceladas", value: stats.canceladas },
       ]} />
 
-      <div className="eq-card p-3">
-        <div className="admin-toolbar admin-reservation-toolbar">
-          <input className="form-control" placeholder="Buscar por cliente, e-mail, telefone, sala ou ID" value={query} onChange={(event) => setQuery(event.target.value)} />
-          <select className="form-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-            <option value="todos">Todos os status</option>
-            <option value="Confirmada">Confirmada</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Cancelada">Cancelada</option>
-          </select>
-          <select className="form-select" value={roomFilter} onChange={(event) => setRoomFilter(event.target.value)}>
-            <option value="todas">Todas as salas</option>
-            {rooms.map((room) => <option key={room} value={room}>{room}</option>)}
-          </select>
+      <div className="admin-reservation-controls">
+        <div className="admin-control-heading">
+          <div>
+            <span>Filtros</span>
+            <strong>Encontrar reserva</strong>
+          </div>
+          <small>{filtered.length} de {reservas.length} reserva(s)</small>
         </div>
+        <div className="admin-toolbar admin-reservation-toolbar">
+          <label className="admin-control-field admin-control-search">
+            <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+            <input className="form-control" placeholder="Cliente, e-mail, telefone, sala ou ID" value={query} onChange={(event) => setQuery(event.target.value)} />
+          </label>
+          <label className="admin-control-field">
+            <i className="fa-solid fa-filter" aria-hidden="true" />
+            <select className="form-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} aria-label="Filtrar por status">
+              <option value="todos">Todos os status</option>
+              <option value="Confirmada">Confirmada</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </label>
+          <label className="admin-control-field">
+            <i className="fa-solid fa-door-open" aria-hidden="true" />
+            <select className="form-select" value={roomFilter} onChange={(event) => setRoomFilter(event.target.value)} aria-label="Filtrar por sala">
+              <option value="todas">Todas as salas</option>
+              {rooms.map((room) => <option key={room} value={room}>{room}</option>)}
+            </select>
+          </label>
+        </div>
+      </div>
 
+      <div className="eq-card p-3">
         <div className="admin-reservation-list">
           {filtered.map((reserva) => {
             const canCancel = normalizeStatus(reserva.status) !== "CANCELADA";
