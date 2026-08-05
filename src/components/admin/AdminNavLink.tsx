@@ -17,12 +17,12 @@ function isActive(pathname: string, href: string) {
 
 export function AdminNavLink({ href, label, icon }: { href: string; label: string; icon: string }) {
   const pathname = usePathname();
-  const [pendingHref, setPendingHref] = useState("");
+  const [pendingNav, setPendingNav] = useState({ href: "", from: "" });
   const active = isActive(pathname, href);
-  const clicked = pendingHref === href && !active;
+  const clicked = pendingNav.href === href && pendingNav.from === pathname && !active;
 
   return (
-    <Link href={href} className={active ? "is-active" : undefined} onClick={() => !active && setPendingHref(href)}>
+    <Link href={href} className={active ? "is-active" : undefined} onClick={() => !active && setPendingNav({ href, from: pathname })}>
       <i className={icon} aria-hidden="true" />
       <span>{label}</span>
       <AdminNavPendingHint clicked={clicked} />

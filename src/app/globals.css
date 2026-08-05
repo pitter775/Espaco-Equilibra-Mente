@@ -471,8 +471,126 @@ a {
   color: #697369;
 }
 
+.admin-room-backdrop {
+  place-items: stretch start;
+  padding: 0;
+  background: rgba(7, 14, 8, 0.46);
+}
+
 .admin-room-modal {
-  width: min(1120px, 96vw);
+  width: min(1040px, calc(100vw - 260px));
+  max-height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 0 8px 8px 0;
+  animation: adminRoomDrawerIn 0.22s ease both;
+}
+
+@keyframes adminRoomDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.admin-room-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e8eee5;
+  background: #fff;
+}
+
+.admin-room-modal-header h2 {
+  margin: 0;
+  color: #203522;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.admin-room-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e8eee5;
+  background: #f8fbf7;
+}
+
+.admin-room-tabs button {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #426043;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-room-tabs button.active {
+  background: #216c2e;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(33, 108, 46, 0.16);
+}
+
+.admin-room-modal-body {
+  max-height: calc(100vh - 121px);
+  overflow: auto;
+  padding: 18px 24px 24px;
+  background: #fbfdfb;
+}
+
+.admin-room-form-section,
+.admin-room-section-panel {
+  border: 1px solid #e8eee5;
+  border-radius: 8px;
+  background: #fff;
+  padding: 18px;
+}
+
+.admin-room-form-section + .admin-room-form-section {
+  margin-top: 14px;
+}
+
+.admin-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.admin-section-heading h3 {
+  margin: 0;
+  color: #203522;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.admin-section-heading p {
+  margin: 4px 0 0;
+  color: #697369;
+  font-size: 13px;
+}
+
+.admin-room-modal-footer {
+  position: sticky;
+  bottom: -24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 18px -24px -24px;
+  padding: 14px 24px;
+  border-top: 1px solid #e8eee5;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .admin-room-form label,
@@ -480,8 +598,7 @@ a {
   display: block;
 }
 
-.admin-room-form label span,
-.admin-room-sections h3 {
+.admin-room-form label span {
   margin-bottom: 7px;
   color: #203522;
   font-size: 13px;
@@ -520,18 +637,6 @@ a {
   display: flex;
   justify-content: flex-end;
   margin-top: 14px;
-}
-
-.admin-room-sections {
-  display: grid;
-  gap: 16px;
-  margin-top: 18px;
-}
-
-.admin-room-sections section {
-  border: 1px solid #edf0eb;
-  border-radius: 8px;
-  padding: 16px;
 }
 
 .admin-image-strip {
@@ -1293,6 +1398,27 @@ a {
 
   .admin-form-wide {
     grid-column: auto;
+  }
+
+  .admin-room-modal {
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .admin-room-modal-header,
+  .admin-room-modal-body {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .admin-room-tabs {
+    overflow-x: auto;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .admin-room-tabs button {
+    flex: 0 0 auto;
   }
 
   .admin-segments {

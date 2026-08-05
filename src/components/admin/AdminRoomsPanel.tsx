@@ -11,6 +11,8 @@ type RoomWithRelationArrays = Sala & {
   fechadura?: Fechadura | Fechadura[] | null;
 };
 
+type RoomEditTab = "dados" | "imagens" | "fechadura" | "bloqueios";
+
 function statusLabel(status?: string | null) {
   const labels: Record<string, string> = {
     disponivel: "Disponivel",
@@ -82,6 +84,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState("");
+  const [activeTab, setActiveTab] = useState<RoomEditTab>("dados");
 
   const stats = useMemo(() => ({
     total: salas.length,
@@ -221,7 +224,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
 
         <div className="admin-room-grid admin-filter-transition" key={`${filter}-${query}`}>
           {filtered.map((sala) => (
-            <button className="admin-room-card" key={sala.id} type="button" onClick={() => { setSelected(sala); setMessage(""); }}>
+            <button className="admin-room-card" key={sala.id} type="button" onClick={() => { setSelected(sala); setActiveTab("dados"); setMessage(""); }}>
               <div className="admin-room-image">
                 {roomImage(sala) ? <img src={roomImage(sala)} alt="" /> : <span>Sem imagem</span>}
               </div>
@@ -253,81 +256,118 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
       </form>
 
       {selected && (
-        <div className="eq-modal-backdrop" role="dialog" aria-modal="true">
+        <div className="eq-modal-backdrop admin-room-backdrop" role="dialog" aria-modal="true">
           <div className="eq-modal eq-card admin-room-modal">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="admin-room-modal-header">
               <div>
                 <p className="admin-kicker mb-1">Editar sala</p>
-                <h2 className="h4 mb-0">{selected.nome}</h2>
+                <h2>{selected.nome}</h2>
               </div>
               <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
             </div>
 
-            <form key={`room-${selected.id}`} className="admin-room-form" onSubmit={updateRoom}>
-              <RoomFields sala={selected} conveniencias={conveniencias} selectedConveniencias={selectedConveniencias} />
-              <div className="admin-modal-actions">
-                <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar sala</LoadingButton>
-              </div>
-            </form>
-
-            <div className="admin-room-sections">
-              <section>
-                <h3>Imagens</h3>
-                <div className="admin-image-strip">
-                  {selected.imagens?.map((imagem) => (
-                    <div key={imagem.id}>
-                      <img src={imagem.imagem_base64} alt="" />
-                      <div>
-                        <LoadingButton type="button" className="eq-btn secondary" loading={loading === `/api/admin/imagens/${imagem.id}`} onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</LoadingButton>
-                        <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/imagens/${imagem.id}`} loadingLabel="Excluindo..." onClick={() => removeImage(imagem.id)}>Excluir</LoadingButton>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <form className="admin-inline-form mt-3" onSubmit={addImages}>
-                  <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
-                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Enviando...">Adicionar imagens</LoadingButton>
-                </form>
-              </section>
-
-              <section>
-                <h3>Fechadura</h3>
-                <form className="admin-key-grid" onSubmit={saveLock}>
-                  {[0, 1, 2, 3].map((index) => (
-                    <input key={index} className="form-control" name={`chave_${index}`} maxLength={12} defaultValue={chaves[index] ?? ""} placeholder={`Chave ${index + 1}`} />
-                  ))}
-                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar chaves</LoadingButton>
-                </form>
-              </section>
-
-              <section>
-                <h3>Bloqueios</h3>
-                <form className="admin-block-form" onSubmit={addBlock}>
-                  <select className="form-select" name="tipo" defaultValue="dia_inteiro">
-                    <option value="dia_inteiro">Dia inteiro</option>
-                    <option value="intervalo">Intervalo</option>
-                  </select>
-                  <input className="form-control" name="data_inicio" type="date" required />
-                  <input className="form-control" name="data_fim" type="date" required />
-                  <input className="form-control" name="hora_inicio" type="time" />
-                  <input className="form-control" name="hora_fim" type="time" />
-                  <input className="form-control" name="motivo" placeholder="Motivo" />
-                  <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
-                </form>
-                <div className="admin-block-list">
-                  {bloqueios.map((bloqueio: BloqueioSala) => (
-                    <div key={bloqueio.id}>
-                      <span>{bloqueio.data_inicio} ate {bloqueio.data_fim}</span>
-                      <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
-                      <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/bloqueios/${bloqueio.id}`} loadingLabel="Removendo..." onClick={() => removeBlock(bloqueio.id)}>Remover</LoadingButton>
-                    </div>
-                  ))}
-                  {!bloqueios.length && <p className="mb-0">Nenhum bloqueio cadastrado.</p>}
-                </div>
-              </section>
+            <div className="admin-room-tabs" role="tablist" aria-label="Editar sala">
+              {[
+                ["dados", "Dados"],
+                ["imagens", `Imagens (${selected.imagens?.length ?? 0})`],
+                ["fechadura", "Fechadura"],
+                ["bloqueios", `Bloqueios (${bloqueios.length})`],
+              ].map(([tab, label]) => (
+                <button key={tab} className={activeTab === tab ? "active" : ""} type="button" onClick={() => setActiveTab(tab as RoomEditTab)}>
+                  {label}
+                </button>
+              ))}
             </div>
 
-            {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
+            <div className="admin-room-modal-body">
+              {activeTab === "dados" && (
+                <form key={`room-${selected.id}`} className="admin-room-form" onSubmit={updateRoom}>
+                  <RoomFields sala={selected} conveniencias={conveniencias} selectedConveniencias={selectedConveniencias} />
+                  <div className="admin-room-modal-footer">
+                    <button className="eq-btn secondary" type="button" onClick={() => setSelected(null)}>Cancelar</button>
+                    <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar sala</LoadingButton>
+                  </div>
+                </form>
+              )}
+
+              {activeTab === "imagens" && (
+                <section className="admin-room-section-panel">
+                  <div className="admin-section-heading">
+                    <div>
+                      <h3>Imagens da sala</h3>
+                      <p>Gerencie a galeria e defina a imagem principal.</p>
+                    </div>
+                  </div>
+                  <div className="admin-image-strip">
+                    {selected.imagens?.map((imagem) => (
+                      <div key={imagem.id}>
+                        <img src={imagem.imagem_base64} alt="" />
+                        <div>
+                          <LoadingButton type="button" className="eq-btn secondary" loading={loading === `/api/admin/imagens/${imagem.id}`} onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</LoadingButton>
+                          <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/imagens/${imagem.id}`} loadingLabel="Excluindo..." onClick={() => removeImage(imagem.id)}>Excluir</LoadingButton>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <form className="admin-inline-form mt-3" onSubmit={addImages}>
+                    <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
+                    <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Enviando...">Adicionar imagens</LoadingButton>
+                  </form>
+                </section>
+              )}
+
+              {activeTab === "fechadura" && (
+                <section className="admin-room-section-panel">
+                  <div className="admin-section-heading">
+                    <div>
+                      <h3>Chaves da fechadura</h3>
+                      <p>Cadastre ate quatro chaves para liberar reservas da sala.</p>
+                    </div>
+                  </div>
+                  <form className="admin-key-grid" onSubmit={saveLock}>
+                    {[0, 1, 2, 3].map((index) => (
+                      <input key={index} className="form-control" name={`chave_${index}`} maxLength={12} defaultValue={chaves[index] ?? ""} placeholder={`Chave ${index + 1}`} />
+                    ))}
+                    <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar chaves</LoadingButton>
+                  </form>
+                </section>
+              )}
+
+              {activeTab === "bloqueios" && (
+                <section className="admin-room-section-panel">
+                  <div className="admin-section-heading">
+                    <div>
+                      <h3>Bloqueios da agenda</h3>
+                      <p>Bloqueie dias ou intervalos em que a sala nao pode receber reserva.</p>
+                    </div>
+                  </div>
+                  <form className="admin-block-form" onSubmit={addBlock}>
+                    <select className="form-select" name="tipo" defaultValue="dia_inteiro">
+                      <option value="dia_inteiro">Dia inteiro</option>
+                      <option value="intervalo">Intervalo</option>
+                    </select>
+                    <input className="form-control" name="data_inicio" type="date" required />
+                    <input className="form-control" name="data_fim" type="date" required />
+                    <input className="form-control" name="hora_inicio" type="time" />
+                    <input className="form-control" name="hora_fim" type="time" />
+                    <input className="form-control" name="motivo" placeholder="Motivo" />
+                    <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
+                  </form>
+                  <div className="admin-block-list">
+                    {bloqueios.map((bloqueio: BloqueioSala) => (
+                      <div key={bloqueio.id}>
+                        <span>{bloqueio.data_inicio} ate {bloqueio.data_fim}</span>
+                        <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
+                        <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/bloqueios/${bloqueio.id}`} loadingLabel="Removendo..." onClick={() => removeBlock(bloqueio.id)}>Remover</LoadingButton>
+                      </div>
+                    ))}
+                    {!bloqueios.length && <p className="mb-0">Nenhum bloqueio cadastrado.</p>}
+                  </div>
+                </section>
+              )}
+
+              {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
+            </div>
           </div>
         </div>
       )}
@@ -348,7 +388,14 @@ function RoomFields({
   return (
     <>
       <input type="hidden" name="endereco_id" value={endereco?.id ?? ""} />
-      <div className="admin-form-grid">
+      <section className="admin-room-form-section">
+        <div className="admin-section-heading">
+          <div>
+            <h3>Informacoes principais</h3>
+            <p>Nome, status, valor, metragem e descricao exibidos no site.</p>
+          </div>
+        </div>
+        <div className="admin-form-grid">
         <label>
           <span>Nome</span>
           <input className="form-control" name="nome" defaultValue={sala?.nome ?? ""} required />
@@ -373,9 +420,17 @@ function RoomFields({
           <span>Descricao</span>
           <textarea className="form-control" name="descricao" rows={3} defaultValue={sala?.descricao ?? ""} required />
         </label>
-      </div>
+        </div>
+      </section>
 
-      <div className="admin-form-grid mt-3">
+      <section className="admin-room-form-section">
+        <div className="admin-section-heading">
+          <div>
+            <h3>Endereco</h3>
+            <p>Dados usados na sala e na localizacao exibida para o cliente.</p>
+          </div>
+        </div>
+        <div className="admin-form-grid">
         <label>
           <span>Rua</span>
           <input className="form-control" name="rua" defaultValue={endereco?.rua ?? ""} required />
@@ -404,16 +459,25 @@ function RoomFields({
           <span>Complemento</span>
           <input className="form-control" name="complemento" defaultValue={endereco?.complemento ?? ""} />
         </label>
-      </div>
+        </div>
+      </section>
 
-      <div className="admin-convenience-list mt-3">
-        {conveniencias.map((item) => (
-          <label key={item.id}>
-            <input name={`conveniencia_${item.id}`} type="checkbox" defaultChecked={selectedConveniencias.has(item.id)} />
-            <span>{item.nome}</span>
-          </label>
-        ))}
-      </div>
+      <section className="admin-room-form-section">
+        <div className="admin-section-heading">
+          <div>
+            <h3>Conveniencias</h3>
+            <p>Selecione os recursos que aparecem no card da sala.</p>
+          </div>
+        </div>
+        <div className="admin-convenience-list">
+          {conveniencias.map((item) => (
+            <label key={item.id}>
+              <input name={`conveniencia_${item.id}`} type="checkbox" defaultChecked={selectedConveniencias.has(item.id)} />
+              <span>{item.nome}</span>
+            </label>
+          ))}
+        </div>
+      </section>
 
       {!sala && (
         <label className="d-block mt-3">
