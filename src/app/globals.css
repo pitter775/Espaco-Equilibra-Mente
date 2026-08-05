@@ -2019,16 +2019,25 @@ body.auth-modal-open {
   margin-top: 18px;
 }
 
-.room-arrows span {
+.room-arrows button {
   display: grid;
   width: 34px;
   height: 34px;
   place-items: center;
+  border: 0;
   border-radius: 999px;
   background: #216c2e;
   color: #fff;
-  font-size: 22px;
+  font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(33, 108, 46, 0.18);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.room-arrows button:hover {
+  background: #1a5725;
+  transform: translateY(-1px);
 }
 
 .rooms-grid {
@@ -2074,6 +2083,7 @@ body.auth-modal-open {
   background-position: center;
   background-size: cover;
   opacity: 1;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .room-image-slide.active {

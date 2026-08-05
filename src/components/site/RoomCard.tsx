@@ -1,12 +1,13 @@
 import Link from "next/link";
 import type { Sala } from "@/lib/types";
 
-export function RoomCard({ sala }: { sala: Sala }) {
-  const image =
+export function RoomCard({ sala, imageOffset = 0 }: { sala: Sala; imageOffset?: number }) {
+  const images =
     (sala.imagens?.length ? [...sala.imagens] : [{ imagem_base64: "/assets/img/salas/sala1.jfif", principal: true }])
       .sort((a, b) => Number(Boolean(b.principal)) - Number(Boolean(a.principal)))
       .map((imagem) => imagem.imagem_base64)
-      .find(Boolean) ?? "/assets/img/salas/sala1.jfif";
+      .filter(Boolean);
+  const image = images.length ? images[Math.abs(imageOffset) % images.length] : "/assets/img/salas/sala1.jfif";
   const indisponivel = sala.status === "indisponivel";
 
   return (

@@ -1,5 +1,5 @@
-import { RoomCard } from "@/components/site/RoomCard";
 import { AboutGallery } from "@/components/site/AboutGallery";
+import { PublicRooms } from "@/components/site/PublicRooms";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteMotion } from "@/components/site/SiteMotion";
@@ -128,13 +128,7 @@ export default async function Home() {
             <h3>Escolha <span>a melhor opção</span></h3>
             <p>Espaços planejados para inspirar e proporcionar bem-estar, com conforto e praticidade.</p>
           </div>
-          <div className="room-arrows" aria-hidden="true">
-            <span>‹</span>
-            <span>›</span>
-          </div>
-          <div className="rooms-grid">
-            {salas.map((sala) => <RoomCard sala={sala} key={sala.id} />)}
-          </div>
+          <PublicRooms salas={salas} />
           {!salas.length && (
             <p className="rooms-empty">Nenhuma sala disponivel no momento. Verifique a conexao com o Supabase.</p>
           )}
