@@ -268,19 +268,6 @@ export async function listReservas(): Promise<Reserva[]> {
   if (!isSupabaseConfigured()) return [];
 
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("reservas")
-    .select("*, sala:salas(*, imagens:imagens_salas(*), endereco:enderecos(*)), usuario:users(id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario,endereco:enderecos(*))")
-    .order("data_reserva", { ascending: false });
-
-  if (!error && data?.length) {
-    return data as Reserva[];
-  }
-
-  if (error) {
-    console.error("Erro ao listar reservas com relacionamentos:", error.message);
-  }
-
   const { data: reservasSimples, error: reservasError } = await supabase
     .from("reservas")
     .select("*")
@@ -301,7 +288,7 @@ export async function listReservas(): Promise<Reserva[]> {
     salaIds.length
       ? supabase
           .from("salas")
-          .select("*, imagens:imagens_salas(*), endereco:enderecos(*)")
+          .select("*, imagens:imagens_salas(id,sala_id,imagem_base64,principal), endereco:enderecos(*)")
           .in("id", salaIds)
       : Promise.resolve({ data: [] }),
     usuarioIds.length
