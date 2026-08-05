@@ -1566,9 +1566,20 @@ a {
   text-shadow: none;
 }
 
+#header.header-internal .nav-menu a,
+#header.header-internal .auth-nav-trigger {
+  color: #233123 !important;
+  text-shadow: none;
+}
+
 #header .nav-menu li.active > a,
 #header .nav-menu a:hover {
   color: #fff !important;
+}
+
+#header.header-internal .nav-menu a:hover,
+#header.header-internal .nav-menu li:hover > a {
+  color: #216c2e !important;
 }
 
 #header .nav-menu li.is-active > a {
@@ -2233,8 +2244,8 @@ body.auth-modal-open {
 
 .room-detail-gallery {
   display: grid;
-  grid-template-columns: minmax(0, 1.72fr) minmax(330px, 0.88fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 30px;
   align-items: stretch;
   margin-bottom: 34px;
 }
@@ -2253,7 +2264,7 @@ body.auth-modal-open {
 .room-detail-main img {
   display: block;
   width: 100%;
-  height: clamp(430px, 37vw, 520px);
+  height: clamp(420px, 35vw, 510px);
   object-fit: cover;
   transition: opacity 0.18s ease, filter 0.18s ease;
 }

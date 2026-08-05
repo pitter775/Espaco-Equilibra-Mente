@@ -103,8 +103,10 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
     window.scrollTo({ top, behavior: "smooth" });
   }
 
+  const isInternalPage = pathname !== "/";
+
   return (
-    <header id="header" className={`fixed-top header-transparent ${menuOpen ? "mobile-menu-open" : ""}`}>
+    <header id="header" className={`fixed-top header-transparent ${isInternalPage ? "header-internal" : ""} ${menuOpen ? "mobile-menu-open" : ""}`}>
       <div className="container d-flex align-items-center hero-content">
         <div className="logo mr-auto">
           <Link href="/">
