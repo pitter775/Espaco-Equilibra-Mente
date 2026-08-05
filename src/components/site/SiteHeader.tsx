@@ -8,11 +8,11 @@ import { AuthModalTrigger } from "./AuthModalTrigger";
 import type { AppUser } from "@/lib/types";
 
 const navItems = [
-  { href: "/#inicio", label: "Inicio" },
-  { href: "/#about", label: "Salas" },
-  { href: "/#quemsomos", label: "Sobre Nos" },
-  { href: "/#team", label: "Especialistas" },
-  { href: "/#contato", label: "Contato" },
+  { href: "/#inicio", label: "Inicio", icon: "fa-solid fa-house" },
+  { href: "/#about", label: "Salas", icon: "fa-solid fa-door-open" },
+  { href: "/#quemsomos", label: "Sobre Nos", icon: "fa-solid fa-seedling" },
+  { href: "/#team", label: "Especialistas", icon: "fa-solid fa-user-doctor" },
+  { href: "/#contato", label: "Contato", icon: "fa-brands fa-whatsapp" },
 ];
 
 export function SiteHeader({ user }: { user: AppUser | null }) {
@@ -129,6 +129,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
             {navItems.map((item) => (
               <li key={item.href} className={pathname === "/" && activeSection === item.href.slice(2) ? "is-active" : ""}>
                 <Link href={item.href} onClick={(event) => handleNavClick(event, item.href)}>
+                  <i className={item.icon} aria-hidden="true" />
                   {item.label}
                 </Link>
               </li>
@@ -136,13 +137,14 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
             <li>
               {user ? (
                 <Link href={user.tipo_usuario === "admin" ? "/admin" : "/cliente/reservas"} onClick={() => setMenuOpen(false)}>
+                  <i className={user.tipo_usuario === "admin" ? "fa-solid fa-chart-line" : "fa-solid fa-calendar-check"} aria-hidden="true" />
                   {user.tipo_usuario === "admin" ? "Gestao" : "Minhas Reservas"}
                 </Link>
               ) : (
                 <AuthModalTrigger label="Entre" className="auth-nav-trigger" />
               )}
             </li>
-            {user && <li><Link href="/profile">Perfil</Link></li>}
+            {user && <li><Link href="/profile"><i className="fa-solid fa-user" aria-hidden="true" />Perfil</Link></li>}
           </ul>
         </nav>
       </div>

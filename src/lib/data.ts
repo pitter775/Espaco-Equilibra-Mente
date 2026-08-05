@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { getSupabaseAdmin, getSupabasePublic, getSupabaseServer, isSupabaseConfigured } from "./supabase";
+import { getSupabaseAdmin, getSupabaseServer, isSupabaseConfigured } from "./supabase";
 import type { AppUser, Conveniencia, Reserva, Sala, Transacao } from "./types";
 
 const salaSelect = `
@@ -15,7 +15,7 @@ export async function listSalas(): Promise<Sala[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabasePublic()
+  const { data, error } = await getSupabaseServer()
     .from("salas")
     .select(salaSelect)
     .order("id", { ascending: true });
@@ -28,11 +28,28 @@ export async function listSalas(): Promise<Sala[]> {
   return (data ?? []) as Sala[];
 }
 
+export async function listSalasAdmin(): Promise<Sala[]> {
+  noStore();
+  if (!isSupabaseConfigured()) return [];
+
+  const { data, error } = await getSupabaseAdmin()
+    .from("salas")
+    .select(salaSelect)
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao listar salas no admin:", error.message);
+    return [];
+  }
+
+  return (data ?? []) as Sala[];
+}
+
 export async function getSala(id: string | number): Promise<Sala | null> {
   noStore();
   if (!isSupabaseConfigured()) return null;
 
-  const { data, error } = await getSupabasePublic()
+  const { data, error } = await getSupabaseServer()
     .from("salas")
     .select(salaSelect)
     .eq("id", Number(id))
@@ -50,7 +67,7 @@ export async function listConveniencias(): Promise<Conveniencia[]> {
   noStore();
   if (!isSupabaseConfigured()) return [];
 
-  const { data, error } = await getSupabasePublic()
+  const { data, error } = await getSupabaseServer()
     .from("conveniencias")
     .select("*")
     .order("nome", { ascending: true });

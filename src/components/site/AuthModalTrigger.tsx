@@ -48,6 +48,7 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
   return (
     <>
       <button type="button" className={className ?? "auth-nav-trigger"} onClick={() => setOpen(true)}>
+        {className === "auth-nav-trigger" ? <i className="fa-solid fa-right-to-bracket" aria-hidden="true" /> : null}
         {label}
       </button>
 

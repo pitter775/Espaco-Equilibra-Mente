@@ -45,7 +45,7 @@ export async function GET() {
     countRows(publicClient, "salas"),
   ]);
 
-  return NextResponse.json({
+  const payload = {
     env: {
       urlHost: process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL.trim()).host : null,
       serviceJwt: decodeJwtPayload(serviceKey),
@@ -61,5 +61,9 @@ export async function GET() {
       reservas: publicReservas,
       salas: publicSalas,
     },
-  });
+  };
+
+  console.info("[admin-db-check]", payload);
+
+  return NextResponse.json(payload);
 }

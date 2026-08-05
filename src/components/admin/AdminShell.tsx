@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { AdminDebugProbe } from "./AdminDebugProbe";
 
 const links = [
   ["/admin", "Dashboard", "fa-solid fa-chart-line"],
@@ -14,6 +15,7 @@ const links = [
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <main className="legacy-page admin-shell">
+      <AdminDebugProbe />
       <div className="admin-shell-layout">
         <aside className="admin-sidebar">
           <img src="/assets/img/logoclaro.png" alt="Equilibra Mente" className="admin-sidebar-logo" />

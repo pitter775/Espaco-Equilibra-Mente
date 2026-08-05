@@ -1,4 +1,4 @@
-import { listReservas, listSalas } from "./data";
+import { listReservas, listSalasAdmin } from "./data";
 import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
 import type { Reserva, Sala } from "./types";
 
@@ -70,7 +70,15 @@ async function countClientes() {
 }
 
 export async function getAdminDashboardData() {
-  const [salas, reservas, clientes] = await Promise.all([listSalas(), listReservas(), countClientes()]);
+  const [salas, reservas, clientes] = await Promise.all([listSalasAdmin(), listReservas(), countClientes()]);
+  console.info("[admin-dashboard-debug]", {
+    supabaseUrlHost: process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL.trim()).host : null,
+    hasServiceRole: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    salas: salas.length,
+    reservas: reservas.length,
+    clientes,
+    at: new Date().toISOString(),
+  });
   const today = new Date();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
