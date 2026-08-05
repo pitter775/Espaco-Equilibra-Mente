@@ -20,8 +20,10 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("auth_error") === "1") {
-      setOpen(true);
-      setAuthError(true);
+      window.setTimeout(() => {
+        setOpen(true);
+        setAuthError(true);
+      }, 0);
       params.delete("auth_error");
       const nextUrl = `${window.location.pathname}${params.toString() ? `?${params}` : ""}${window.location.hash}`;
       window.history.replaceState(null, "", nextUrl);

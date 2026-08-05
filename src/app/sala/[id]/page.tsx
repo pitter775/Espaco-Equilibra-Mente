@@ -34,9 +34,6 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
             <div className="row">
               <div className="col-lg-12">
                 <RoomDetailGallery images={imagens} roomName={sala.nome} />
-                <div className="contentg room-detail-heading">
-                  <h3>Sobre a <span>{sala.nome}</span></h3>
-                </div>
                 {indisponivel && (
                   <div className="status-sala-banner indisponivel">
                     <span>Esta sala esta temporariamente indisponivel para novas reservas.</span>
@@ -50,6 +47,9 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
             <div className="container">
               <div className="row">
                 <div className="col-lg-8 mb-5 mt-3">
+                  <div className="contentg room-detail-heading">
+                    <h3>Sobre a <span>{sala.nome}</span></h3>
+                  </div>
                   <div className="room-detail-copy" dangerouslySetInnerHTML={{ __html: sala.descricao ?? "" }} />
                   <hr className="room-detail-divider" />
                   <div className="room-conveniences">

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export function RoomDetailGallery({ images, roomName }: { images: string[]; roomName: string }) {
   const safeImages = images.length ? images : ["/assets/img/salas/sala1.jfif"];
+  const visibleThumbs = safeImages.slice(0, 4);
+  const extraCount = Math.max(safeImages.length - visibleThumbs.length, 0);
   const [activeImage, setActiveImage] = useState(safeImages[0]);
   const [transitioning, setTransitioning] = useState(false);
 
@@ -22,7 +24,7 @@ export function RoomDetailGallery({ images, roomName }: { images: string[]; room
         <img className={transitioning ? "is-transitioning" : ""} src={activeImage} alt={roomName} />
       </div>
       <div className="room-detail-thumbs">
-        {safeImages.slice(0, 5).map((image, index) => (
+        {visibleThumbs.map((image, index) => (
           <button
             type="button"
             className={image === activeImage ? "active" : ""}
@@ -31,6 +33,9 @@ export function RoomDetailGallery({ images, roomName }: { images: string[]; room
             aria-label={`Ver imagem ${index + 1} de ${roomName}`}
           >
             <img src={image} alt="" />
+            {index === visibleThumbs.length - 1 && extraCount > 0 ? (
+              <span className="room-detail-thumb-more">+{extraCount} fotos</span>
+            ) : null}
           </button>
         ))}
       </div>
