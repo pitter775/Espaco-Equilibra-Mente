@@ -967,20 +967,76 @@ a {
 
 .admin-reservation-actions {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
-.admin-reservation-actions > div {
+.admin-reservation-action-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
+  align-items: center;
 }
 
-.admin-reservation-actions .eq-btn {
-  min-height: 34px;
+.admin-table-action {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #216c2e !important;
   padding: 7px 10px;
   font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
   text-decoration: none;
+  box-shadow: none;
+}
+
+.admin-table-action span,
+.admin-table-action .btn-label {
+  color: inherit;
+}
+
+.admin-table-action i {
+  font-size: 11px;
+}
+
+.admin-table-action:hover {
+  background: #dfeedd;
+}
+
+.admin-table-action.danger {
+  background: #b83a2f;
+  color: #fff !important;
+}
+
+.admin-table-action.danger span,
+.admin-table-action.danger .btn-label,
+.admin-table-action.danger i {
+  color: #fff !important;
+}
+
+.admin-table-action.danger .btn-spinner {
+  border-color: currentColor;
+  border-right-color: transparent;
+}
+
+.admin-table-action.danger.is-loading,
+.admin-table-action.danger:disabled {
+  background: #b83a2f;
+  color: #fff !important;
+}
+
+.admin-table-action.danger:hover {
+  background: #a9342a;
+}
+
+.admin-table-action.is-loading {
+  cursor: wait;
+  opacity: 0.85;
 }
 
 .admin-reservation-modal {

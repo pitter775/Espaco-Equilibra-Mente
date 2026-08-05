@@ -177,10 +177,21 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                 </div>
                 <div className="admin-reservation-actions">
                   <em className={`eq-status eq-status-${statusClass(reserva.status)}`}>{statusLabel(reserva.status)}</em>
-                  <div>
-                    <button className="eq-btn secondary" type="button" onClick={() => { setSelected(reserva); setMessage(""); }}>Detalhes</button>
-                    <a className="eq-btn secondary" href={reserva.sala?.id ? `/admin/salas?editar=${reserva.sala.id}` : "/admin/salas"}>Sala</a>
-                    {canCancel && <LoadingButton className="eq-btn danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(reserva)}>Cancelar</LoadingButton>}
+                  <div className="admin-reservation-action-group">
+                    <button className="admin-table-action" type="button" onClick={() => { setSelected(reserva); setMessage(""); }}>
+                      <i className="fa-solid fa-eye" aria-hidden="true" />
+                      <span>Detalhes</span>
+                    </button>
+                    <a className="admin-table-action" href={reserva.sala?.id ? `/admin/salas?editar=${reserva.sala.id}` : "/admin/salas"}>
+                      <i className="fa-solid fa-door-open" aria-hidden="true" />
+                      <span>Sala</span>
+                    </a>
+                    {canCancel && (
+                      <LoadingButton className="admin-table-action danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(reserva)}>
+                        <i className="fa-solid fa-ban" aria-hidden="true" />
+                        <span>Cancelar</span>
+                      </LoadingButton>
+                    )}
                   </div>
                 </div>
               </div>
