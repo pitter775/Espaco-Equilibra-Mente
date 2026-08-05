@@ -31,6 +31,13 @@ function userInitials(name?: string | null) {
   return String(name || "U").split(" ").filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
 }
 
+function formatDate(value?: string | null) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(date);
+}
+
 function payloadFromForm(form: HTMLFormElement) {
   const data = new FormData(form);
   return {
@@ -65,6 +72,7 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
   const [localUsers, setLocalUsers] = useState(users);
   const [loading, setLoading] = useState("");
   const [message, setMessage] = useState("");
+  const [isClosing, setIsClosing] = useState(false);
 
   const stats = useMemo(() => ({
     total: localUsers.length,
@@ -80,15 +88,27 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
   });
 
   function openUser(user: AppUser) {
+    setIsClosing(false);
     setSelected(user);
     setMode("details");
     setMessage("");
   }
 
   function openCreate() {
+    setIsClosing(false);
     setSelected(null);
     setMode("create");
     setMessage("");
+  }
+
+  function closeUser() {
+    setIsClosing(true);
+    window.setTimeout(() => {
+      setSelected(null);
+      setMode("details");
+      setMessage("");
+      setIsClosing(false);
+    }, 220);
   }
 
   async function submitJson(url: string, method: string, body?: unknown) {
@@ -201,21 +221,23 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
       </div>
 
       {(selected || mode === "create") && (
-        <div className="eq-modal-backdrop" role="dialog" aria-modal="true">
-          <div className="eq-modal eq-card admin-user-modal">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className={`eq-modal-backdrop admin-user-backdrop ${isClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" onClick={closeUser}>
+          <div className={`eq-modal eq-card admin-user-modal ${isClosing ? "is-closing" : ""}`} onClick={(event) => event.stopPropagation()}>
+            <div className="admin-user-modal-header">
               <div>
                 <p className="admin-kicker mb-1">{mode === "create" ? "Criar usuario" : mode === "edit" ? "Editar usuario" : "Revisar cadastro"}</p>
                 <h2 className="h4 mb-0">{selected?.name || "Novo usuario"}</h2>
               </div>
-              <button className="eq-icon-btn" type="button" onClick={() => { setSelected(null); setMode("details"); }} aria-label="Fechar">x</button>
+              <button className="eq-icon-btn" type="button" onClick={closeUser} aria-label="Fechar">x</button>
             </div>
 
-            {mode === "details" && selected && (
-              <>
+            <div className="admin-user-modal-body">
+              {mode === "details" && selected && (
+                <>
                 <div className="admin-user-detail">
                   <section>
                     <h3>Dados cadastrais</h3>
+                    <p><strong>Cadastro:</strong> {formatDate(selected.created_at)}</p>
                     <p><strong>Email:</strong> {selected.email}</p>
                     <p><strong>Telefone:</strong> {selected.telefone || "-"}</p>
                     <p><strong>CPF:</strong> {selected.cpf || "-"}</p>
@@ -250,20 +272,21 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
                     <LoadingButton className="eq-btn danger" type="button" loading={loading === "DELETE"} loadingLabel="Excluindo..." onClick={() => deleteUser(selected)}>Excluir</LoadingButton>
                   </div>
                 </section>
-              </>
-            )}
+                </>
+              )}
 
-            {(mode === "create" || (mode === "edit" && selected)) && (
-              <form className="admin-user-form" onSubmit={mode === "create" ? createUser : updateUser}>
-                <UserFields user={selected ?? undefined} requirePassword={mode === "create"} />
-                <div className="admin-modal-actions">
-                  {mode === "edit" && <button className="eq-btn secondary" type="button" onClick={() => setMode("details")}>Cancelar</button>}
-                  <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">{mode === "create" ? "Criar usuario" : "Salvar alteracoes"}</LoadingButton>
-                </div>
-              </form>
-            )}
+              {(mode === "create" || (mode === "edit" && selected)) && (
+                <form className="admin-user-form" onSubmit={mode === "create" ? createUser : updateUser}>
+                  <UserFields user={selected ?? undefined} requirePassword={mode === "create"} />
+                  <div className="admin-user-modal-footer">
+                    {mode === "edit" && <button className="eq-btn secondary" type="button" onClick={() => setMode("details")}>Cancelar</button>}
+                    <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">{mode === "create" ? "Criar usuario" : "Salvar alteracoes"}</LoadingButton>
+                  </div>
+                </form>
+              )}
 
-            {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
+              {message && <p className="alert alert-warning mt-3 mb-0">{message}</p>}
+            </div>
           </div>
         </div>
       )}
