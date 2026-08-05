@@ -132,22 +132,20 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
             <input className="form-control" placeholder="Cliente, e-mail, telefone, sala ou ID" value={query} onChange={(event) => setQuery(event.target.value)} />
           </label>
-          <label className="admin-control-field">
-            <i className="fa-solid fa-filter" aria-hidden="true" />
-            <select className="form-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} aria-label="Filtrar por status">
-              <option value="todos">Todos os status</option>
-              <option value="Confirmada">Confirmada</option>
-              <option value="Pendente">Pendente</option>
-              <option value="Cancelada">Cancelada</option>
-            </select>
-          </label>
-          <label className="admin-control-field">
-            <i className="fa-solid fa-door-open" aria-hidden="true" />
-            <select className="form-select" value={roomFilter} onChange={(event) => setRoomFilter(event.target.value)} aria-label="Filtrar por sala">
-              <option value="todas">Todas as salas</option>
-              {rooms.map((room) => <option key={room} value={room}>{room}</option>)}
-            </select>
-          </label>
+          <div className="admin-segments admin-reservation-segments" aria-label="Filtrar por status">
+            {["todos", "Confirmada", "Pendente", "Cancelada"].map((item) => (
+              <button key={item} className={statusFilter === item ? "active" : ""} type="button" onClick={() => setStatusFilter(item)}>
+                {item === "todos" ? "Todos" : item}
+              </button>
+            ))}
+          </div>
+          <div className="admin-segments admin-reservation-segments admin-room-segments" aria-label="Filtrar por sala">
+            {["todas", ...rooms].map((item) => (
+              <button key={item} className={roomFilter === item ? "active" : ""} type="button" onClick={() => setRoomFilter(item)}>
+                {item === "todas" ? "Todas as salas" : item}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
