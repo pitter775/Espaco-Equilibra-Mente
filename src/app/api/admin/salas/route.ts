@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { listSalas } from "@/lib/data";
+import { storeRoomImages } from "@/lib/room-images";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -72,7 +73,15 @@ export async function POST(request: NextRequest) {
     ? body.imagens.map((imagem: unknown) => String(imagem ?? "")).filter(Boolean)
     : [];
   if (imagens.length) {
-    await supabase.from("imagens_salas").insert(imagens.map((imagem_base64, index) => ({
+    let imagensSalvas: string[];
+    try {
+      imagensSalvas = await storeRoomImages(sala.id, imagens);
+    } catch (error) {
+      await supabase.from("salas").delete().eq("id", sala.id);
+      return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Nao foi possivel enviar as imagens." }, { status: 422 });
+    }
+
+    await supabase.from("imagens_salas").insert(imagensSalvas.map((imagem_base64, index) => ({
       sala_id: sala.id,
       imagem_base64,
       principal: index === 0,

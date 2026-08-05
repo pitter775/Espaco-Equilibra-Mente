@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { deleteRoomImageAsset } from "@/lib/room-images";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -28,8 +29,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
   const { id } = await params;
-  const { error } = await getSupabaseAdmin().from("imagens_salas").delete().eq("id", Number(id));
+  const supabase = getSupabaseAdmin();
+  const { data: imagem } = await supabase.from("imagens_salas").select("imagem_base64").eq("id", Number(id)).single();
+  const { error } = await supabase.from("imagens_salas").delete().eq("id", Number(id));
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
+
+  try {
+    await deleteRoomImageAsset(imagem?.imagem_base64);
+  } catch (error) {
+    console.error("Erro ao remover imagem do Blob:", error);
+  }
 
   revalidateTag("salas", "max");
   revalidatePath("/admin/salas");
