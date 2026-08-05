@@ -2090,6 +2090,38 @@ body.auth-modal-open {
   opacity: 1;
 }
 
+.room-card-image-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  gap: 7px;
+}
+
+.room-card-image-controls button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #203522;
+  font-size: 11px;
+  box-shadow: 0 10px 24px rgba(15, 24, 16, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.room-card-image-controls button:hover {
+  background: #216c2e;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .room-card-public .badge-open {
   position: absolute;
   z-index: 2;
