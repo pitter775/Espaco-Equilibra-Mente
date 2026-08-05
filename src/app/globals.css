@@ -1180,7 +1180,13 @@ a {
   color: #fff !important;
 }
 
+#header .nav-menu li.is-active > a {
+  color: #fff !important;
+  box-shadow: inset 0 -2px 0 currentColor !important;
+}
+
 #header.header-scrolled .nav-menu li.active > a,
+#header.header-scrolled .nav-menu li.is-active > a,
 #header.header-scrolled .nav-menu a:hover {
   color: #216c2e !important;
 }
@@ -3111,6 +3117,12 @@ body.auth-modal-open {
   #header {
     top: 0;
     height: 68px;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+  }
+
+  #header.header-scrolled {
     background: rgba(255, 255, 255, 0.96) !important;
     box-shadow: 0 10px 28px rgba(26, 31, 34, 0.11) !important;
     backdrop-filter: blur(12px);
@@ -3128,8 +3140,12 @@ body.auth-modal-open {
   }
 
   #header .logo {
-    display: block;
+    display: none;
     margin: 0 !important;
+  }
+
+  #header.header-scrolled .logo {
+    display: block;
   }
 
   #header.header-scrolled .header-logo-img,
@@ -3187,6 +3203,12 @@ body.auth-modal-open {
     color: #216c2e !important;
   }
 
+  #header .nav-menu li.is-active > a {
+    background: #eef6ec;
+    color: #216c2e !important;
+    font-weight: 900;
+  }
+
   #header .auth-nav-trigger {
     width: 100%;
     min-height: 48px;
@@ -3205,6 +3227,7 @@ body.auth-modal-open {
     display: inline-flex;
     width: 44px;
     height: 44px;
+    margin-left: auto;
     flex-direction: column;
     align-items: center;
     justify-content: center;

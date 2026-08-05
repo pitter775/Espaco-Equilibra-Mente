@@ -18,6 +18,7 @@ const navItems = [
 export function SiteHeader({ user }: { user: AppUser | null }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("inicio");
 
   useEffect(() => {
     const header = document.getElementById("header");
@@ -31,6 +32,36 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
 
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const sectionIds = navItems.map((item) => item.href.slice(2));
+    const updateActiveSection = () => {
+      if (window.scrollY < 120) {
+        setActiveSection(sectionIds[0]);
+        return;
+      }
+      const targetLine = Math.min(window.innerHeight * 0.42, 340);
+      const current =
+        sectionIds
+          .map((id) => {
+            const section = document.getElementById(id);
+            if (!section) return null;
+            return { id, distance: Math.abs(section.getBoundingClientRect().top - targetLine) };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a!.distance - b!.distance)[0]?.id ?? sectionIds[0];
+      setActiveSection(current);
+    };
+
+    const timer = window.setTimeout(updateActiveSection, 0);
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", updateActiveSection);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     window.setTimeout(() => setMenuOpen(false), 0);
@@ -65,6 +96,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
     if (!target) return;
     event.preventDefault();
     setMenuOpen(false);
+    setActiveSection(href.slice(2));
 
     const headerOffset = window.innerWidth < 992 ? 76 : 72;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
@@ -95,7 +127,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
         <nav id="site-navigation" className="nav-menu">
           <ul>
             {navItems.map((item) => (
-              <li key={item.href}>
+              <li key={item.href} className={pathname === "/" && activeSection === item.href.slice(2) ? "is-active" : ""}>
                 <Link href={item.href} onClick={(event) => handleNavClick(event, item.href)}>
                   {item.label}
                 </Link>
