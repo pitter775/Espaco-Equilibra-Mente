@@ -219,7 +219,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
           </div>
         </div>
 
-        <div className="admin-room-grid">
+        <div className="admin-room-grid admin-filter-transition" key={`${filter}-${query}`}>
           {filtered.map((sala) => (
             <button className="admin-room-card" key={sala.id} type="button" onClick={() => { setSelected(sala); setMessage(""); }}>
               <div className="admin-room-image">

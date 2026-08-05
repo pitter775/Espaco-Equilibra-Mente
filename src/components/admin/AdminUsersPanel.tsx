@@ -182,7 +182,7 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
           <button className="eq-btn" type="button" onClick={openCreate}>Criar usuario</button>
         </div>
 
-        <div className="admin-user-grid">
+        <div className="admin-user-grid admin-filter-transition" key={`${filter}-${query}`}>
           {filtered.map((user) => (
             <button className="admin-user-card" key={user.id} type="button" onClick={() => openUser(user)}>
               <div className="admin-avatar">{user.photo ? <img src={user.photo} alt="" /> : userInitials(user.name)}</div>

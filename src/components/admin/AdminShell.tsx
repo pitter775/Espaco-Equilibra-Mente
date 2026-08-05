@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { AdminDebugProbe } from "./AdminDebugProbe";
+import { AdminNavLink } from "./AdminNavLink";
 
 const links = [
   ["/admin", "Dashboard", "fa-solid fa-chart-line"],
@@ -21,15 +21,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <img src="/assets/img/logoclaro.png" alt="Equilibra Mente" className="admin-sidebar-logo" />
           <nav className="admin-sidebar-nav">
             {links.map(([href, label, icon]) => (
-              <Link key={href} href={href}>
-                <i className={icon} aria-hidden="true" />
-                <span>{label}</span>
-              </Link>
+              <AdminNavLink key={href} href={href} label={label} icon={icon} />
             ))}
-            <Link href="/">
-              <i className="fa-solid fa-globe" aria-hidden="true" />
-              <span>Site</span>
-            </Link>
+            <AdminNavLink href="/" label="Site" icon="fa-solid fa-globe" />
           </nav>
         </aside>
         <section className="admin-shell-content">{children}</section>

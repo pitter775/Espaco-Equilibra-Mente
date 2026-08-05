@@ -23,7 +23,7 @@ export function SiteMotion() {
     const elements = Array.from(document.querySelectorAll<HTMLElement>(revealSelector));
     elements.forEach((element, index) => {
       element.classList.add("reveal-on-scroll");
-      element.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 70}ms`);
+      element.style.setProperty("--reveal-delay", `${Math.min(index % 3, 2) * 35}ms`);
     });
 
     const observer = new IntersectionObserver(

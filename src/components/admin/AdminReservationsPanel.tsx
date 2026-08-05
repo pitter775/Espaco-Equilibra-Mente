@@ -152,7 +152,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
       </div>
 
       <div className="eq-card p-3">
-        <div className="admin-reservation-list">
+        <div className="admin-reservation-list admin-filter-transition" key={`${statusFilter}-${roomFilter}-${query}`}>
           {filtered.map((reserva) => {
             const canCancel = normalizeStatus(reserva.status) !== "CANCELADA";
             return (
