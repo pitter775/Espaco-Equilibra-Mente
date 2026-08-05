@@ -31,9 +31,14 @@ yarn-error.log*
 .pnpm-debug.log*
 dev-server.*.log
 prod-server.*.log
+dev-*.log
+mobile-*.png
+.next-gallery-dev.*.log
+cookies-test.txt
 home-check.png
 backup.sql
 dump-railway-*.sql
+scripts/room-images-base64-backup.sql
 
 # env files (can opt-in for committing if needed)
 .env*
