@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { BloqueioSala, Conveniencia, Fechadura, Sala } from "@/lib/types";
@@ -50,6 +50,10 @@ function readFiles(files: FileList | null): Promise<string[]> {
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
   })));
+}
+
+function normalizeEditorHtml(value: string) {
+  return value.trim() || "<p></p>";
 }
 
 function formPayload(form: HTMLFormElement, conveniencias: Conveniencia[], imagens: string[] = []) {
@@ -418,7 +422,7 @@ function RoomFields({
         </label>
         <label className="admin-form-wide">
           <span>Descricao</span>
-          <textarea className="form-control" name="descricao" rows={3} defaultValue={sala?.descricao ?? ""} required />
+          <DescriptionEditor defaultValue={sala?.descricao ?? ""} />
         </label>
         </div>
       </section>
@@ -486,5 +490,50 @@ function RoomFields({
         </label>
       )}
     </>
+  );
+}
+
+function DescriptionEditor({ defaultValue }: { defaultValue: string }) {
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const [value, setValue] = useState(normalizeEditorHtml(defaultValue));
+
+  function syncValue() {
+    setValue(normalizeEditorHtml(editorRef.current?.innerHTML ?? ""));
+  }
+
+  function runCommand(command: "bold" | "italic" | "insertUnorderedList" | "insertOrderedList") {
+    editorRef.current?.focus();
+    document.execCommand(command);
+    syncValue();
+  }
+
+  function applyParagraph() {
+    editorRef.current?.focus();
+    document.execCommand("formatBlock", false, "p");
+    syncValue();
+  }
+
+  return (
+    <div className="admin-rich-editor">
+      <input type="hidden" name="descricao" value={value} required />
+      <div className="admin-rich-toolbar" aria-label="Formatar descricao">
+        <button type="button" onClick={() => runCommand("bold")}><strong>B</strong></button>
+        <button type="button" onClick={() => runCommand("italic")}><em>I</em></button>
+        <button type="button" onClick={applyParagraph}>P</button>
+        <button type="button" onClick={() => runCommand("insertUnorderedList")}>Lista</button>
+        <button type="button" onClick={() => runCommand("insertOrderedList")}>1. Lista</button>
+      </div>
+      <div
+        ref={editorRef}
+        className="admin-rich-editor-field"
+        contentEditable
+        role="textbox"
+        aria-multiline="true"
+        suppressContentEditableWarning
+        onInput={syncValue}
+        onBlur={syncValue}
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+    </div>
   );
 }

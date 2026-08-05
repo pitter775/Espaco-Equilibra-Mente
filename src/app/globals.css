@@ -633,6 +633,64 @@ a {
   font-weight: 700;
 }
 
+.admin-rich-editor {
+  overflow: hidden;
+  border: 1px solid #d8dfd6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.admin-rich-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid #e8eee5;
+  background: #f7faf6;
+  padding: 8px;
+}
+
+.admin-rich-toolbar button {
+  min-height: 32px;
+  border: 1px solid #dde6da;
+  border-radius: 6px;
+  background: #fff;
+  color: #203522;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-rich-toolbar button:hover {
+  border-color: #b9d5b2;
+  background: #eef4ec;
+  color: #216c2e;
+}
+
+.admin-rich-editor-field {
+  min-height: 148px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 12px 14px;
+  color: #3b463c;
+  font-size: 14px;
+  line-height: 1.55;
+  outline: 0;
+}
+
+.admin-rich-editor-field:focus {
+  box-shadow: inset 0 0 0 2px rgba(33, 108, 46, 0.18);
+}
+
+.admin-rich-editor-field p {
+  margin: 0 0 8px;
+}
+
+.admin-rich-editor-field ul,
+.admin-rich-editor-field ol {
+  margin: 0 0 8px 20px;
+  padding: 0;
+}
+
 .admin-modal-actions {
   display: flex;
   justify-content: flex-end;
