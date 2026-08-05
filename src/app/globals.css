@@ -746,6 +746,7 @@ a {
 }
 
 .admin-image-strip > div {
+  position: relative;
   overflow: hidden;
   border: 1px solid #edf0eb;
   border-radius: 8px;
@@ -753,13 +754,22 @@ a {
 }
 
 .admin-image-strip img {
+  display: block;
+  width: 100%;
+  height: 168px;
   aspect-ratio: 4 / 3;
+  object-fit: cover;
 }
 
 .admin-image-strip > div > div {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
   display: flex;
+  justify-content: space-between;
   gap: 6px;
-  padding: 8px;
+  padding: 0;
 }
 
 .admin-empty-inline {
@@ -780,6 +790,12 @@ a {
   min-height: 36px;
   padding: 8px 10px;
   font-size: 12px;
+}
+
+.admin-image-strip .eq-btn {
+  min-height: 32px;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(12, 18, 12, 0.18);
 }
 
 .admin-inline-form,

@@ -351,7 +351,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                         <img src={imagem.imagem_base64} alt="" />
                         <div>
                           <LoadingButton type="button" className="eq-btn secondary" loading={loading === `/api/admin/imagens/${imagem.id}`} onClick={() => setMainImage(imagem.id)} disabled={Boolean(imagem.principal)}>Principal</LoadingButton>
-                          <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/imagens/${imagem.id}`} loadingLabel="Excluindo..." onClick={() => removeImage(imagem.id)}>Excluir</LoadingButton>
+                          <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/imagens/${imagem.id}`} loadingLabel="Removendo..." onClick={() => removeImage(imagem.id)}>Remover</LoadingButton>
                         </div>
                       </div>
                     ))}
