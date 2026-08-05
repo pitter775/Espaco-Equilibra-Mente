@@ -76,7 +76,7 @@ export function ReservationSelector({
   }
 
   return (
-    <div className="eq-card p-4 reservation-card">
+    <div id="agenda" className="eq-card p-4 reservation-card">
       <div className="reservation-card-heading">
         <div>
           <span>Agenda</span>
@@ -87,6 +87,7 @@ export function ReservationSelector({
 
       <label className="reservation-date-label" htmlFor={`reservation-date-${salaId}`}>Escolha uma data</label>
       <div className="reservation-date-field">
+        <i className="fa-regular fa-calendar-days" aria-hidden="true" />
         <input
           id={`reservation-date-${salaId}`}
           className="form-control"
@@ -95,6 +96,7 @@ export function ReservationSelector({
           value={date}
           onChange={(event) => loadSlots(event.target.value)}
         />
+        <span>{date ? "Toque para trocar" : "Toque para abrir o calendario"}</span>
       </div>
 
       <div className="reservation-legend">

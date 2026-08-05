@@ -4,7 +4,9 @@ import { getSupabaseAnon } from "@/lib/supabase";
 export async function GET(request: NextRequest) {
   const origin = new URL(request.url).origin;
   const salaId = request.nextUrl.searchParams.get("sala_id");
-  const redirectAfterLogin = salaId ? `/sala/${salaId}` : request.headers.get("referer") ?? "/";
+  const anchor = request.nextUrl.searchParams.get("anchor");
+  const hash = anchor && /^[a-z0-9_-]+$/i.test(anchor) ? `#${anchor}` : "";
+  const redirectAfterLogin = salaId ? `/sala/${salaId}${hash}` : request.headers.get("referer") ?? "/";
 
   const { data, error } = await getSupabaseAnon().auth.signInWithOAuth({
     provider: "google",

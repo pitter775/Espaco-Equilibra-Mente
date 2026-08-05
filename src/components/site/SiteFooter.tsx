@@ -1,12 +1,12 @@
 export function SiteFooter() {
   return (
-    <footer id="footer" className="mt-5">
+    <footer id="footer" className="site-footer mt-5">
       <div className="footer-top">
         <div className="container">
           <div className="row">
             <div className="col-lg-4 col-md-6">
               <div className="footer-info">
-                <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="img-fluid mb-4" style={{ width: "70%" }} />
+                <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="footer-logo img-fluid mb-4" />
                 <div className="social-links mt-3">
                   <a href="https://www.facebook.com/share/16PuqyqkeM/?mibextid=wwXIfr" target="_blank" className="facebook"><i className="bx bxl-facebook" /></a>
                   <a href="https://www.instagram.com/espaco_equilibramente?igsh=dG03Z3pid2hpYmFk" target="_blank" className="instagram"><i className="bx bxl-instagram" /></a>

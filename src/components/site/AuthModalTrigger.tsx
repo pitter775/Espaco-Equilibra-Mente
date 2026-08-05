@@ -14,8 +14,8 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState(false);
   const titleId = useId();
-  const redirectTo = salaId ? `/sala/${salaId}` : "/";
-  const googleHref = salaId ? `/login/google?sala_id=${salaId}` : "/login/google";
+  const redirectTo = salaId ? `/sala/${salaId}#agenda` : "/";
+  const googleHref = salaId ? `/login/google?sala_id=${salaId}&anchor=agenda` : "/login/google";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
