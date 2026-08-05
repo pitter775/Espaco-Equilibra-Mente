@@ -32,8 +32,10 @@ function EmptyState({ icon, title, text }: { icon: string; title: string; text: 
 }
 
 export function AdminDashboardPanel({ data }: { data: DashboardData }) {
-  const maxReservasDia = maxValue(data.reservasPorDia, "total");
-  const maxOcupacao = maxValue(data.ocupacaoUltimos20Dias, "horas");
+  const reservasPorDiaComMovimento = data.reservasPorDia.filter((item) => item.total > 0);
+  const ocupacaoComMovimento = data.ocupacaoUltimos20Dias.filter((item) => item.horas > 0);
+  const maxReservasDia = maxValue(reservasPorDiaComMovimento, "total");
+  const maxOcupacao = maxValue(ocupacaoComMovimento, "horas");
   const maxMensal = maxValue(data.evolucaoMensal, "reservas");
   const temReservasNoMes = hasAny(data.reservasPorDia, "total");
   const temOcupacaoRecente = hasAny(data.ocupacaoUltimos20Dias, "horas");
@@ -135,8 +137,8 @@ export function AdminDashboardPanel({ data }: { data: DashboardData }) {
             <span>Horas</span>
           </div>
           <div className="admin-chart-bars compact">
-            {data.ocupacaoUltimos20Dias.map((item) => (
-              <div key={item.label} className={item.horas > 0 ? undefined : "is-empty"}>
+            {ocupacaoComMovimento.map((item) => (
+              <div key={item.label}>
                 <span>{item.label}</span>
                 <i style={{ width: percent(item.horas, maxOcupacao) }} />
                 <strong>{item.horas.toFixed(1)}h</strong>
@@ -158,8 +160,8 @@ export function AdminDashboardPanel({ data }: { data: DashboardData }) {
             <span>Mes atual</span>
           </div>
           <div className="admin-chart-bars">
-            {data.reservasPorDia.map((item) => (
-              <div key={item.label} className={item.total > 0 ? undefined : "is-empty"}>
+            {reservasPorDiaComMovimento.map((item) => (
+              <div key={item.label}>
                 <span>{item.label}</span>
                 <i style={{ width: percent(item.total, maxReservasDia) }} />
                 <strong>{item.total}</strong>
