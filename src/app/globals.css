@@ -270,12 +270,10 @@ a {
 @keyframes adminContentIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -472,9 +470,15 @@ a {
 }
 
 .admin-room-backdrop {
-  place-items: stretch start;
+  z-index: 3000;
+  place-items: stretch end;
   padding: 0;
   background: rgba(7, 14, 8, 0.46);
+  animation: adminRoomMaskIn 0.18s ease both;
+}
+
+.admin-room-backdrop.is-closing {
+  animation: adminRoomMaskOut 0.22s ease both;
 }
 
 .admin-room-modal {
@@ -483,19 +487,45 @@ a {
   min-height: 100vh;
   overflow: hidden;
   padding: 0;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px 0 0 8px;
   animation: adminRoomDrawerIn 0.22s ease both;
+}
+
+.admin-room-modal.is-closing {
+  animation: adminRoomDrawerOut 0.22s ease both;
+}
+
+@keyframes adminRoomMaskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes adminRoomMaskOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @keyframes adminRoomDrawerIn {
   from {
     opacity: 0;
-    transform: translateX(-24px);
+    transform: translateX(34px);
   }
 
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes adminRoomDrawerOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(34px);
   }
 }
 
@@ -701,6 +731,18 @@ a {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+  margin-top: 14px;
+}
+
+.admin-image-upload {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px dashed #bfd4ba;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 12px;
 }
 
 .admin-image-strip > div {
@@ -718,6 +760,16 @@ a {
   display: flex;
   gap: 6px;
   padding: 8px;
+}
+
+.admin-empty-inline {
+  margin: 14px 0 0;
+  border-radius: 8px;
+  background: #f7faf6;
+  color: #697369;
+  padding: 14px;
+  text-align: center;
+  font-weight: 700;
 }
 
 .admin-image-strip .eq-btn,
@@ -1439,6 +1491,7 @@ a {
   .admin-toolbar,
   .admin-form-grid,
   .admin-image-strip,
+  .admin-image-upload,
   .admin-inline-form,
   .admin-key-grid,
   .admin-block-form,

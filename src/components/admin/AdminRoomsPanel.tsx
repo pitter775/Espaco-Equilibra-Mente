@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
-import type { BloqueioSala, Conveniencia, Fechadura, Sala } from "@/lib/types";
+import type { BloqueioSala, Conveniencia, Fechadura, ImagemSala, Sala } from "@/lib/types";
 import { money } from "@/lib/format";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 
@@ -89,6 +89,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState("");
   const [activeTab, setActiveTab] = useState<RoomEditTab>("dados");
+  const [isClosing, setIsClosing] = useState(false);
 
   const stats = useMemo(() => ({
     total: salas.length,
@@ -123,6 +124,22 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
     return true;
   }
 
+  function openRoom(sala: RoomWithRelationArrays) {
+    setSelected(sala);
+    setActiveTab("dados");
+    setIsClosing(false);
+    setMessage("");
+  }
+
+  function closeRoom() {
+    setIsClosing(true);
+    window.setTimeout(() => {
+      setSelected(null);
+      setIsClosing(false);
+      setMessage("");
+    }, 220);
+  }
+
   async function createRoom(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -149,11 +166,26 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
     if (!selected) return;
     const form = event.currentTarget;
     const imagens = await readFiles((form.elements.namedItem("imagens") as HTMLInputElement | null)?.files ?? null);
-    const ok = await submitJson(`/api/admin/salas/${selected.id}/imagens`, {
+    setLoading(`/api/admin/salas/${selected.id}/imagens`);
+    setMessage("");
+    const response = await fetch(`/api/admin/salas/${selected.id}/imagens`, {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ imagens }),
-    }, "Imagens da sala salvas com sucesso!");
-    if (ok) form.reset();
+    });
+    const data = await response.json();
+    setLoading("");
+
+    if (!response.ok || !data.success) {
+      setMessage(data.message || "Nao foi possivel enviar as imagens.");
+      return;
+    }
+
+    const novasImagens = Array.isArray(data.imagens) ? data.imagens as ImagemSala[] : [];
+    setSelected((current) => current ? { ...current, imagens: [...(current.imagens ?? []), ...novasImagens] } : current);
+    setMessage(data.message || "Imagens da sala salvas com sucesso!");
+    form.reset();
+    router.refresh();
   }
 
   async function saveLock(event: React.FormEvent<HTMLFormElement>) {
@@ -186,11 +218,18 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   }
 
   async function removeImage(id: number) {
-    await submitJson(`/api/admin/imagens/${id}`, { method: "DELETE" }, "Imagem excluida com sucesso.");
+    const ok = await submitJson(`/api/admin/imagens/${id}`, { method: "DELETE" }, "Imagem excluida com sucesso.");
+    if (!ok) return;
+    setSelected((current) => current ? { ...current, imagens: current.imagens?.filter((imagem) => imagem.id !== id) } : current);
   }
 
   async function setMainImage(id: number) {
-    await submitJson(`/api/admin/imagens/${id}`, { method: "PATCH", body: JSON.stringify({ principal: true }) }, "Imagem definida como principal!");
+    const ok = await submitJson(`/api/admin/imagens/${id}`, { method: "PATCH", body: JSON.stringify({ principal: true }) }, "Imagem definida como principal!");
+    if (!ok) return;
+    setSelected((current) => current ? {
+      ...current,
+      imagens: current.imagens?.map((imagem) => ({ ...imagem, principal: imagem.id === id })),
+    } : current);
   }
 
   async function removeBlock(id: number) {
@@ -228,7 +267,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
 
         <div className="admin-room-grid admin-filter-transition" key={`${filter}-${query}`}>
           {filtered.map((sala) => (
-            <button className="admin-room-card" key={sala.id} type="button" onClick={() => { setSelected(sala); setActiveTab("dados"); setMessage(""); }}>
+            <button className="admin-room-card" key={sala.id} type="button" onClick={() => openRoom(sala)}>
               <div className="admin-room-image">
                 {roomImage(sala) ? <img src={roomImage(sala)} alt="" /> : <span>Sem imagem</span>}
               </div>
@@ -260,14 +299,14 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
       </form>
 
       {selected && (
-        <div className="eq-modal-backdrop admin-room-backdrop" role="dialog" aria-modal="true">
-          <div className="eq-modal eq-card admin-room-modal">
+        <div className={`eq-modal-backdrop admin-room-backdrop ${isClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" onClick={closeRoom}>
+          <div className={`eq-modal eq-card admin-room-modal ${isClosing ? "is-closing" : ""}`} onClick={(event) => event.stopPropagation()}>
             <div className="admin-room-modal-header">
               <div>
                 <p className="admin-kicker mb-1">Editar sala</p>
                 <h2>{selected.nome}</h2>
               </div>
-              <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+              <button className="eq-icon-btn" type="button" onClick={closeRoom} aria-label="Fechar">x</button>
             </div>
 
             <div className="admin-room-tabs" role="tablist" aria-label="Editar sala">
@@ -288,7 +327,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                 <form key={`room-${selected.id}`} className="admin-room-form" onSubmit={updateRoom}>
                   <RoomFields sala={selected} conveniencias={conveniencias} selectedConveniencias={selectedConveniencias} />
                   <div className="admin-room-modal-footer">
-                    <button className="eq-btn secondary" type="button" onClick={() => setSelected(null)}>Cancelar</button>
+                    <button className="eq-btn secondary" type="button" onClick={closeRoom}>Cancelar</button>
                     <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Salvando...">Salvar sala</LoadingButton>
                   </div>
                 </form>
@@ -299,9 +338,13 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                   <div className="admin-section-heading">
                     <div>
                       <h3>Imagens da sala</h3>
-                      <p>Gerencie a galeria e defina a imagem principal.</p>
+                      <p>Adicione novas fotos, remova imagens antigas e defina a principal.</p>
                     </div>
                   </div>
+                  <form className="admin-image-upload" onSubmit={addImages}>
+                    <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
+                    <LoadingButton className="eq-btn" type="submit" loading={Boolean(loading)} loadingLabel="Enviando...">Adicionar imagens</LoadingButton>
+                  </form>
                   <div className="admin-image-strip">
                     {selected.imagens?.map((imagem) => (
                       <div key={imagem.id}>
@@ -313,10 +356,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                       </div>
                     ))}
                   </div>
-                  <form className="admin-inline-form mt-3" onSubmit={addImages}>
-                    <input className="form-control" name="imagens" type="file" accept="image/*" multiple />
-                    <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Enviando...">Adicionar imagens</LoadingButton>
-                  </form>
+                  {!selected.imagens?.length && <p className="admin-empty-inline">Nenhuma imagem cadastrada para esta sala.</p>}
                 </section>
               )}
 

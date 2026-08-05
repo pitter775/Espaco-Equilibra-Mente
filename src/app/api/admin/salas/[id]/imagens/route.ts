@@ -26,16 +26,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Nao foi possivel enviar as imagens." }, { status: 422 });
   }
 
-  const { error } = await supabase.from("imagens_salas").insert(imagensSalvas.map((imagem_base64, index) => ({
+  const { data: inseridas, error } = await supabase.from("imagens_salas").insert(imagensSalvas.map((imagem_base64, index) => ({
     sala_id: salaId,
     imagem_base64,
     principal: !(existentes?.length) && index === 0,
-  })));
+  }))).select("*");
 
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
 
   revalidateTag("salas", "max");
   revalidatePath("/admin/salas");
   revalidatePath("/");
-  return NextResponse.json({ success: true, message: "Imagens da sala salvas com sucesso!" });
+  return NextResponse.json({ success: true, message: "Imagens da sala salvas com sucesso!", imagens: inseridas ?? [] });
 }
