@@ -89,6 +89,12 @@ const depoimentos = [
   },
 ];
 
+function formatPhone(value: string) {
+  const digits = value.replace(/\D/g, "").replace(/^55/, "");
+  if (digits.length !== 11) return value;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 export default async function Home() {
   const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
 
@@ -100,7 +106,11 @@ export default async function Home() {
         <div className="public-hero-content">
           <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="public-hero-logo" />
           <p style={{ fontSize: 25 }}>Espaco Coworking para Profissionais da Saude</p>
-          <p style={{ fontSize: 20 }}>Consolacao - SP <br />Rua Dona Antonia de Queiros</p>
+          <p style={{ fontSize: 20 }}>
+            Rua Dona Antônia de Queirós n. 504 - cj 43
+            <br />
+            Consolação - SP
+          </p>
           <a href="https://wa.me/5511979691269?text=Ola%2C%20gostaria%20de%20saber%20mais%20sobre%20as%20salas." target="_blank" className="about-btn">
             <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} /> Chamar no Whats
           </a>
@@ -235,7 +245,7 @@ export default async function Home() {
                 <p>{item.texto}</p>
                 <a href={`https://wa.me/${item.whatsapp}`} target="_blank" style={{ color: "inherit" }}>
                   <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20, marginRight: 5 }} />
-                  <strong>{item.whatsapp.replace("55", "+55 ")}</strong>
+                  <strong>{formatPhone(item.whatsapp)}</strong>
                 </a>
               </div>
             </div>
@@ -250,6 +260,10 @@ export default async function Home() {
             <p>Entre em contato com nosso time através do WhatsApp ou siga nosso Instagram para acompanhar as novidades.</p>
           </div>
           <div className="contact-actions">
+            <a href="https://wa.me/5511979691269" target="_blank" className="about-btn">
+              <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
+              Espaço - (11) 97969-1269
+            </a>
             <a href="https://wa.me/5511986428238" target="_blank" className="about-btn">
               <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
               Rosiane - (11) 98642-8238

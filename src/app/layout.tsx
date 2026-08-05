@@ -18,12 +18,12 @@ const structuredData = {
   telephone: "+55 11 97969-1269",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Rua Dona Antonia de Queiros, 504",
-    addressLocality: "Sao Paulo",
+    streetAddress: "Rua Dona Antônia de Queirós, 504 - cj 43",
+    addressLocality: "São Paulo",
     addressRegion: "SP",
     addressCountry: "BR",
   },
-  areaServed: "Sao Paulo",
+  areaServed: "São Paulo",
   priceRange: "$$",
 };
 

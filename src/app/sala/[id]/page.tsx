@@ -80,13 +80,15 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
 
   const imagens = sala.imagens?.length ? sala.imagens.map((item) => item.imagem_base64) : ["/assets/img/salas/sala1.jfif"];
   const endereco = sala.endereco ?? {
-    rua: "Rua Dona Antonia de Queiros",
+    rua: "Rua Dona Antônia de Queirós",
     numero: "504",
-    bairro: "Consolacao",
-    cidade: "Sao Paulo",
+    complemento: "cj 43",
+    bairro: "Consolação",
+    cidade: "São Paulo",
     estado: "SP",
   };
-  const enderecoTexto = `${endereco.rua}, ${endereco.numero}, ${endereco.bairro} - ${endereco.cidade}, ${endereco.estado}`;
+  const complementoTexto = endereco.complemento ? ` - ${endereco.complemento}` : "";
+  const enderecoTexto = `${endereco.rua}, ${endereco.numero}${complementoTexto}, ${endereco.bairro} - ${endereco.cidade}, ${endereco.estado}`;
   const enderecoMapa = `${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}, ${endereco.estado}`;
   const indisponivel = sala.status === "indisponivel";
 

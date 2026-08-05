@@ -141,7 +141,7 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
                   {user.tipo_usuario === "admin" ? "Gestao" : "Minhas Reservas"}
                 </Link>
               ) : (
-                <AuthModalTrigger label="Entre" className="auth-nav-trigger" />
+                <AuthModalTrigger label="Entre" className="auth-nav-trigger" onOpen={() => setMenuOpen(false)} />
               )}
             </li>
             {user && <li><Link href="/profile"><i className="fa-solid fa-user" aria-hidden="true" />Perfil</Link></li>}

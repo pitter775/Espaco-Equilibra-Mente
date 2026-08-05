@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import { PasswordField } from "./PasswordField";
 
 type AuthModalTriggerProps = {
   label: string;
   className?: string;
   salaId?: number | string;
+  onOpen?: () => void;
 };
 
-export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerProps) {
+export function AuthModalTrigger({ label, className, salaId, onOpen }: AuthModalTriggerProps) {
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState(false);
   const titleId = useId();
@@ -47,12 +49,19 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
 
   return (
     <>
-      <button type="button" className={className ?? "auth-nav-trigger"} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={className ?? "auth-nav-trigger"}
+        onClick={() => {
+          setOpen(true);
+          window.setTimeout(() => onOpen?.(), 0);
+        }}
+      >
         {className === "auth-nav-trigger" ? <i className="fa-solid fa-right-to-bracket" aria-hidden="true" /> : null}
         {label}
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="auth-modal-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
           <div
             className="auth-modal"
@@ -98,7 +107,8 @@ export function AuthModalTrigger({ label, className, salaId }: AuthModalTriggerP
               <Link href="/login">Abrir página de login</Link>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
