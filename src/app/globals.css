@@ -3775,6 +3775,160 @@ body.auth-modal-open {
   line-height: 1.8;
 }
 
+.reception-showcase {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+  gap: 30px;
+  align-items: center;
+  max-width: 980px;
+  margin: 34px auto 0;
+}
+
+.reception-copy {
+  text-align: left;
+}
+
+.reception-copy > span {
+  display: inline-flex;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background: #eef4ec;
+  color: #216c2e;
+  padding: 7px 13px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.reception-copy h4 {
+  margin: 0 0 12px;
+  color: #1f2720;
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.reception-copy p {
+  max-width: 360px;
+  margin: 0 0 18px;
+  color: #4f554f;
+  font-size: 14px;
+  line-height: 1.72;
+}
+
+.reception-video-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 999px;
+  background: #216c2e;
+  color: #fff;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 14px 30px rgba(33, 108, 46, 0.18);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+
+.reception-video-button:hover {
+  background: #165c24;
+  box-shadow: 0 18px 34px rgba(33, 108, 46, 0.24);
+  transform: translateY(-2px);
+}
+
+.reception-video-button i {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 10px;
+}
+
+.reception-gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(150px, 0.68fr);
+  gap: 14px;
+}
+
+.reception-gallery figure {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 6px;
+  background: #e8e4dc;
+  box-shadow: 0 18px 34px rgba(26, 31, 34, 0.1);
+}
+
+.reception-gallery-main {
+  min-height: 330px;
+}
+
+.reception-gallery-side {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.reception-gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 158px;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.reception-gallery figure:hover img {
+  transform: scale(1.035);
+}
+
+.reception-video-modal {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(13, 19, 15, 0.72);
+  padding: 24px;
+}
+
+.reception-video-frame {
+  position: relative;
+  width: min(420px, calc(100vw - 36px));
+  max-height: calc(100vh - 48px);
+}
+
+.reception-video-frame button {
+  position: absolute;
+  z-index: 2;
+  top: -14px;
+  right: -14px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f2720;
+  cursor: pointer;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+.reception-video-frame video {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  border-radius: 10px;
+  background: #111;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
+}
+
 .gallery-tabs {
   display: flex;
   justify-content: center;
@@ -4426,6 +4580,7 @@ body.auth-modal-open {
   .how-grid,
   .steps-grid,
   .testimonials-grid,
+  .reception-showcase,
   .about-gallery,
   .about-gallery.image-count-2,
   .about-gallery.image-count-1,
@@ -4435,6 +4590,19 @@ body.auth-modal-open {
 
   .how-title {
     text-align: center;
+  }
+
+  .reception-showcase {
+    gap: 22px;
+  }
+
+  .reception-copy {
+    text-align: center;
+  }
+
+  .reception-copy p {
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .professionals-wrap {
@@ -4583,6 +4751,33 @@ body.auth-modal-open {
     overflow-x: auto;
     justify-content: flex-start;
     padding: 0 6px 4px;
+  }
+
+  .reception-showcase {
+    margin-top: 28px;
+  }
+
+  .reception-copy h4 {
+    font-size: 22px;
+  }
+
+  .reception-gallery {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .reception-gallery-main {
+    min-height: 255px;
+  }
+
+  .reception-gallery-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    gap: 12px;
+  }
+
+  .reception-gallery img {
+    min-height: 132px;
   }
 
   .about-gallery,
