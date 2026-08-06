@@ -9,8 +9,8 @@ const galleryRooms = [
     label: "Sala 1",
     images: [
       "/assets/img/salas/sala12.jfif",
-      "/assets/img/salas/sala13.jfif",
-      "/assets/img/salas/sala14.jfif",
+      "/assets/img/salas/sala1-nova-varanda.jpg",
+      "/assets/img/salas/sala1-nova-interna.jpg",
     ],
   },
   {
