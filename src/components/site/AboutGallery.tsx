@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const galleryRooms = [
   {
@@ -42,6 +43,35 @@ const receptionImages = [
 export function AboutGallery() {
   const [activeRoom, setActiveRoom] = useState(galleryRooms[0]);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isVideoOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isVideoOpen]);
+
+  const videoModal = (
+    <div className="reception-video-modal" role="dialog" aria-modal="true" aria-label="Video da recepção" onClick={() => setIsVideoOpen(false)}>
+      <div className="reception-video-frame" onClick={(event) => event.stopPropagation()}>
+        <button type="button" aria-label="Fechar video" onClick={() => setIsVideoOpen(false)}>
+          <i className="fa-solid fa-xmark" aria-hidden="true" />
+        </button>
+        <div className="reception-video-shell">
+          <video controls playsInline poster="/assets/img/recepcao/recepcao-principal.jpg">
+            <source src="/assets/img/recepcao/recepcao-tour.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -91,18 +121,7 @@ export function AboutGallery() {
           </figure>
         ))}
       </div>
-      {isVideoOpen ? (
-        <div className="reception-video-modal" role="dialog" aria-modal="true" aria-label="Vídeo da recepção" onClick={() => setIsVideoOpen(false)}>
-          <div className="reception-video-frame" onClick={(event) => event.stopPropagation()}>
-            <button type="button" aria-label="Fechar vídeo" onClick={() => setIsVideoOpen(false)}>
-              <i className="fa-solid fa-xmark" aria-hidden="true" />
-            </button>
-            <video controls playsInline poster="/assets/img/recepcao/recepcao-principal.jpg">
-              <source src="/assets/img/recepcao/recepcao-tour.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-      ) : null}
+      {isMounted && isVideoOpen ? createPortal(videoModal, document.body) : null}
     </>
   );
 }

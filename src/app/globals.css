@@ -3889,17 +3889,18 @@ body.auth-modal-open {
 
 .reception-video-modal {
   position: fixed;
-  z-index: 9999;
+  z-index: 2147483000;
   inset: 0;
   display: grid;
   place-items: center;
   background: rgba(13, 19, 15, 0.72);
-  padding: 24px;
+  padding: max(22px, env(safe-area-inset-top)) 24px 24px;
+  backdrop-filter: blur(3px);
 }
 
 .reception-video-frame {
   position: relative;
-  width: min(420px, calc(100vw - 36px));
+  width: min(390px, calc(100vw - 36px));
   max-height: calc(100vh - 48px);
 }
 
@@ -3920,13 +3921,21 @@ body.auth-modal-open {
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
 }
 
+.reception-video-shell {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: #0d0f0d;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
+}
+
 .reception-video-frame video {
   display: block;
   width: 100%;
+  height: auto;
   max-height: calc(100vh - 48px);
-  border-radius: 10px;
+  object-fit: contain;
   background: #111;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
 }
 
 .gallery-tabs {
