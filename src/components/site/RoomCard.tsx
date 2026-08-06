@@ -8,13 +8,41 @@ function imageIndex(offset: number, total: number) {
   return ((offset % total) + total) % total;
 }
 
+const cardGalleryImages: Record<number, string[]> = {
+  1: [
+    "/assets/img/salas/sala1-nova-varanda.jpg",
+    "/assets/img/salas/sala1-nova-interna.jpg",
+  ],
+  2: [
+    "/assets/img/salas/sala2-nova-ampla.png",
+    "/assets/img/salas/sala2-nova-mesa.png",
+  ],
+  3: [
+    "/assets/img/salas/sala3-nova-sofa.jpg",
+    "/assets/img/salas/sala3-nova-janela.png",
+  ],
+};
+
+function extraImagesForRoom(sala: Sala) {
+  const byId = cardGalleryImages[Number(sala.id)] ?? [];
+  const name = sala.nome.toLowerCase();
+  if (byId.length) return byId;
+  if (name.includes("sala 1")) return cardGalleryImages[1];
+  if (name.includes("sala 2")) return cardGalleryImages[2];
+  if (name.includes("sala 3")) return cardGalleryImages[3];
+  return [];
+}
+
 export function RoomCard({ sala, imageOffset = 0 }: { sala: Sala; imageOffset?: number }) {
   const [localOffset, setLocalOffset] = useState(0);
   const images =
-    (sala.imagens?.length ? [...sala.imagens] : [{ imagem_base64: "/assets/img/salas/sala1.jfif", principal: true }])
+    [
+      ...(sala.imagens?.length ? [...sala.imagens] : [{ imagem_base64: "/assets/img/salas/sala1.jfif", principal: true }]),
+      ...extraImagesForRoom(sala).map((imagem_base64) => ({ imagem_base64, principal: false })),
+    ]
       .sort((a, b) => Number(Boolean(b.principal)) - Number(Boolean(a.principal)))
       .map((imagem) => imagem.imagem_base64)
-      .filter(Boolean);
+      .filter((imagem, index, all) => Boolean(imagem) && all.indexOf(imagem) === index);
   const image = images.length ? images[imageIndex(imageOffset + localOffset, images.length)] : "/assets/img/salas/sala1.jfif";
   const indisponivel = sala.status === "indisponivel";
   const hasGallery = images.length > 1;

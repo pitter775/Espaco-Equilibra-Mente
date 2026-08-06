@@ -16,12 +16,22 @@ const galleryRooms = [
   {
     id: "sala-2",
     label: "Sala 2",
-    images: ["/assets/img/salas/sala2.jfif", "/assets/img/salas/sala21.jfif"],
+    images: [
+      "/assets/img/salas/sala2.jfif",
+      "/assets/img/salas/sala21.jfif",
+      "/assets/img/salas/sala2-nova-ampla.png",
+      "/assets/img/salas/sala2-nova-mesa.png",
+    ],
   },
   {
     id: "sala-3",
     label: "Sala 3",
-    images: ["/assets/img/salas/sala3.jfif", "/assets/img/salas/sala31.jfif"],
+    images: [
+      "/assets/img/salas/sala3.jfif",
+      "/assets/img/salas/sala31.jfif",
+      "/assets/img/salas/sala3-nova-sofa.jpg",
+      "/assets/img/salas/sala3-nova-janela.png",
+    ],
   },
 ];
 
