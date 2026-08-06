@@ -68,6 +68,10 @@ const perguntas = [
   },
 ];
 
+const shareText = encodeURIComponent(
+  "Conheça o Espaço Equilibra Mente: salas acolhedoras para profissionais da saúde em São Paulo. https://www.espacoequilibramente.com.br/",
+);
+
 const depoimentos = [
   {
     nome: "Luiza Martins",
@@ -271,6 +275,10 @@ export default async function Home() {
               @espaco_equilibramente
             </a>
           </div>
+          <a href={`https://wa.me/?text=${shareText}`} target="_blank" className="contact-share-button">
+            <img src="/assets/img/icons/whats.png" alt="" />
+            Compartilhar site no WhatsApp
+          </a>
         </div>
       </section>
       <SiteFooter />
