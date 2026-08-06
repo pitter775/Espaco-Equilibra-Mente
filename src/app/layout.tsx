@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://espaco-equilibra-mente.vercel.app");
+const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.espacoequilibramente.com.br");
 const siteName = "Espaco Equilibra Mente";
 const siteDescription =
   "Coworking para psicologos, terapeutas e profissionais da saude em Sao Paulo, com salas acolhedoras para atendimento por hora.";
-const socialImage = "/assets/img/equilibramente.jpeg";
+const socialImage = "/assets/img/seo/equilibra-mente-og.jpg";
+const socialImageUrl = new URL(socialImage, siteUrl).toString();
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: siteName,
   description: siteDescription,
   url: siteUrl.toString(),
-  image: new URL(socialImage, siteUrl).toString(),
+  image: socialImageUrl,
   logo: new URL("/assets/img/logoescuro.png", siteUrl).toString(),
   telephone: "+55 11 97969-1269",
   address: {
@@ -73,9 +74,9 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: socialImage,
-        width: 1600,
-        height: 900,
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
         alt: "Recepcao do Espaco Equilibra Mente",
       },
     ],
@@ -84,7 +85,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteName} | Salas para profissionais da saude`,
     description: siteDescription,
-    images: [socialImage],
+    images: [socialImageUrl],
   },
   robots: {
     index: true,
