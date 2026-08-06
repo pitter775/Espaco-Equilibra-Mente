@@ -2826,7 +2826,7 @@ body.auth-modal-open {
 
 .room-detail-gallery {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
   gap: 30px;
   align-items: stretch;
   margin-bottom: 34px;
@@ -4056,8 +4056,8 @@ body.auth-modal-open {
 
 .contact-section .contentg h3 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 42px);
-  line-height: 1.02;
+  font-size: 24px;
+  line-height: 1.18;
 }
 
 .contact-section .contentg p {
