@@ -13,6 +13,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Projeto: Next.js App Router com React 19/Next 16. Antes de mexer em API nova do Next, consulte `node_modules/next/dist/docs/` porque esta versao pode diferir do conhecimento treinado.
 - Fonte de verdade de regra de negocio: Laravel em `C:\xampp81\htdocs\EquilibraMente`. Use apenas para leitura e comparacao. Nao altere o Laravel.
 - Banco: usar Supabase com cuidado. Para operacoes de servidor/admin, prefira helpers existentes em `src/lib/supabase.ts` e evite depender de RLS/anon key para fluxo critico.
+- Supabase neste projeto deve ser usado apenas como banco/Postgres. Nao usar Supabase Auth, OAuth providers, sessoes Supabase, magic link ou `supabase.auth.*`; login Google deve ser OAuth direto no Next e sessao propria do app.
 - Cache: antes de criar consultas novas, procure funcoes em `src/lib/data.ts` e tags/revalidate existentes. Evite chamar Supabase em componente client quando a informacao pode vir server-side/cacheada.
 - Visual publico: CSS central em `src/app/globals.css`; componentes do site em `src/components/site`. Preserve o visual premium/mobile-first e valide no celular via viewport Playwright quando mexer em header, galeria, modal ou cards.
 - Admin: reaproveite `AdminShell`, `AdminPageHero`, `AdminMetrics`, `eq-card`, `eq-modal`, `admin-toolbar` e `admin-segments`. Nao crie um estilo novo por tela.

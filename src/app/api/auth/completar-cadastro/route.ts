@@ -1,8 +1,11 @@
+import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
+import bcrypt from "bcryptjs";
 import { getCurrentUser } from "@/lib/auth";
 import { getProfileByEmail } from "@/lib/data";
-import { getSupabaseAdmin, getSupabaseAnon } from "@/lib/supabase";
+import { sendPendingRegistrationEmail } from "@/lib/email";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
@@ -45,25 +48,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.redirect(new URL("/completar-cadastro?erro=email", request.url));
     }
 
-    const { data: authData, error: authError } = await getSupabaseAnon().auth.signUp({
-      email,
-      password: senha,
-      options: { data: { name: String(form.get("fullname") ?? "") } },
-    });
-
-    if (authError || !authData.user) {
-      return NextResponse.redirect(new URL("/completar-cadastro?erro=cadastro", request.url));
-    }
-
-    userId = authData.user.id;
-    await supabase.from("users").insert({
+    userId = crypto.randomUUID();
+    const { error: userError } = await supabase.from("users").insert({
       id: userId,
       name: String(form.get("fullname") ?? ""),
       email,
+      password: await bcrypt.hash(senha, 12),
       tipo_usuario: "cliente",
       cadastro_completo: false,
       status_aprovacao: "pendente",
     });
+    if (userError) return NextResponse.redirect(new URL("/completar-cadastro?erro=cadastro", request.url));
   }
 
   let documentoUrl = "";
@@ -91,12 +86,13 @@ export async function POST(request: NextRequest) {
 
   const { data: enderecoCriado } = await supabase.from("enderecos").insert(endereco).select("id").single();
 
-  await supabase
+  const { data: pendingUser } = await supabase
     .from("users")
     .update({
       name: String(form.get("fullname") ?? ""),
       photo: String(form.get("photo") ?? user?.photo ?? ""),
       email,
+      password: await bcrypt.hash(senha, 12),
       telefone: String(form.get("telefone") ?? ""),
       cpf: String(form.get("cpf") ?? ""),
       sexo: String(form.get("sexo") ?? ""),
@@ -109,7 +105,14 @@ export async function POST(request: NextRequest) {
       documento_caminho: documentoUrl,
       status_aprovacao: "pendente",
     })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select("*")
+    .single();
+
+  if (pendingUser) {
+    const emailResult = await sendPendingRegistrationEmail(pendingUser);
+    if (!emailResult.sent) console.error("Erro ao enviar e-mail de cadastro pendente:", emailResult.error);
+  }
 
   const { data: contrato } = await supabase
     .from("contracts")

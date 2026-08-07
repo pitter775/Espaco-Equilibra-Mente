@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 import { requireAdmin } from "@/lib/auth";
 import { sendApprovalStatusEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -80,8 +81,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     : null;
 
   const senha = cleanText(body.senha ?? body.password);
-  if (senha.length >= 8 && id.includes("-")) {
-    await supabase.auth.admin.updateUserById(id, { password: senha });
+  if (senha.length >= 8) {
+    await supabase.from("users").update({ password: await bcrypt.hash(senha, 12) }).eq("id", id);
   }
 
   const endereco = addressPayload(body, id);
@@ -104,7 +105,6 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const supabase = getSupabaseAdmin();
   await supabase.from("users").delete().eq("id", id);
-  if (id.includes("-")) await supabase.auth.admin.deleteUser(id);
   revalidatePath("/admin/usuarios");
   return NextResponse.json({ success: true });
 }

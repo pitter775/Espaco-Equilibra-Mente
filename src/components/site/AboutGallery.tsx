@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 const galleryRooms = [
   {
@@ -52,11 +51,6 @@ const receptionImages = [
 export function AboutGallery() {
   const [activeRoom, setActiveRoom] = useState(galleryRooms[0]);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!isVideoOpen) return;
@@ -130,7 +124,7 @@ export function AboutGallery() {
           </figure>
         ))}
       </div>
-      {isMounted && isVideoOpen ? createPortal(videoModal, document.body) : null}
+      {isVideoOpen ? videoModal : null}
     </>
   );
 }

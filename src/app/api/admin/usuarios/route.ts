@@ -1,5 +1,7 @@
+import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 import { requireAdmin } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -64,18 +66,11 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseAdmin();
-  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-    email: payload.email,
-    password: senha,
-    email_confirm: true,
-    user_metadata: { name: payload.name, tipo_usuario: payload.tipo_usuario },
-  });
-
-  if (authError || !authData.user) {
-    return NextResponse.json({ success: false, message: authError?.message || "Nao foi possivel criar o usuario." }, { status: 422 });
-  }
-
-  const { data, error } = await supabase.from("users").insert({ id: authData.user.id, ...payload }).select("*, endereco:enderecos(*)").single();
+  const { data, error } = await supabase
+    .from("users")
+    .insert({ id: crypto.randomUUID(), ...payload, password: await bcrypt.hash(senha, 12) })
+    .select("*, endereco:enderecos(*)")
+    .single();
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
 
   const endereco = addressPayload(body, data.id);
