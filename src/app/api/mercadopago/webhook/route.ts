@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getMercadoPagoAccessToken } from "@/lib/payments";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
+  const mercadoPagoAccessToken = getMercadoPagoAccessToken();
   if (!isSupabaseConfigured()) return NextResponse.json({ status: "ok" });
 
   const paymentId = body?.type === "payment" ? body?.data?.id : null;
-  if (!paymentId || !process.env.MERCADO_PAGO_ACCESS_TOKEN) return NextResponse.json({ status: "ok" });
+  if (!paymentId || !mercadoPagoAccessToken) return NextResponse.json({ status: "ok" });
 
   const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-    headers: { Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}` },
+    headers: { Authorization: `Bearer ${mercadoPagoAccessToken}` },
   });
   const payment = await response.json();
   const reservaId = String(payment.external_reference ?? "").replace("reserva_", "");

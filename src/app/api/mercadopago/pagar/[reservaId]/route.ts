@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { requireUser } from "@/lib/auth";
+import { getMercadoPagoAccessToken } from "@/lib/payments";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 async function gerarLinkPagamento(request: NextRequest, reservaId: string) {
   const user = await requireUser();
+  const mercadoPagoAccessToken = getMercadoPagoAccessToken();
   if (!isSupabaseConfigured()) return NextResponse.json({ message: "Supabase nao configurado." }, { status: 503 });
-  if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) return NextResponse.json({ message: "Mercado Pago nao configurado." }, { status: 503 });
+  if (!mercadoPagoAccessToken) return NextResponse.json({ message: "Mercado Pago nao configurado." }, { status: 503 });
 
   const supabase = getSupabaseAdmin();
   const { data: reserva } = await supabase
@@ -19,7 +21,7 @@ async function gerarLinkPagamento(request: NextRequest, reservaId: string) {
   if (String(reserva.usuario_id) !== String(user.id)) return NextResponse.json({ message: "Reserva nao pertence a voce." }, { status: 403 });
   if (String(reserva.status).toLowerCase() !== "pendente") return NextResponse.json({ message: "Reserva nao esta pendente." }, { status: 422 });
 
-  const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN });
+  const client = new MercadoPagoConfig({ accessToken: mercadoPagoAccessToken });
   const preference = new Preference(client);
   const origin = new URL(request.url).origin;
   const created = await preference.create({
