@@ -38,7 +38,7 @@ const especialistas = [
 ];
 
 const passos = [
-  { icon: "/assets/img/icons/mesa.png", text: "Escolha um dos nossos consultórios disponíveis" },
+  { icon: "/assets/img/icons/mesa.png", text: "Escolha uma das nossas salas disponíveis" },
   { icon: "/assets/img/icons/calendar.png", text: "Reserve os horários disponíveis" },
   { icon: "/assets/img/icons/cadastro.png", text: "Cadastre-se e pague com segurança" },
   { icon: "/assets/img/icons/mapa.png", text: "Vá até o consultório na data reservada" },
