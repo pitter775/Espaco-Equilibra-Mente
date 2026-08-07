@@ -27,7 +27,6 @@ const galleryRooms = [
     id: "sala-3",
     label: "Sala 3",
     images: [
-      "/assets/img/salas/sala3.jfif",
       "/assets/img/salas/sala31.jfif",
       "/assets/img/salas/sala3-nova-sofa.jpg",
       "/assets/img/salas/sala3-nova-janela.png",
