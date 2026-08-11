@@ -25,14 +25,12 @@ const especialistas = [
   {
     nome: "Cristina Azevedo",
     foto: "/assets/img/team/cristina.jpg",
-    whatsapp: "5511915654166",
     texto:
       "Psicóloga Clínica com mais de 5 anos de experiência em Terapia Cognitivo-Comportamental. Pós-graduanda em Neuropsicologia. Trabalha com avaliações e intervenções personalizadas.",
   },
   {
     nome: "Djane",
     foto: "/assets/img/team/djane.jpg",
-    whatsapp: "5511972396456",
     texto:
       "Psicopedagoga e Neuropsicopedagoga especializada no atendimento a crianças, jovens e adultos com TDAH, TEA e dificuldades de aprendizagem. Oferece avaliação, intervenção e orientação educacional personalizada.",
   },
