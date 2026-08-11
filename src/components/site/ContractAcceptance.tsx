@@ -58,6 +58,8 @@ function fieldValue(name: string) {
 }
 
 function currentContractData() {
+  if (typeof document === "undefined") return emptyContractData();
+
   const endereco = [
     fieldValue("endereco_rua"),
     fieldValue("endereco_numero"),
@@ -79,11 +81,23 @@ function currentContractData() {
   };
 }
 
+function emptyContractData() {
+  return {
+    nome: "Nao informado",
+    profissao: "Nao informado",
+    cpf: "Nao informado",
+    endereco: "Nao informado",
+    email: "Nao informado",
+    telefone: "Nao informado",
+    data: new Intl.DateTimeFormat("pt-BR").format(new Date()),
+  };
+}
+
 export function ContractAcceptance({ version, content }: ContractAcceptanceProps) {
   const [open, setOpen] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [accepting, setAccepting] = useState(false);
-  const [snapshot, setSnapshot] = useState(currentContractData);
+  const [snapshot, setSnapshot] = useState(emptyContractData);
   const contractText = content?.trim() || fallbackContract;
 
   const preview = useMemo(() => {
