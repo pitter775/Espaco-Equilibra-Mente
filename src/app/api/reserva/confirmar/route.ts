@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { getSala } from "@/lib/data";
+import { expireStalePendingReservations } from "@/lib/reservation";
 import { createMercadoPagoReservationPayment } from "@/lib/reservation-payment";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
@@ -42,7 +43,7 @@ async function existeConflitoReserva(salaId: number, horario: ReservaHorario) {
     .select("hora_inicio,hora_fim")
     .eq("sala_id", salaId)
     .eq("data_reserva", horario.data_reserva)
-    .in("status", ["PENDENTE", "CONFIRMADA"]);
+    .in("status", ["PENDENTE", "pendente", "CONFIRMADA", "confirmada"]);
 
   return (data ?? []).some((reserva) => {
     const inicio = String(reserva.hora_inicio).slice(0, 5);
@@ -69,6 +70,7 @@ export async function POST(request: NextRequest) {
     if (!sala) return NextResponse.json({ success: false, message: "Sala nao encontrada." }, { status: 404 });
 
     const supabase = getSupabaseAdmin();
+    await expireStalePendingReservations(sala.id);
     const criadas = [];
     for (const horario of reservaData.horarios) {
       if (await existeBloqueioParaPeriodo(sala.id, horario)) {

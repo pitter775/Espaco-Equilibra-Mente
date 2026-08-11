@@ -7,6 +7,12 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 type Slot = { inicio: string; fim: string; status: string; mensagem: string };
 type Selected = { data_reserva: string; hora_inicio: string; hora_fim: string };
 
+function slotStatusLabel(slot: Slot) {
+  if (slot.status === "bloqueado") return "Bloqueado";
+  if (slot.status === "reservado") return "Reservado";
+  return "Livre";
+}
+
 export function ReservationSelector({
   salaId,
   valor,
@@ -110,6 +116,7 @@ export function ReservationSelector({
         <span><i className="is-free"></i> Livre</span>
         <span><i className="is-selected"></i> Selecionado</span>
         <span><i className="is-busy"></i> Reservado</span>
+        <span><i className="is-blocked"></i> Bloqueado</span>
       </div>
 
       <div className="reservation-slots-area">
@@ -119,17 +126,19 @@ export function ReservationSelector({
           <div className="horarios-grid">
             {slots.map((slot) => {
               const active = selected.some((item) => item.hora_inicio === slot.inicio && item.hora_fim === slot.fim);
+              const unavailable = slot.status !== "disponivel";
               return (
                 <button
                   key={`${slot.inicio}-${slot.fim}`}
                   type="button"
                   className={`horario-slot horario-${slot.status} ${active ? "horario-selecionado" : ""}`}
-                  disabled={slot.status !== "disponivel"}
+                  disabled={unavailable}
+                  aria-disabled={unavailable}
                   title={slot.mensagem}
                   onClick={() => toggle(slot)}
                 >
-                  <span>{slot.inicio.slice(0, 2)}h</span>
-                  <small>{slot.fim.slice(0, 2)}h</small>
+                  <span>{slot.inicio.slice(0, 2)}h - {slot.fim.slice(0, 2)}h</span>
+                  <small>{slotStatusLabel(slot)}</small>
                 </button>
               );
             })}

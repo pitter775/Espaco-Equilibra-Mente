@@ -3374,6 +3374,10 @@ body.auth-modal-open {
   background: #c14338;
 }
 
+.reservation-legend .is-blocked {
+  background: #6c5844;
+}
+
 .reservation-slots-area {
   min-height: 132px;
   transition: opacity 0.18s ease;
@@ -3413,7 +3417,7 @@ body.auth-modal-open {
 }
 
 .horario-slot span {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .horario-slot small {
@@ -3449,17 +3453,23 @@ body.auth-modal-open {
   background: #ffffff;
 }
 
-.horario-reservado,
-.horario-bloqueado {
-  border-color: #f1c7c1;
-  background: #fff3f1;
-  color: #b6372e;
+.horario-reservado {
+  border-color: #f0c3bc;
+  background: repeating-linear-gradient(135deg, #fff6f4 0 8px, #fee9e5 8px 16px);
+  color: #a93229;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.horario-reservado::before,
-.horario-bloqueado::before {
+.horario-bloqueado {
+  border-color: #d8cabb;
+  background: repeating-linear-gradient(135deg, #f7f1ea 0 8px, #eee3d7 8px 16px);
+  color: #5f4b38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.horario-reservado::before {
   content: "";
   position: absolute;
   right: 10px;
@@ -3468,6 +3478,17 @@ body.auth-modal-open {
   height: 1px;
   background: rgba(182, 55, 46, 0.55);
   transform: rotate(-12deg);
+}
+
+.horario-bloqueado::after {
+  content: "\f023";
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  font-family: "Font Awesome 6 Free";
+  font-size: 10px;
+  font-weight: 900;
+  opacity: 0.72;
 }
 
 .reservation-summary-box {
