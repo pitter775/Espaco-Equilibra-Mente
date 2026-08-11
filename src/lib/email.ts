@@ -49,6 +49,11 @@ function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || "https://www.espacoequilibramente.com.br";
 }
 
+function adminApprovalEmails() {
+  const raw = process.env.ADMIN_APPROVAL_EMAIL || process.env.ADMIN_EMAIL || "pitter775@gmail.com";
+  return raw.split(",").map((email) => email.trim()).filter(Boolean);
+}
+
 function fromAddress() {
   const smtpFrom = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USERNAME;
   if (smtpFrom) {
@@ -98,6 +103,36 @@ function pendingHtml(user: AppUser) {
       Duvidas? Fale com a gente pelo WhatsApp:
       <a href="https://wa.me/5511979691269" style="color:#28a745;text-decoration:none;">(11) 97969-1269</a>
     </p>
+  `;
+}
+
+function adminPendingHtml(user: AppUser) {
+  const baseUrl = siteUrl().startsWith("http") ? siteUrl() : `https://${siteUrl()}`;
+  const approvalUrl = `${baseUrl}/admin/usuarios?usuario=${encodeURIComponent(String(user.id))}`;
+  const name = escapeHtml(user.name || "cliente");
+  const email = escapeHtml(user.email || "-");
+  const telefone = escapeHtml(user.telefone || "-");
+  const documento = escapeHtml(user.documento_tipo || "-");
+
+  return `
+    <div style="margin:0;padding:28px;background:#eef6eb;font-family:Arial,Helvetica,sans-serif;color:#263326;">
+      <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 18px 45px rgba(32,53,34,0.12);">
+        <div style="padding:28px 28px 18px;border-bottom:1px solid #e4ecdf;">
+          <p style="margin:0 0 8px;color:#216c2e;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">Novo cadastro pendente</p>
+          <h1 style="margin:0;color:#203522;font-size:26px;line-height:1.25;">${name}</h1>
+        </div>
+        <div style="padding:28px;">
+          <p style="margin:0 0 18px;color:#526052;line-height:1.7;">Um novo usuario completou o cadastro e precisa de aprovacao no painel administrativo.</p>
+          <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
+            <p style="margin:0 0 8px;"><strong>E-mail:</strong> ${email}</p>
+            <p style="margin:0 0 8px;"><strong>Telefone:</strong> ${telefone}</p>
+            <p style="margin:0;"><strong>Documento:</strong> ${documento}</p>
+          </div>
+          <a href="${approvalUrl}" style="display:inline-block;background:#216c2e;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:999px;font-weight:bold;">Abrir cadastro para aprovacao</a>
+          <p style="margin:16px 0 0;color:#7a857a;font-size:12px;line-height:1.6;">Se o botao nao funcionar, copie e cole este link:<br><span style="color:#526052;">${approvalUrl}</span></p>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -194,7 +229,15 @@ export async function sendApprovalStatusEmail(user: AppUser, status: "aprovado" 
 
 export async function sendPendingRegistrationEmail(user: AppUser): Promise<EmailResult> {
   if (!user.email) return { sent: false, skipped: true, error: "Usuario sem e-mail." };
-  return sendEmail(user.email, "Recebemos seu cadastro", pendingHtml(user));
+  const userEmail = await sendEmail(user.email, "Recebemos seu cadastro", pendingHtml(user));
+  const adminResults = await Promise.all(
+    adminApprovalEmails().map((email) => sendEmail(email, `Novo cadastro para aprovacao: ${user.name || user.email}`, adminPendingHtml(user))),
+  );
+
+  if (!userEmail.sent) return userEmail;
+  const failedAdminEmail = adminResults.find((result) => !result.sent);
+  if (failedAdminEmail) return failedAdminEmail;
+  return { sent: true };
 }
 
 export async function sendReservationConfirmedEmail(user: AppUser, reserva: Reserva & { sala?: Sala | null }): Promise<EmailResult> {

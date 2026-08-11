@@ -35,6 +35,27 @@ function userInitials(name?: string | null) {
   return String(name || "U").split(" ").filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
 }
 
+function documentLabel(value?: string | null) {
+  if (!value) return "Documento nao registrado";
+  try {
+    const url = new URL(value);
+    return decodeURIComponent(url.pathname.split("/").pop() || "Documento enviado");
+  } catch {
+    return value.split("/").pop() || value;
+  }
+}
+
+function UserAvatar({ user, className = "admin-avatar" }: { user: AppUser; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const photo = user.photo && !failed ? user.photo : "";
+
+  return (
+    <div className={className}>
+      {photo ? <img src={photo} alt="" onError={() => setFailed(true)} /> : userInitials(user.name)}
+    </div>
+  );
+}
+
 function formatDate(value?: string | null) {
   if (!value) return "-";
   const date = new Date(value);
@@ -68,8 +89,12 @@ function payloadFromForm(form: HTMLFormElement) {
   };
 }
 
-export function AdminUsersPanel({ users }: { users: AppUser[] }) {
-  const [selected, setSelected] = useState<AppUser | null>(null);
+export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; initialUserId?: string }) {
+  const initialSelected = useMemo(
+    () => users.find((item) => String(item.id) === String(initialUserId)) ?? null,
+    [initialUserId, users],
+  );
+  const [selected, setSelected] = useState<AppUser | null>(initialSelected);
   const [mode, setMode] = useState<Mode>("details");
   const [filter, setFilter] = useState("todos");
   const [query, setQuery] = useState("");
@@ -212,7 +237,7 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
             return (
             <div className="admin-user-card admin-user-card-actionable" key={user.id}>
               <button className="admin-user-card-main" type="button" onClick={() => openUser(user)}>
-                <div className="admin-avatar">{user.photo ? <img src={user.photo} alt="" /> : userInitials(user.name)}</div>
+                <UserAvatar user={user} />
                 <div>
                   <strong>{user.name}</strong>
                   <span>{user.email}</span>
@@ -249,28 +274,55 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
             <div className="admin-user-modal-body">
               {mode === "details" && selected && (
                 <>
+                <section className="admin-user-review-hero">
+                  <UserAvatar user={selected} className="admin-user-review-avatar" />
+                  <div>
+                    <span>Cadastro em revisao</span>
+                    <h3>{selected.name || "Usuario sem nome"}</h3>
+                    <p>{selected.email || "E-mail nao informado"}</p>
+                  </div>
+                  <strong className={`eq-status eq-status-${statusClass(selected.status_aprovacao)}`}>{statusLabel(selected.status_aprovacao)}</strong>
+                </section>
+
                 <div className="admin-user-detail">
                   <section>
                     <h3>Dados cadastrais</h3>
-                    <p><strong>Cadastro:</strong> {formatDate(selected.created_at)}</p>
-                    <p><strong>Email:</strong> {selected.email}</p>
-                    <p><strong>Telefone:</strong> {selected.telefone || "-"}</p>
-                    <p><strong>CPF:</strong> {selected.cpf || "-"}</p>
-                    <p><strong>Perfil:</strong> {selected.tipo_usuario || "cliente"} <strong>Status:</strong> {selected.status || "ativo"}</p>
-                    <p><strong>Sexo:</strong> {selected.sexo || "-"} <strong>Idade:</strong> {selected.idade || "-"}</p>
-                    <p><strong>Registro:</strong> {selected.registro_profissional || "-"} ({selected.tipo_registro_profissional || "-"})</p>
-                    <p><strong>Endereco:</strong> {selected.endereco ? `${selected.endereco.rua}, ${selected.endereco.numero} - ${selected.endereco.bairro}, ${selected.endereco.cidade}/${selected.endereco.estado}` : "-"}</p>
+                    <div className="admin-user-facts">
+                      <p><span>Cadastro</span><strong>{formatDate(selected.created_at)}</strong></p>
+                      <p><span>E-mail</span><strong>{selected.email || "-"}</strong></p>
+                      <p><span>Telefone</span><strong>{selected.telefone || "-"}</strong></p>
+                      <p><span>CPF</span><strong>{selected.cpf || "-"}</strong></p>
+                      <p><span>Perfil</span><strong>{selected.tipo_usuario || "cliente"} - {selected.status || "ativo"}</strong></p>
+                      <p><span>Sexo / idade</span><strong>{selected.sexo || "-"} - {selected.idade || "-"}</strong></p>
+                      <p><span>Registro</span><strong>{selected.registro_profissional || "-"} ({selected.tipo_registro_profissional || "-"})</strong></p>
+                      <p className="wide"><span>Endereco</span><strong>{selected.endereco ? `${selected.endereco.rua}, ${selected.endereco.numero} - ${selected.endereco.bairro}, ${selected.endereco.cidade}/${selected.endereco.estado}` : "-"}</strong></p>
+                    </div>
                   </section>
 
                   <section>
                     <h3>Documento</h3>
-                    <p><strong>Tipo:</strong> {selected.documento_tipo || "-"}</p>
                     {selected.documento_caminho ? (
                       <div className="admin-document-box">
-                        <span>{selected.documento_caminho}</span>
-                        <a className="eq-btn secondary" href={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} target="_blank" rel="noreferrer">Abrir documento</a>
+                        <div className="admin-document-icon">
+                          <i className="fa-solid fa-file-shield" aria-hidden="true" />
+                        </div>
+                        <div>
+                          <small>{selected.documento_tipo || "Documento"}</small>
+                          <strong>{documentLabel(selected.documento_caminho)}</strong>
+                          <span>Arquivo protegido no storage. Alguns documentos antigos podem nao ter preview por causa da migracao.</span>
+                        </div>
+                        <a className="admin-pill-action primary" href={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} target="_blank" rel="noreferrer">
+                          <i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+                          Abrir documento
+                        </a>
                       </div>
-                    ) : <p>Nenhum documento registrado.</p>}
+                    ) : (
+                      <div className="admin-document-empty">
+                        <i className="fa-regular fa-file" aria-hidden="true" />
+                        <strong>Nenhum documento registrado</strong>
+                        <span>O cadastro nao possui arquivo anexado.</span>
+                      </div>
+                    )}
                   </section>
                 </div>
 
@@ -279,12 +331,27 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
                     <span>Status atual</span>
                     <strong className={`eq-status eq-status-${statusClass(selected.status_aprovacao)}`}>{statusLabel(selected.status_aprovacao)}</strong>
                   </div>
-                  <div className="d-flex flex-wrap" style={{ gap: 10 }}>
-                    <LoadingButton className="eq-btn" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "aprovado")}>Aprovar</LoadingButton>
-                    <LoadingButton className="eq-btn danger" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "reprovado")}>Reprovar</LoadingButton>
-                    <button className="eq-btn secondary" type="button" onClick={() => setMode("edit")}>Editar</button>
-                    <LoadingButton className="eq-btn secondary" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => toggleStatus(selected)}>{selected.status === "ativo" ? "Inativar" : "Ativar"}</LoadingButton>
-                    <LoadingButton className="eq-btn danger" type="button" loading={loading === "DELETE"} loadingLabel="Excluindo..." onClick={() => deleteUser(selected)}>Excluir</LoadingButton>
+                  <div className="admin-review-actions">
+                    <LoadingButton className="admin-pill-action approve" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "aprovado")}>
+                      <i className="fa-solid fa-check" aria-hidden="true" />
+                      Aprovar
+                    </LoadingButton>
+                    <LoadingButton className="admin-pill-action reject" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => updateApproval(selected, "reprovado")}>
+                      <i className="fa-solid fa-xmark" aria-hidden="true" />
+                      Reprovar
+                    </LoadingButton>
+                    <button className="admin-pill-action neutral" type="button" onClick={() => setMode("edit")}>
+                      <i className="fa-solid fa-pen" aria-hidden="true" />
+                      Editar
+                    </button>
+                    <LoadingButton className="admin-pill-action neutral" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => toggleStatus(selected)}>
+                      <i className="fa-solid fa-power-off" aria-hidden="true" />
+                      {selected.status === "ativo" ? "Inativar" : "Ativar"}
+                    </LoadingButton>
+                    <LoadingButton className="admin-pill-action reject" type="button" loading={loading === "DELETE"} loadingLabel="Excluindo..." onClick={() => deleteUser(selected)}>
+                      <i className="fa-solid fa-trash" aria-hidden="true" />
+                      Excluir
+                    </LoadingButton>
                   </div>
                 </section>
                 </>
