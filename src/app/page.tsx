@@ -40,7 +40,18 @@ const especialistas = [
     texto:
       "Fonoaudióloga, graduada em Fonoaudiologia pela PUC-SP, com especializações em Motricidade Oral e Disfagia, Voz Profissional e Canto, Fala, Linguagem e Distúrbios de Aprendizagem. Atua no atendimento de crianças, jovens, adultos e idosos, oferecendo acompanhamento especializado de acordo com as necessidades de cada paciente.",
   },
+  {
+    nome: "Júlia Begnami Isioka",
+    foto: "/assets/img/team/julia-begnami-isioka.jpg",
+    registro: "CRP 06/223101",
+    texto:
+      "Psicóloga clínica com foco em Terapia Cognitivo-Comportamental, com atualizações em ansiedade, depressão, TDAH e TEA. Atua com acolhimento e intervenções personalizadas no atendimento de crianças, jovens, adultos e idosos.",
+  },
 ];
+
+function specialistId(name: string) {
+  return `especialista-${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+}
 
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, "").replace(/^55/, "");
@@ -240,29 +251,42 @@ export default async function Home() {
             <h3>Nosso time de <span>Especialistas</span></h3>
             <p>Nosso time é formado por profissionais experientes comprometidas com o cuidado emocional, garantindo qualidade no atendimento e cuidado com cada detalhe.</p>
           </div>
-          {especialistas.map((item, index) => (
-            <div className={`specialist-row ${index % 2 ? "reverse" : ""}`} key={item.nome}>
-              <img src={item.foto} className="specialist-photo" alt={item.nome} />
-              <div className="specialist-copy">
-                <h4>{item.nome}</h4>
-                <p>{item.texto}</p>
-                <div className="specialist-actions">
-                  {"whatsapp" in item && item.whatsapp ? (
-                    <a href={`https://wa.me/${item.whatsapp}`} target="_blank" rel="noreferrer" className="specialist-contact specialist-phone" aria-label={`WhatsApp de ${item.nome}`}>
-                      <img src="/assets/img/icons/whats.png" alt="" />
-                      {formatPhone(item.whatsapp)}
-                    </a>
-                  ) : null}
-                  {"linkedin" in item && item.linkedin ? (
-                    <a href={item.linkedin} target="_blank" rel="noreferrer" className="specialist-contact specialist-linkedin" aria-label={`LinkedIn de ${item.nome}`}>
-                      <i className="fa-brands fa-linkedin-in" aria-hidden="true" />
-                      LinkedIn
-                    </a>
-                  ) : null}
+          <div className="specialists-layout">
+            <nav className="specialist-thumb-nav" aria-label="Navegar entre especialistas">
+              {especialistas.map((item) => (
+                <a href={`#${specialistId(item.nome)}`} className="specialist-thumb-link" key={item.nome} aria-label={`Ir para ${item.nome}`}>
+                  <img src={item.foto} alt="" />
+                  <span>{item.nome.split(" ")[0]}</span>
+                </a>
+              ))}
+            </nav>
+            <div className="specialists-list">
+              {especialistas.map((item, index) => (
+                <div id={specialistId(item.nome)} className={`specialist-row ${index % 2 ? "reverse" : ""}`} key={item.nome}>
+                  <img src={item.foto} className="specialist-photo" alt={item.nome} />
+                  <div className="specialist-copy">
+                    <h4>{item.nome}</h4>
+                    {"registro" in item && item.registro ? <strong className="specialist-register">{item.registro}</strong> : null}
+                    <p>{item.texto}</p>
+                    <div className="specialist-actions">
+                      {"whatsapp" in item && item.whatsapp ? (
+                        <a href={`https://wa.me/${item.whatsapp}`} target="_blank" rel="noreferrer" className="specialist-contact specialist-phone" aria-label={`WhatsApp de ${item.nome}`}>
+                          <img src="/assets/img/icons/whats.png" alt="" />
+                          {formatPhone(item.whatsapp)}
+                        </a>
+                      ) : null}
+                      {"linkedin" in item && item.linkedin ? (
+                        <a href={item.linkedin} target="_blank" rel="noreferrer" className="specialist-contact specialist-linkedin" aria-label={`LinkedIn de ${item.nome}`}>
+                          <i className="fa-brands fa-linkedin-in" aria-hidden="true" />
+                          LinkedIn
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
