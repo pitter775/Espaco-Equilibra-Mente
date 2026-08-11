@@ -22,6 +22,7 @@ export function SiteFooter() {
                 <li><i className="bx bx-chevron-right" /> Espacos para Eventos</li>
                 <li><i className="bx bx-chevron-right" /> Salas de Reuniao</li>
                 <li><i className="bx bx-chevron-right" /> Ambientes Equipados</li>
+                <li><i className="bx bx-chevron-right" /> <a href="/regulamento">Regulamento Interno</a></li>
               </ul>
             </div>
             <div className="col-lg-4 col-md-6 footer-newsletter">

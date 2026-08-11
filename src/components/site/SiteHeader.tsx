@@ -145,7 +145,17 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
                 <AuthModalTrigger label="Entre" className="auth-nav-trigger" onOpen={() => setMenuOpen(false)} />
               )}
             </li>
-            {user && <li><Link href="/profile"><i className="fa-solid fa-user" aria-hidden="true" />Perfil</Link></li>}
+            {user && <li><Link href="/profile" onClick={() => setMenuOpen(false)}><i className="fa-solid fa-user" aria-hidden="true" />Perfil</Link></li>}
+            {user && (
+              <li>
+                <form method="post" action="/api/auth/logout" className="site-logout-form">
+                  <button type="submit" className="site-logout-button">
+                    <i className="fa-solid fa-right-from-bracket" aria-hidden="true" />
+                    Sair
+                  </button>
+                </form>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

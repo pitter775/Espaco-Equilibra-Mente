@@ -28,11 +28,11 @@ export function ConfirmReservationButton() {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
-      if (!response.ok || !data.redirect) {
+      if (!response.ok || !data?.redirect) {
         paymentWindow?.close();
-        setMessage(data.message || "Erro ao confirmar a reserva.");
+        setMessage(data?.message || data?.error || "Erro ao confirmar a reserva.");
         return;
       }
 
@@ -61,7 +61,7 @@ export function ConfirmReservationButton() {
         />
         <label className="form-check-label" htmlFor="aceitoRegras">
           Li e aceito os termos do regulamento de uso das salas.
-          <a href="/assets/REGULAMENTO%20DO%20ESPA%C3%87O%20-%20EQM.pdf" target="_blank" rel="noreferrer" className="reservation-regulation-link">
+          <a href="/regulamento" target="_blank" rel="noreferrer" className="reservation-regulation-link">
             Ver regulamento completo
           </a>
         </label>

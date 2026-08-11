@@ -37,6 +37,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: url("/regulamento"),
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
   ];
 
   const salaPages = salas
