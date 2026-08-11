@@ -108,7 +108,8 @@ function pendingHtml(user: AppUser) {
 
 function adminPendingHtml(user: AppUser) {
   const baseUrl = siteUrl().startsWith("http") ? siteUrl() : `https://${siteUrl()}`;
-  const approvalUrl = `${baseUrl}/admin/usuarios?usuario=${encodeURIComponent(String(user.id))}`;
+  const directApprovalPath = `/admin/usuarios?usuario=${encodeURIComponent(String(user.id))}`;
+  const approvalUrl = `${baseUrl}/login?redirect_to=${encodeURIComponent(directApprovalPath)}`;
   const name = escapeHtml(user.name || "cliente");
   const email = escapeHtml(user.email || "-");
   const telefone = escapeHtml(user.telefone || "-");

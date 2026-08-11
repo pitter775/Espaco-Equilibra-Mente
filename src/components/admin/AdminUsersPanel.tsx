@@ -35,14 +35,9 @@ function userInitials(name?: string | null) {
   return String(name || "U").split(" ").filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
 }
 
-function documentLabel(value?: string | null) {
-  if (!value) return "Documento nao registrado";
-  try {
-    const url = new URL(value);
-    return decodeURIComponent(url.pathname.split("/").pop() || "Documento enviado");
-  } catch {
-    return value.split("/").pop() || value;
-  }
+function isImageDocument(value?: string | null) {
+  if (!value) return false;
+  return /\.(png|jpe?g|webp)(\?|$)/i.test(value);
 }
 
 function UserAvatar({ user, className = "admin-avatar" }: { user: AppUser; className?: string }) {
@@ -303,14 +298,17 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
                     <h3>Documento</h3>
                     {selected.documento_caminho ? (
                       <div className="admin-document-box">
-                        <div className="admin-document-icon">
-                          <i className="fa-solid fa-file-shield" aria-hidden="true" />
-                        </div>
-                        <div>
-                          <small>{selected.documento_tipo || "Documento"}</small>
-                          <strong>{documentLabel(selected.documento_caminho)}</strong>
-                          <span>Arquivo protegido no storage. Alguns documentos antigos podem nao ter preview por causa da migracao.</span>
-                        </div>
+                        <span className="admin-document-type">{selected.documento_tipo || "Documento"}</span>
+                        {isImageDocument(selected.documento_caminho) ? (
+                          <a className="admin-document-preview" href={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} target="_blank" rel="noreferrer" aria-label="Abrir documento">
+                            <img src={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} alt={`Documento ${selected.documento_tipo || ""}`} />
+                          </a>
+                        ) : (
+                          <div className="admin-document-preview admin-document-preview-empty">
+                            <i className="fa-solid fa-file-shield" aria-hidden="true" />
+                            <strong>Documento enviado</strong>
+                          </div>
+                        )}
                         <a className="admin-pill-action primary" href={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} target="_blank" rel="noreferrer">
                           <i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
                           Abrir documento

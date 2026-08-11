@@ -3,7 +3,7 @@ import type { AppUser } from "@/lib/types";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 type PageProps = {
-  searchParams?: Promise<{ usuario?: string }>;
+  searchParams?: Promise<{ usuario?: string; user?: string; id?: string }>;
 };
 
 export default async function AdminUsuariosPage({ searchParams }: PageProps) {
@@ -12,5 +12,5 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps) {
     ? (await getSupabaseAdmin().from("users").select("*, endereco:enderecos(*)").order("created_at", { ascending: false })).data ?? []
     : [];
 
-  return <AdminUsersPanel users={users as AppUser[]} initialUserId={params?.usuario} />;
+  return <AdminUsersPanel users={users as AppUser[]} initialUserId={params?.usuario ?? params?.user ?? params?.id} />;
 }
