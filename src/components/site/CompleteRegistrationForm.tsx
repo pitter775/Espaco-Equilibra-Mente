@@ -23,7 +23,7 @@ type AddressState = {
   estado: string;
 };
 
-const documentMaxSize = 10 * 1024 * 1024;
+const documentMaxSize = 4 * 1024 * 1024;
 const allowedDocumentTypes = ["application/pdf", "image/jpeg", "image/png"];
 
 function onlyDigits(value: string) {
@@ -124,6 +124,7 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
   const [senha, setSenha] = useState("");
   const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
   const [documentMessage, setDocumentMessage] = useState("");
+  const [documentPreview, setDocumentPreview] = useState<{ url: string; type: "image" | "pdf"; name: string } | null>(null);
   const [formError, setFormError] = useState("");
   const [address, setAddress] = useState<AddressState>({ rua: "", bairro: "", cidade: "", estado: "" });
   const [cepLoading, setCepLoading] = useState(false);
@@ -158,6 +159,11 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
   }
 
   function validateDocument(file?: File | null) {
+    setDocumentPreview((current) => {
+      if (current?.type === "image") URL.revokeObjectURL(current.url);
+      return null;
+    });
+
     if (!file) {
       setDocumentMessage("");
       return;
@@ -169,11 +175,16 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
     }
 
     if (file.size > documentMaxSize) {
-      setDocumentMessage("Arquivo acima de 10 MB.");
+      setDocumentMessage("Arquivo acima de 4 MB. Na Vercel, envie um arquivo menor.");
       return;
     }
 
     setDocumentMessage(`${file.name} selecionado.`);
+    if (file.type.startsWith("image/")) {
+      setDocumentPreview({ url: URL.createObjectURL(file), type: "image", name: file.name });
+      return;
+    }
+    setDocumentPreview({ url: "", type: "pdf", name: file.name });
   }
 
   function validateBeforeSubmit(event: FormEvent<HTMLFormElement>) {
@@ -350,6 +361,18 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
             <label className="form-label">Arquivo do documento</label>
             <input className="form-control" type="file" name="documento" accept=".jpg,.jpeg,.png,.pdf" required onChange={(event) => validateDocument(event.target.files?.[0])} />
             {documentMessage && <small className={documentMessage.includes("selecionado") ? "complete-valid" : "complete-invalid"}>{documentMessage}</small>}
+            {documentPreview && (
+              <div className="complete-document-preview">
+                {documentPreview.type === "image" ? (
+                  <img src={documentPreview.url} alt={`Previa do documento ${documentPreview.name}`} />
+                ) : (
+                  <div className="complete-document-pdf">
+                    <i className="fa-solid fa-file-pdf" aria-hidden="true" />
+                    <span>PDF selecionado</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>

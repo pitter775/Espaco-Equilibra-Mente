@@ -4089,6 +4089,37 @@ body.auth-modal-open {
   color: #a93229;
 }
 
+.complete-document-preview {
+  display: inline-flex;
+  max-width: 320px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #dbe5d8;
+  border-radius: 8px;
+  background: #f7faf6;
+}
+
+.complete-document-preview img {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.complete-document-pdf {
+  display: inline-flex;
+  min-height: 82px;
+  align-items: center;
+  gap: 10px;
+  color: #9b3129;
+  padding: 16px;
+  font-weight: 700;
+}
+
+.complete-document-pdf i {
+  font-size: 28px;
+}
+
 .complete-submit {
   min-width: 230px;
 }

@@ -7,7 +7,7 @@ import { getProfileByEmail } from "@/lib/data";
 import { sendPendingRegistrationEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
-const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+const MAX_DOCUMENT_SIZE = 4 * 1024 * 1024;
 const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
 function onlyDigits(value: string) {
@@ -107,8 +107,9 @@ export async function POST(request: NextRequest) {
       addRandomSuffix: true,
     });
     documentoUrl = blob.url;
-  } catch {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
+  } catch (error) {
+    console.error("Erro ao enviar documento para o Vercel Blob:", error);
+    return NextResponse.redirect(new URL("/completar-cadastro?erro=upload", request.url));
   }
 
   const endereco = {
