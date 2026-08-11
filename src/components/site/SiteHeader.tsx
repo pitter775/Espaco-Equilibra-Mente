@@ -42,25 +42,31 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
         setActiveSection(sectionIds[0]);
         return;
       }
-      const targetLine = Math.min(window.innerHeight * 0.42, 340);
-      const current =
-        sectionIds
-          .map((id) => {
-            const section = document.getElementById(id);
-            if (!section) return null;
-            return { id, distance: Math.abs(section.getBoundingClientRect().top - targetLine) };
-          })
-          .filter(Boolean)
-          .sort((a, b) => a!.distance - b!.distance)[0]?.id ?? sectionIds[0];
+      const activationLine = window.innerWidth < 992 ? 150 : Math.min(window.innerHeight * 0.32, 280);
+      let current = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const section = document.getElementById(id);
+        if (!section) continue;
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= activationLine && rect.bottom > activationLine) {
+          current = id;
+          break;
+        }
+        if (rect.top <= activationLine) current = id;
+      }
+
       setActiveSection(current);
     };
 
     const timer = window.setTimeout(updateActiveSection, 0);
     window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
 
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
     };
   }, [pathname]);
 
