@@ -11,6 +11,17 @@ const MAX_DOCUMENT_SIZE = 4 * 1024 * 1024;
 const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 const BLOB_ACCESS = "private";
 
+const ERROR_MESSAGES: Record<string, string> = {
+  senha: "Confira a senha e a confirmacao. A senha precisa ter pelo menos 8 caracteres.",
+  documento: "Envie um documento valido em PDF, JPG ou PNG, com ate 4 MB.",
+  email: "Este e-mail ja esta cadastrado. Faca login ou use outro e-mail.",
+  cadastro: "Nao foi possivel criar seu acesso agora. Tente novamente.",
+  contrato: "Voce precisa aceitar os termos do contrato para concluir o cadastro.",
+  dados: "Confira os dados informados antes de enviar o cadastro.",
+  upload: "Nao foi possivel enviar o documento. Confira a configuracao do Blob na Vercel e tente novamente.",
+  fatal: "Nao foi possivel concluir o cadastro agora.",
+};
+
 function onlyDigits(value: string) {
   return value.replace(/\D/g, "");
 }
@@ -32,11 +43,35 @@ function safeFileName(name: string) {
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
 }
 
-function uploadErrorRedirect(request: NextRequest, reason: string) {
+function wantsJson(request: NextRequest) {
+  return request.headers.get("accept")?.includes("application/json") || request.headers.get("x-eqm-debug") === "1";
+}
+
+function failureResponse(request: NextRequest, code: string, reason?: string, status = 422) {
+  const message = ERROR_MESSAGES[code] ?? ERROR_MESSAGES.fatal;
+  if (wantsJson(request)) {
+    return NextResponse.json({
+      success: false,
+      code,
+      reason: reason ?? null,
+      message: reason ? `${message} Debug: ${reason}` : message,
+    }, { status });
+  }
+
   const url = new URL("/completar-cadastro", request.url);
-  url.searchParams.set("erro", "upload");
-  url.searchParams.set("motivo", reason);
+  url.searchParams.set("erro", code);
+  if (reason) url.searchParams.set("motivo", reason);
   return NextResponse.redirect(url);
+}
+
+function successResponse(request: NextRequest, redirectTo: string) {
+  if (wantsJson(request)) {
+    return NextResponse.json({ success: true, redirectTo });
+  }
+
+  const response = NextResponse.redirect(new URL(redirectTo, request.url));
+  response.cookies.delete("eqm-google-data");
+  return response;
 }
 
 function errorReason(error: unknown) {
@@ -47,6 +82,21 @@ function errorReason(error: unknown) {
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    return await completeRegistration(request);
+  } catch (error) {
+    const reason = errorReason(error);
+    console.error("[completar-cadastro:fatal]", {
+      reason,
+      message: error instanceof Error ? error.message : String(error),
+      name: error instanceof Error ? error.name : typeof error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return failureResponse(request, "fatal", reason, 500);
+  }
+}
+
+async function completeRegistration(request: NextRequest) {
   const user = await getCurrentUser();
   const form = await request.formData();
   const email = String(form.get("email") ?? "").trim().toLowerCase();
@@ -64,11 +114,11 @@ export async function POST(request: NextRequest) {
   const cepDigits = onlyDigits(cep);
 
   if (!aceitouContrato) {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=contrato", request.url));
+    return failureResponse(request, "contrato");
   }
 
   if (senha.length < 8 || senha !== senhaConfirmacao) {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=senha", request.url));
+    return failureResponse(request, "senha");
   }
 
   if (
@@ -82,15 +132,15 @@ export async function POST(request: NextRequest) {
     !/^\d{1,3}$/.test(idade) ||
     !/^[A-Z]{2}$/.test(estado)
   ) {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=dados", request.url));
+    return failureResponse(request, "dados");
   }
 
   if (!(documento instanceof File) || !documento.name) {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
+    return failureResponse(request, "documento");
   }
 
   if (documento.size > MAX_DOCUMENT_SIZE || !ALLOWED_DOCUMENT_TYPES.includes(documento.type)) {
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=documento", request.url));
+    return failureResponse(request, "documento");
   }
 
   const supabase = getSupabaseAdmin();
@@ -100,7 +150,7 @@ export async function POST(request: NextRequest) {
   if (isNewUser) {
     const existing = await getProfileByEmail(email);
     if (existing) {
-      return NextResponse.redirect(new URL("/completar-cadastro?erro=email", request.url));
+      return failureResponse(request, "email");
     }
 
     userId = crypto.randomUUID();
@@ -139,7 +189,7 @@ export async function POST(request: NextRequest) {
       hasBlobStoreId: Boolean(process.env.BLOB_STORE_ID),
       access: BLOB_ACCESS,
     });
-    return uploadErrorRedirect(request, reason);
+    return failureResponse(request, "upload", reason);
   }
 
   if (isNewUser) {
@@ -152,7 +202,7 @@ export async function POST(request: NextRequest) {
       cadastro_completo: false,
       status_aprovacao: "pendente",
     });
-    if (userError) return NextResponse.redirect(new URL("/completar-cadastro?erro=cadastro", request.url));
+    if (userError) return failureResponse(request, "cadastro", userError.message);
   }
 
   const endereco = {
@@ -210,7 +260,7 @@ export async function POST(request: NextRequest) {
     aceito_em: new Date().toISOString(),
   });
 
-  const response = NextResponse.redirect(new URL(user ? "/" : "/login?cadastro=1", request.url));
+  const response = successResponse(request, user ? "/" : "/login?cadastro=1");
   response.cookies.delete("eqm-google-data");
   return response;
 }

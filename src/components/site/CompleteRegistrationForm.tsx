@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ContractAcceptance } from "@/components/site/ContractAcceptance";
-import { SubmitButton } from "@/components/ui/LoadingButton";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import { compressImageFile } from "@/lib/client-images";
 
 type CompleteRegistrationFormProps = {
@@ -140,6 +140,7 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
   const [documentMessage, setDocumentMessage] = useState("");
   const [documentPreview, setDocumentPreview] = useState<{ url: string; type: "image" | "pdf"; name: string } | null>(null);
   const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [address, setAddress] = useState<AddressState>({ rua: "", bairro: "", cidade: "", estado: "" });
   const [cepLoading, setCepLoading] = useState(false);
 
@@ -239,42 +240,64 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
     validateDocument(file);
   }
 
-  function validateBeforeSubmit(event: FormEvent<HTMLFormElement>) {
+  async function validateBeforeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     const telefoneDigits = onlyDigits(telefone);
     const cepDigits = onlyDigits(cep);
     const numeroDigits = onlyDigits(numero);
 
     if (telefoneDigits.length < 10 || telefoneDigits.length > 11) {
-      event.preventDefault();
       setFormError("Informe um telefone valido com DDD.");
       return;
     }
 
     if (!isValidCpf(cpf)) {
-      event.preventDefault();
       setFormError("Informe um CPF valido.");
       return;
     }
 
     if (cepDigits.length !== 8) {
-      event.preventDefault();
       setFormError("Informe um CEP valido.");
       return;
     }
 
     if (!numeroDigits) {
-      event.preventDefault();
       setFormError("Informe apenas numeros no numero do endereco.");
       return;
     }
 
     if (senha.length < 8 || senha !== senhaConfirmacao) {
-      event.preventDefault();
       setFormError("Confira a senha e a confirmacao.");
       return;
     }
 
     setFormError("");
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(event.currentTarget.action, {
+        method: "POST",
+        body: new FormData(event.currentTarget),
+        headers: {
+          accept: "application/json",
+          "x-eqm-debug": "1",
+        },
+      });
+      const contentType = response.headers.get("content-type") ?? "";
+      const data = contentType.includes("application/json") ? await response.json() : null;
+
+      if (response.ok && data?.success && data.redirectTo) {
+        window.location.href = data.redirectTo;
+        return;
+      }
+
+      setFormError(data?.message ?? `Nao foi possivel concluir o cadastro. Debug: http-${response.status}`);
+    } catch (submitError) {
+      const message = submitError instanceof Error ? submitError.message : String(submitError);
+      setFormError(`Nao foi possivel concluir o cadastro. Debug: ${message}`);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -431,7 +454,7 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
 
       <ContractAcceptance version={contract?.versao ?? undefined} content={contract?.conteudo ?? undefined} />
 
-      <SubmitButton className="eq-btn complete-submit" loadingLabel="Enviando cadastro...">Enviar cadastro para analise</SubmitButton>
+      <LoadingButton className="eq-btn complete-submit" type="submit" loading={submitting} loadingLabel="Enviando cadastro...">Enviar cadastro para analise</LoadingButton>
     </form>
   );
 }
