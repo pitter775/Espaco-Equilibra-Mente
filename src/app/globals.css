@@ -38,6 +38,7 @@
 .admin-kicker,
 .eq-btn,
 .auth-nav-trigger,
+.site-account-trigger,
 .site-logout-button,
 #header .nav-menu a,
 .profile-card label span,
@@ -49,6 +50,7 @@
 #header .nav-menu a:hover,
 #header .nav-menu li.is-active > a,
 #header .auth-nav-trigger:hover,
+#header .site-account-trigger:hover,
 #header .site-logout-button:hover {
   font-weight: 600 !important;
 }
@@ -2401,7 +2403,8 @@ a {
 }
 
 #header .nav-menu a i,
-.auth-nav-trigger i {
+.auth-nav-trigger i,
+.site-account-trigger i {
   font-size: 13px;
 }
 
@@ -2431,7 +2434,8 @@ a {
 }
 
 #header.header-internal .nav-menu a,
-#header.header-internal .auth-nav-trigger {
+#header.header-internal .auth-nav-trigger,
+#header.header-internal .site-account-trigger {
   color: #233123 !important;
   text-shadow: none;
 }
@@ -2457,7 +2461,8 @@ a {
   color: #216c2e !important;
 }
 
-.auth-nav-trigger {
+.auth-nav-trigger,
+.site-account-trigger {
   position: relative;
   display: inline-flex;
   min-height: 46px;
@@ -2475,6 +2480,10 @@ a {
   box-shadow: none !important;
   cursor: pointer;
   transition: color 0.22s ease, text-shadow 0.22s ease;
+}
+
+.site-account-trigger {
+  gap: 8px;
 }
 
 .site-logout-form {
@@ -2503,7 +2512,8 @@ a {
   font-size: 13px;
 }
 
-#header.header-scrolled .auth-nav-trigger {
+#header.header-scrolled .auth-nav-trigger,
+#header.header-scrolled .site-account-trigger {
   color: #233123;
   text-shadow: none;
 }
@@ -2516,6 +2526,9 @@ a {
 
 .auth-nav-trigger:hover,
 #header.header-scrolled .auth-nav-trigger:hover,
+.site-account-trigger:hover,
+#header.header-scrolled .site-account-trigger:hover,
+#header.header-internal .site-account-trigger:hover,
 .site-logout-button:hover,
 #header.header-scrolled .site-logout-button:hover,
 #header.header-internal .site-logout-button:hover {
@@ -2525,8 +2538,91 @@ a {
 #header .nav-menu a:hover,
 #header .nav-menu li.is-active > a,
 #header .auth-nav-trigger:hover,
+#header .site-account-trigger:hover,
 #header .site-logout-button:hover {
   font-weight: 700;
+}
+
+.site-account-menu {
+  position: relative;
+}
+
+.site-account-avatar {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #216c2e;
+  font-size: 13px;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.site-account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.site-account-name {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#header.header-scrolled .site-account-avatar,
+#header.header-internal .site-account-avatar {
+  border-color: rgba(33, 108, 46, 0.15);
+  background: #eef6ec;
+}
+
+.site-account-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  min-width: 198px;
+  gap: 4px;
+  border: 1px solid rgba(33, 108, 46, 0.11);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 8px;
+  box-shadow: 0 20px 48px rgba(13, 20, 14, 0.16);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.site-account-menu.is-open .site-account-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+#header .site-account-dropdown a,
+#header .site-account-dropdown .site-logout-button {
+  width: 100%;
+  min-height: 42px;
+  justify-content: flex-start;
+  gap: 10px;
+  border-radius: 6px !important;
+  color: #233123 !important;
+  padding: 0 10px !important;
+  text-shadow: none;
+}
+
+#header .site-account-dropdown a:hover,
+#header .site-account-dropdown .site-logout-button:hover {
+  background: rgba(238, 246, 236, 0.92);
+  color: #216c2e !important;
 }
 
 body.site-menu-open {
@@ -5092,6 +5188,46 @@ body.auth-modal-open {
     border-radius: 6px;
     color: #233123;
     text-shadow: none;
+  }
+
+  #header .site-account-menu {
+    width: 100%;
+  }
+
+  #header .site-account-trigger {
+    width: 100%;
+    min-height: 54px;
+    justify-content: center;
+    border-radius: 6px;
+    color: #233123;
+    text-shadow: none;
+  }
+
+  #header .site-account-avatar {
+    border-color: rgba(33, 108, 46, 0.15);
+    background: #eef6ec;
+  }
+
+  #header .site-account-dropdown {
+    position: static;
+    min-width: 0;
+    width: 100%;
+    margin-top: 4px;
+    border: 0;
+    background: #f7faf6;
+    box-shadow: none;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  #header .site-account-menu:not(.is-open) .site-account-dropdown {
+    display: none;
+  }
+
+  #header .site-account-dropdown a,
+  #header .site-account-dropdown .site-logout-button {
+    justify-content: center;
   }
 
   #header .site-logout-form {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { AuthModalTrigger } from "./AuthModalTrigger";
 import type { AppUser } from "@/lib/types";
@@ -18,7 +18,9 @@ const navItems = [
 export function SiteHeader({ user }: { user: AppUser | null }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
+  const accountRef = useRef<HTMLLIElement | null>(null);
 
   useEffect(() => {
     const header = document.getElementById("header");
@@ -63,13 +65,19 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
   }, [pathname]);
 
   useEffect(() => {
-    window.setTimeout(() => setMenuOpen(false), 0);
+    window.setTimeout(() => {
+      setMenuOpen(false);
+      setAccountOpen(false);
+    }, 0);
   }, [pathname]);
 
   useEffect(() => {
     document.body.classList.toggle("site-menu-open", menuOpen);
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setAccountOpen(false);
+      }
     };
     const onResize = () => {
       if (window.innerWidth >= 992) setMenuOpen(false);
@@ -84,6 +92,17 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
       window.removeEventListener("resize", onResize);
     };
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [accountOpen]);
 
   function handleNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (!href.startsWith("/#") || pathname !== "/") {
@@ -104,6 +123,10 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
   }
 
   const isInternalPage = pathname !== "/";
+  const accountName = user?.name?.split(" ")[0] || "Minha conta";
+  const accountInitial = accountName.slice(0, 1).toUpperCase();
+  const accountHref = user?.tipo_usuario === "admin" ? "/admin" : "/cliente/reservas";
+  const accountLabel = user?.tipo_usuario === "admin" ? "Gestao" : "Minhas reservas";
 
   return (
     <header id="header" className={`fixed-top header-transparent ${isInternalPage ? "header-internal" : ""} ${menuOpen ? "mobile-menu-open" : ""}`}>
@@ -135,25 +158,42 @@ export function SiteHeader({ user }: { user: AppUser | null }) {
                 </Link>
               </li>
             ))}
-            <li>
-              {user ? (
-                <Link href={user.tipo_usuario === "admin" ? "/admin" : "/cliente/reservas"} onClick={() => setMenuOpen(false)}>
-                  <i className={user.tipo_usuario === "admin" ? "fa-solid fa-chart-line" : "fa-solid fa-calendar-check"} aria-hidden="true" />
-                  {user.tipo_usuario === "admin" ? "Gestao" : "Minhas Reservas"}
-                </Link>
-              ) : (
-                <AuthModalTrigger label="Entre" className="auth-nav-trigger" onOpen={() => setMenuOpen(false)} />
-              )}
-            </li>
-            {user && <li><Link href="/profile" onClick={() => setMenuOpen(false)}><i className="fa-solid fa-user" aria-hidden="true" />Perfil</Link></li>}
-            {user && (
+            {!user && (
               <li>
-                <form method="post" action="/api/auth/logout" className="site-logout-form">
-                  <button type="submit" className="site-logout-button">
-                    <i className="fa-solid fa-right-from-bracket" aria-hidden="true" />
-                    Sair
-                  </button>
-                </form>
+                <AuthModalTrigger label="Entre" className="auth-nav-trigger" onOpen={() => setMenuOpen(false)} />
+              </li>
+            )}
+            {user && (
+              <li className={`site-account-menu ${accountOpen ? "is-open" : ""}`} ref={accountRef}>
+                <button
+                  type="button"
+                  className="site-account-trigger"
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  onClick={() => setAccountOpen((open) => !open)}
+                >
+                  <span className="site-account-avatar">
+                    {user.photo ? <img src={user.photo} alt="" /> : accountInitial}
+                  </span>
+                  <span className="site-account-name">{accountName}</span>
+                  <i className="fa-solid fa-chevron-down" aria-hidden="true" />
+                </button>
+                <div className="site-account-dropdown" role="menu">
+                  <Link href={accountHref} role="menuitem" onClick={() => { setMenuOpen(false); setAccountOpen(false); }}>
+                    <i className={user.tipo_usuario === "admin" ? "fa-solid fa-chart-line" : "fa-solid fa-calendar-check"} aria-hidden="true" />
+                    {accountLabel}
+                  </Link>
+                  <Link href="/profile" role="menuitem" onClick={() => { setMenuOpen(false); setAccountOpen(false); }}>
+                    <i className="fa-solid fa-user" aria-hidden="true" />
+                    Perfil
+                  </Link>
+                  <form method="post" action="/api/auth/logout" className="site-logout-form" role="none">
+                    <button type="submit" className="site-logout-button" role="menuitem">
+                      <i className="fa-solid fa-right-from-bracket" aria-hidden="true" />
+                      Sair
+                    </button>
+                  </form>
+                </div>
               </li>
             )}
           </ul>
