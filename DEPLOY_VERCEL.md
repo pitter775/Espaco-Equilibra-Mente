@@ -8,6 +8,7 @@
    - `SUPABASE_SERVICE_ROLE_KEY`: secret/service-role key do mesmo projeto. Sem ela, rotas admin e fluxos server-side de reserva podem falhar.
    - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `GOOGLE_REDIRECT_URI`: usar as credenciais OAuth do Google, como no Laravel. O callback deve ser `https://www.espacoequilibramente.com.br/login/google/callback`.
    - O Supabase deve ser usado apenas como banco/Postgres. Nao habilitar nem usar OAuth/Google Provider do Supabase neste projeto.
+   - `ADMIN_TEST_PAYMENT_AMOUNT`: opcional. Quando definido, apenas usuarios admin geram checkout Mercado Pago nesse valor para teste, por exemplo `1`. Clientes continuam pagando o valor real da sala.
    - `DATABASE_URL` e senha do banco ficam apenas para importacao/manutencao local; nao precisam ser expostas no front.
 3. Use Node.js 20.9 ou superior.
 4. Build command: `npm run build`.

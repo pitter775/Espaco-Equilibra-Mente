@@ -21,6 +21,15 @@ function splitName(name?: string | null) {
   };
 }
 
+function getAdminTestAmount(user: AppUser) {
+  if (user.tipo_usuario !== "admin") return null;
+  const raw = process.env.ADMIN_TEST_PAYMENT_AMOUNT?.trim();
+  if (!raw) return null;
+
+  const amount = Number(raw.replace(",", "."));
+  return Number.isFinite(amount) && amount > 0 ? amount : null;
+}
+
 export async function createMercadoPagoReservationPayment(request: Request, reservaId: string | number, user: AppUser): Promise<PaymentResult> {
   const mercadoPagoAccessToken = getMercadoPagoAccessToken();
   if (!mercadoPagoAccessToken) return { message: "Mercado Pago nao configurado." };
@@ -37,7 +46,8 @@ export async function createMercadoPagoReservationPayment(request: Request, rese
   if (String(reserva.usuario_id) !== String(user.id)) return { message: "Reserva nao pertence a voce." };
   if (String(reserva.status).toLowerCase() !== "pendente") return { message: "Reserva nao esta pendente." };
 
-  const valor = Number(reserva.sala?.valor ?? 0);
+  const valorReal = Number(reserva.sala?.valor ?? 0);
+  const valor = getAdminTestAmount(user) ?? valorReal;
   if (!Number.isFinite(valor) || valor <= 0) return { message: "Valor da reserva invalido." };
 
   const origin = new URL(request.url).origin;

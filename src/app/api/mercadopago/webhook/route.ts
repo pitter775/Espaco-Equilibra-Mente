@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendReservationConfirmedEmail } from "@/lib/email";
 import { getMercadoPagoAccessToken } from "@/lib/payments";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
+import type { AppUser, Reserva, Sala } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -18,7 +20,7 @@ export async function POST(request: NextRequest) {
   if (!reservaId) return NextResponse.json({ status: "ok" });
 
   const supabase = getSupabaseAdmin();
-  const { data: reserva } = await supabase.from("reservas").select("*").eq("id", Number(reservaId)).single();
+  const { data: reserva } = await supabase.from("reservas").select("*, sala:salas(*)").eq("id", Number(reservaId)).single();
   if (!reserva) return NextResponse.json({ status: "ok" });
 
   const status = String(payment.status ?? "").toLowerCase();
@@ -35,5 +37,14 @@ export async function POST(request: NextRequest) {
 
   const reservaStatus = status === "approved" ? "CONFIRMADA" : ["rejected", "cancelled", "refunded", "charged_back"].includes(status) ? "CANCELADA" : "PENDENTE";
   await supabase.from("reservas").update({ status: reservaStatus }).eq("id", reserva.id);
+
+  if (reservaStatus === "CONFIRMADA" && String(reserva.status).toUpperCase() !== "CONFIRMADA") {
+    const { data: usuario } = await supabase.from("users").select("*").eq("id", String(reserva.usuario_id)).maybeSingle();
+    if (usuario) {
+      const emailResult = await sendReservationConfirmedEmail(usuario as AppUser, reserva as Reserva & { sala?: Sala | null });
+      if (!emailResult.sent) console.error("Erro ao enviar e-mail de reserva confirmada:", emailResult.error);
+    }
+  }
+
   return NextResponse.json({ status: "ok" });
 }

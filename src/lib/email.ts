@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
-import type { AppUser } from "./types";
+import type { AppUser, Reserva, Sala } from "./types";
 
 type EmailResult = {
   sent: boolean;
@@ -141,6 +141,49 @@ function rejectionHtml(user: AppUser) {
   `;
 }
 
+function formatDate(value?: string | null) {
+  if (!value) return "Data nao informada";
+  const [year, month, day] = value.split("-");
+  if (!year || !month || !day) return escapeHtml(value);
+  return `${day}/${month}/${year}`;
+}
+
+function formatTime(value?: string | null) {
+  return String(value ?? "").slice(0, 5) || "Horario nao informado";
+}
+
+function reservationConfirmedHtml(user: AppUser, reserva: Reserva & { sala?: Sala | null }) {
+  const baseUrl = siteUrl().startsWith("http") ? siteUrl() : `https://${siteUrl()}`;
+  const logoUrl = `${baseUrl}/assets/img/logoescuro.png`;
+  const reservationsUrl = `${baseUrl}/cliente/reservas`;
+  const name = escapeHtml(user.name || "cliente");
+  const salaNome = escapeHtml(reserva.sala?.nome || `Sala ${reserva.sala_id}`);
+  const data = formatDate(reserva.data_reserva);
+  const horario = `${formatTime(reserva.hora_inicio)} as ${formatTime(reserva.hora_fim)}`;
+
+  return `
+    <div style="margin:0;padding:28px;background:#eef6eb;font-family:Arial,Helvetica,sans-serif;color:#263326;">
+      <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 18px 45px rgba(32,53,34,0.12);">
+        <div style="padding:28px 28px 18px;text-align:center;border-bottom:1px solid #e4ecdf;">
+          <img src="${logoUrl}" alt="Espaco Equilibra Mente" style="max-width:190px;height:auto;margin-bottom:18px;" />
+          <h1 style="margin:0;color:#203522;font-size:26px;line-height:1.25;">Reserva confirmada</h1>
+        </div>
+        <div style="padding:28px;">
+          <p style="margin:0 0 18px;color:#526052;line-height:1.7;">Ola, ${name}. Seu pagamento foi aprovado e sua reserva esta confirmada.</p>
+          <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
+            <p style="margin:0 0 8px;"><strong>Sala:</strong> ${salaNome}</p>
+            <p style="margin:0 0 8px;"><strong>Data:</strong> ${data}</p>
+            <p style="margin:0 0 8px;"><strong>Horario:</strong> ${horario}</p>
+            <p style="margin:0;"><strong>Status:</strong> Confirmada</p>
+          </div>
+          <a href="${reservationsUrl}" style="display:inline-block;background:#216c2e;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:6px;font-weight:bold;">Ver minhas reservas</a>
+          <p style="margin:20px 0 0;color:#526052;line-height:1.7;">Em caso de duvidas, fale com a equipe pelo WhatsApp: <a href="https://wa.me/5511979691269" style="color:#216c2e;text-decoration:none;">(11) 97969-1269</a>.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export async function sendApprovalStatusEmail(user: AppUser, status: "aprovado" | "reprovado"): Promise<EmailResult> {
   if (!user.email) return { sent: false, skipped: true, error: "Usuario sem e-mail." };
 
@@ -152,4 +195,9 @@ export async function sendApprovalStatusEmail(user: AppUser, status: "aprovado" 
 export async function sendPendingRegistrationEmail(user: AppUser): Promise<EmailResult> {
   if (!user.email) return { sent: false, skipped: true, error: "Usuario sem e-mail." };
   return sendEmail(user.email, "Recebemos seu cadastro", pendingHtml(user));
+}
+
+export async function sendReservationConfirmedEmail(user: AppUser, reserva: Reserva & { sala?: Sala | null }): Promise<EmailResult> {
+  if (!user.email) return { sent: false, skipped: true, error: "Usuario sem e-mail." };
+  return sendEmail(user.email, "Sua reserva foi confirmada", reservationConfirmedHtml(user, reserva));
 }
