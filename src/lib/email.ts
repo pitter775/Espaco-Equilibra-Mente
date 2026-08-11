@@ -63,6 +63,10 @@ function adminApprovalEmails() {
   return raw.split(",").map((email) => email.trim()).filter(Boolean);
 }
 
+function logoUrl() {
+  return `${siteUrl()}/assets/img/logoescuro.png`;
+}
+
 function fromAddress() {
   const smtpFrom = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USERNAME;
   if (smtpFrom) {
@@ -115,21 +119,44 @@ async function sendEmail(to: string, subject: string, html: string): Promise<Ema
   return { sent: true, provider: "resend", to };
 }
 
+function emailLayout({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
+  return `
+    <div style="margin:0;padding:28px;background:#eef6eb;font-family:Arial,Helvetica,sans-serif;color:#263326;">
+      <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 18px 45px rgba(32,53,34,0.12);">
+        <div style="padding:28px 28px 18px;text-align:center;border-bottom:1px solid #e4ecdf;">
+          <img src="${logoUrl()}" alt="Espaco Equilibra Mente" style="display:block;max-width:178px;height:auto;margin:0 auto 18px;" />
+          <p style="margin:0 0 8px;color:#216c2e;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">${eyebrow}</p>
+          <h1 style="margin:0;color:#203522;font-size:26px;line-height:1.25;">${title}</h1>
+        </div>
+        <div style="padding:28px;">
+          ${body}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function pendingHtml(user: AppUser) {
   const name = escapeHtml(user.name || "cliente");
-  return `
-    <h2 style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;color:#222;">Cadastro recebido, ${name}</h2>
-    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Recebemos seu cadastro no <strong>Espaco Equilibra Mente</strong> e ele esta em analise.
-    </p>
-    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Assim que a equipe aprovar seus dados, voce recebera uma nova confirmacao por e-mail.
-    </p>
-    <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Duvidas? Fale com a gente pelo WhatsApp:
-      <a href="https://wa.me/5511979691269" style="color:#28a745;text-decoration:none;">(11) 97969-1269</a>
-    </p>
-  `;
+  return emailLayout({
+    eyebrow: "Cadastro recebido",
+    title: `Ola, ${name}`,
+    body: `
+      <p style="margin:0 0 14px;color:#526052;line-height:1.7;">
+        Recebemos seu cadastro no <strong>Espaco Equilibra Mente</strong> e ele esta em analise.
+      </p>
+      <p style="margin:0 0 18px;color:#526052;line-height:1.7;">
+        Assim que a equipe aprovar seus dados, voce recebera uma nova confirmacao por e-mail.
+      </p>
+      <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
+        <p style="margin:0;color:#526052;line-height:1.7;">Enquanto isso, seus dados ficam protegidos e a reserva sera liberada assim que o cadastro for aprovado.</p>
+      </div>
+      <p style="margin:0;color:#526052;line-height:1.7;">
+        Duvidas? Fale com a gente pelo WhatsApp:
+        <a href="https://wa.me/5511979691269" style="color:#216c2e;text-decoration:none;font-weight:bold;">(11) 97969-1269</a>
+      </p>
+    `,
+  });
 }
 
 function adminPendingHtml(user: AppUser) {
@@ -167,40 +194,44 @@ function approvalHtml(user: AppUser) {
   const baseUrl = siteUrl().startsWith("http") ? siteUrl() : `https://${siteUrl()}`;
   const url = `${baseUrl}/cadastro-aprovado/${user.id}`;
   const name = escapeHtml(user.name || "cliente");
-  return `
-    <h2 style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;color:#222;">Parabens, ${name}!</h2>
-    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Seu cadastro no <strong>Espaco Equilibra Mente</strong> foi <strong>aprovado</strong>.
-    </p>
-    <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">A partir de agora voce pode:</p>
-    <ul style="margin:0 0 16px 18px;padding:0;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      <li>Fazer e acompanhar suas reservas</li>
-      <li>Visualizar seus dados</li>
-      <li>Garantir seus horarios favoritos</li>
-    </ul>
-    <a href="${url}" style="display:inline-block;background:#28a745;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;">Acessar o site</a>
-    <p style="margin:14px 0 0;font-family:Arial,Helvetica,sans-serif;color:#888;font-size:12px;line-height:1.6;">
-      Se o botao nao funcionar, copie e cole este link no navegador:<br><span style="color:#555;">${url}</span>
-    </p>
-    <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Duvidas? Fale com a gente pelo WhatsApp:
-      <a href="https://wa.me/5511979691269" style="color:#28a745;text-decoration:none;">(11) 97969-1269</a>
-    </p>
-  `;
+  return emailLayout({
+    eyebrow: "Cadastro aprovado",
+    title: `Parabens, ${name}!`,
+    body: `
+      <p style="margin:0 0 18px;color:#526052;line-height:1.7;">
+        Seu cadastro no <strong>Espaco Equilibra Mente</strong> foi <strong>aprovado</strong>. A partir de agora voce ja pode acessar sua area e fazer reservas.
+      </p>
+      <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
+        <p style="margin:0 0 8px;color:#526052;"><strong>Disponivel agora:</strong></p>
+        <p style="margin:0 0 6px;color:#526052;">- Fazer e acompanhar suas reservas</p>
+        <p style="margin:0 0 6px;color:#526052;">- Visualizar seus dados</p>
+        <p style="margin:0;color:#526052;">- Garantir seus horarios favoritos</p>
+      </div>
+      <a href="${url}" style="display:inline-block;background:#216c2e;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:999px;font-weight:bold;">Acessar o site</a>
+      <p style="margin:16px 0 0;color:#7a857a;font-size:12px;line-height:1.6;">Se o botao nao funcionar, copie e cole este link:<br><span style="color:#526052;">${url}</span></p>
+      <p style="margin:18px 0 0;color:#526052;line-height:1.7;">
+        Duvidas? Fale com a gente pelo WhatsApp:
+        <a href="https://wa.me/5511979691269" style="color:#216c2e;text-decoration:none;font-weight:bold;">(11) 97969-1269</a>
+      </p>
+    `,
+  });
 }
 
 function rejectionHtml(user: AppUser) {
   const name = escapeHtml(user.name || "cliente");
-  return `
-    <h2 style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;color:#222;">Ola, ${name}</h2>
-    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Seu cadastro no <strong>Espaco Equilibra Mente</strong> foi analisado e nao foi aprovado neste momento.
-    </p>
-    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;color:#444;line-height:1.6;">
-      Para revisar as informacoes ou entender o motivo, fale com a equipe pelo WhatsApp.
-    </p>
-    <a href="https://wa.me/5511979691269" style="display:inline-block;background:#d9534f;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;">Falar com a equipe</a>
-  `;
+  return emailLayout({
+    eyebrow: "Cadastro analisado",
+    title: `Ola, ${name}`,
+    body: `
+      <p style="margin:0 0 14px;color:#526052;line-height:1.7;">
+        Seu cadastro no <strong>Espaco Equilibra Mente</strong> foi analisado e nao foi aprovado neste momento.
+      </p>
+      <p style="margin:0 0 22px;color:#526052;line-height:1.7;">
+        Para revisar as informacoes ou entender o motivo, fale com a equipe pelo WhatsApp.
+      </p>
+      <a href="https://wa.me/5511979691269" style="display:inline-block;background:#c73d32;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:999px;font-weight:bold;">Falar com a equipe</a>
+    `,
+  });
 }
 
 function formatDate(value?: string | null) {
@@ -216,34 +247,27 @@ function formatTime(value?: string | null) {
 
 function reservationConfirmedHtml(user: AppUser, reserva: Reserva & { sala?: Sala | null }) {
   const baseUrl = siteUrl().startsWith("http") ? siteUrl() : `https://${siteUrl()}`;
-  const logoUrl = `${baseUrl}/assets/img/logoescuro.png`;
   const reservationsUrl = `${baseUrl}/cliente/reservas`;
   const name = escapeHtml(user.name || "cliente");
   const salaNome = escapeHtml(reserva.sala?.nome || `Sala ${reserva.sala_id}`);
   const data = formatDate(reserva.data_reserva);
   const horario = `${formatTime(reserva.hora_inicio)} as ${formatTime(reserva.hora_fim)}`;
 
-  return `
-    <div style="margin:0;padding:28px;background:#eef6eb;font-family:Arial,Helvetica,sans-serif;color:#263326;">
-      <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 18px 45px rgba(32,53,34,0.12);">
-        <div style="padding:28px 28px 18px;text-align:center;border-bottom:1px solid #e4ecdf;">
-          <img src="${logoUrl}" alt="Espaco Equilibra Mente" style="max-width:190px;height:auto;margin-bottom:18px;" />
-          <h1 style="margin:0;color:#203522;font-size:26px;line-height:1.25;">Reserva confirmada</h1>
-        </div>
-        <div style="padding:28px;">
-          <p style="margin:0 0 18px;color:#526052;line-height:1.7;">Ola, ${name}. Seu pagamento foi aprovado e sua reserva esta confirmada.</p>
-          <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
-            <p style="margin:0 0 8px;"><strong>Sala:</strong> ${salaNome}</p>
-            <p style="margin:0 0 8px;"><strong>Data:</strong> ${data}</p>
-            <p style="margin:0 0 8px;"><strong>Horario:</strong> ${horario}</p>
-            <p style="margin:0;"><strong>Status:</strong> Confirmada</p>
-          </div>
-          <a href="${reservationsUrl}" style="display:inline-block;background:#216c2e;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:6px;font-weight:bold;">Ver minhas reservas</a>
-          <p style="margin:20px 0 0;color:#526052;line-height:1.7;">Em caso de duvidas, fale com a equipe pelo WhatsApp: <a href="https://wa.me/5511979691269" style="color:#216c2e;text-decoration:none;">(11) 97969-1269</a>.</p>
-        </div>
+  return emailLayout({
+    eyebrow: "Reserva confirmada",
+    title: `Tudo certo, ${name}`,
+    body: `
+      <p style="margin:0 0 18px;color:#526052;line-height:1.7;">Seu pagamento foi aprovado e sua reserva esta confirmada.</p>
+      <div style="background:#f7fbf5;border:1px solid #e0ebdc;border-radius:8px;padding:18px;margin:0 0 22px;">
+        <p style="margin:0 0 8px;"><strong>Sala:</strong> ${salaNome}</p>
+        <p style="margin:0 0 8px;"><strong>Data:</strong> ${data}</p>
+        <p style="margin:0 0 8px;"><strong>Horario:</strong> ${horario}</p>
+        <p style="margin:0;"><strong>Status:</strong> Confirmada</p>
       </div>
-    </div>
-  `;
+      <a href="${reservationsUrl}" style="display:inline-block;background:#216c2e;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:999px;font-weight:bold;">Ver minhas reservas</a>
+      <p style="margin:20px 0 0;color:#526052;line-height:1.7;">Em caso de duvidas, fale com a equipe pelo WhatsApp: <a href="https://wa.me/5511979691269" style="color:#216c2e;text-decoration:none;font-weight:bold;">(11) 97969-1269</a>.</p>
+    `,
+  });
 }
 
 export async function sendApprovalStatusEmail(user: AppUser, status: "aprovado" | "reprovado"): Promise<EmailResult> {

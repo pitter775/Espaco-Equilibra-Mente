@@ -3924,6 +3924,107 @@ body.auth-modal-open {
   font-size: 15px;
 }
 
+.reservation-approval-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(18, 31, 21, 0.56);
+  backdrop-filter: blur(8px);
+}
+
+.reservation-approval-modal {
+  position: relative;
+  width: min(440px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(216, 229, 211, 0.95);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbf6 100%);
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 28px 70px rgba(23, 45, 27, 0.28);
+  animation: reservationApprovalIn 0.2s ease both;
+}
+
+.reservation-approval-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #eef6ec;
+  color: #216c2e;
+}
+
+.reservation-approval-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  margin: 4px auto 16px;
+  border-radius: 999px;
+  background: #eef6ec;
+  color: #216c2e;
+  font-size: 25px;
+  box-shadow: 0 14px 32px rgba(33, 108, 46, 0.14);
+}
+
+.reservation-approval-modal > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #216c2e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.reservation-approval-modal h3 {
+  margin: 0 0 12px;
+  color: #203522;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.reservation-approval-modal p {
+  margin: 0;
+  color: #5c695f;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.reservation-approval-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.reservation-approval-actions .eq-btn {
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: 18px;
+}
+
+@keyframes reservationApprovalIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .reservation-review-page {
   min-height: 100vh;
   padding: 104px 0 72px;
