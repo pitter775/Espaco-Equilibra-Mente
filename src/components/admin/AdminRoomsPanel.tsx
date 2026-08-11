@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { BloqueioSala, Conveniencia, Fechadura, ImagemSala, Sala } from "@/lib/types";
@@ -98,6 +98,11 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   const [isClosing, setIsClosing] = useState(false);
   const [blockType, setBlockType] = useState("dia_inteiro");
 
+  useEffect(() => {
+    document.body.classList.toggle("admin-room-open", Boolean(selected));
+    return () => document.body.classList.remove("admin-room-open");
+  }, [selected]);
+
   const stats = useMemo(() => ({
     total: salas.length,
     disponiveis: salas.filter((sala) => sala.status === "disponivel").length,
@@ -106,7 +111,9 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   }), [salas]);
 
   const filtered = salas.filter((sala) => {
-    const matchesStatus = filter === "todos" || sala.status === filter;
+    const matchesStatus = filter === "todos"
+      || sala.status === filter
+      || (filter === "indisponivel_manutencao" && ["indisponivel", "manutencao"].includes(String(sala.status)));
     const text = `${sala.nome} ${sala.descricao ?? ""} ${sala.endereco?.cidade ?? ""}`.toLowerCase();
     return matchesStatus && text.includes(query.toLowerCase());
   });
@@ -269,9 +276,13 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
         <div className="admin-toolbar">
           <input className="form-control" placeholder="Buscar por sala, descricao ou cidade" value={query} onChange={(event) => setQuery(event.target.value)} />
           <div className="admin-segments">
-            {["todos", "disponivel", "indisponivel", "manutencao"].map((item) => (
+            {[
+              ["todos", "Todos"],
+              ["disponivel", "Disponivel"],
+              ["indisponivel_manutencao", "Indisp./manut."],
+            ].map(([item, label]) => (
               <button key={item} className={filter === item ? "active" : ""} type="button" onClick={() => setFilter(item)}>
-                {item === "todos" ? "Todos" : statusLabel(item)}
+                {label}
               </button>
             ))}
           </div>

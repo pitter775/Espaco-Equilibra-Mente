@@ -744,6 +744,10 @@ a {
   font-weight: 700;
 }
 
+body.admin-room-open {
+  overflow: hidden;
+}
+
 .admin-room-modal-body {
   max-height: calc(100vh - 121px);
   overflow: auto;
@@ -2241,16 +2245,27 @@ a {
   }
 
   .admin-room-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    display: flex !important;
     align-items: stretch;
+    justify-content: stretch;
     padding: 0;
+    background: #fbfdfb;
   }
 
   .admin-room-modal {
     display: flex;
     flex-direction: column;
+    width: 100vw !important;
+    height: 100dvh;
     min-height: 100dvh;
+    max-height: 100dvh;
     overflow: hidden;
+    border: 0;
     padding: 0;
+    box-shadow: none;
   }
 
   .admin-room-modal-header,
@@ -2259,6 +2274,13 @@ a {
   .admin-user-modal-body {
     padding-right: 16px;
     padding-left: 16px;
+  }
+
+  .admin-room-modal-header {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 6;
+    padding-top: max(14px, env(safe-area-inset-top));
   }
 
   .admin-user-modal-body {
@@ -2284,9 +2306,9 @@ a {
   }
 
   .admin-room-tabs {
-    position: sticky;
-    top: 0;
-    z-index: 4;
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 5;
     margin-right: 0;
     margin-left: 0;
     padding: 10px 16px;
@@ -2303,13 +2325,16 @@ a {
 
   .admin-room-tabs-hint {
     display: block;
+    flex: 0 0 auto;
     padding: 0 16px 10px;
   }
 
   .admin-room-modal-body {
     flex: 1;
+    min-height: 0;
     max-height: none;
     overflow: auto;
+    padding-bottom: 92px;
   }
 
   .admin-room-card-action {
