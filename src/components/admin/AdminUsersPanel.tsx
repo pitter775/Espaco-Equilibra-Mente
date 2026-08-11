@@ -16,12 +16,16 @@ type ApiResult = {
 };
 
 function statusLabel(status?: string | null) {
-  const value = status || "pendente";
+  const value = normalizeApprovalStatus(status) || "pendente";
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+function normalizeApprovalStatus(status?: string | null) {
+  return String(status || "pendente").trim().toLowerCase();
+}
+
 function statusClass(status?: string | null) {
-  const value = String(status ?? "").toLowerCase();
+  const value = normalizeApprovalStatus(status);
   if (value === "aprovado" || value === "ativo") return "success";
   if (value === "reprovado" || value === "inativo") return "danger";
   return "warning";
@@ -76,13 +80,13 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
 
   const stats = useMemo(() => ({
     total: localUsers.length,
-    pendentes: localUsers.filter((user) => user.status_aprovacao === "pendente").length,
-    aprovados: localUsers.filter((user) => user.status_aprovacao === "aprovado").length,
-    reprovados: localUsers.filter((user) => user.status_aprovacao === "reprovado").length,
+    pendentes: localUsers.filter((user) => normalizeApprovalStatus(user.status_aprovacao) === "pendente").length,
+    aprovados: localUsers.filter((user) => normalizeApprovalStatus(user.status_aprovacao) === "aprovado").length,
+    reprovados: localUsers.filter((user) => normalizeApprovalStatus(user.status_aprovacao) === "reprovado").length,
   }), [localUsers]);
 
   const filtered = localUsers.filter((user) => {
-    const matchesStatus = filter === "todos" || user.status_aprovacao === filter;
+    const matchesStatus = filter === "todos" || normalizeApprovalStatus(user.status_aprovacao) === filter;
     const text = `${user.name ?? ""} ${user.email ?? ""} ${user.telefone ?? ""} ${user.cpf ?? ""}`.toLowerCase();
     return matchesStatus && text.includes(query.toLowerCase());
   });
@@ -155,8 +159,8 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
     const result = await submitJson(`/api/admin/usuarios/${user.id}`, "PUT", { status_aprovacao: status });
     const updated = result?.data;
     if (!updated) return;
-    setLocalUsers((current) => current.map((item) => item.id === user.id ? { ...item, status_aprovacao: status } : item));
-    setSelected((current) => current ? { ...current, status_aprovacao: status } : current);
+    setLocalUsers((current) => current.map((item) => item.id === user.id ? { ...updated, status_aprovacao: status } : item));
+    setSelected((current) => current && current.id === user.id ? { ...updated, status_aprovacao: status } : current);
     const emailMessage = result?.email?.sent ? " E-mail enviado." : result?.email?.error ? ` E-mail pendente: ${result.email.error}` : "";
     setMessage(`${status === "aprovado" ? "Cadastro aprovado com sucesso." : "Cadastro reprovado com sucesso."}${emailMessage}`);
   }
@@ -203,17 +207,28 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
         </div>
 
         <div className="admin-user-grid admin-filter-transition" key={`${filter}-${query}`}>
-          {filtered.map((user) => (
-            <button className="admin-user-card" key={user.id} type="button" onClick={() => openUser(user)}>
-              <div className="admin-avatar">{user.photo ? <img src={user.photo} alt="" /> : userInitials(user.name)}</div>
-              <div>
-                <strong>{user.name}</strong>
-                <span>{user.email}</span>
-                <small>{user.telefone || "Sem telefone"} - {user.tipo_usuario || "cliente"} - {user.status || "ativo"}</small>
+          {filtered.map((user) => {
+            const approvalStatus = normalizeApprovalStatus(user.status_aprovacao);
+            return (
+            <div className="admin-user-card admin-user-card-actionable" key={user.id}>
+              <button className="admin-user-card-main" type="button" onClick={() => openUser(user)}>
+                <div className="admin-avatar">{user.photo ? <img src={user.photo} alt="" /> : userInitials(user.name)}</div>
+                <div>
+                  <strong>{user.name}</strong>
+                  <span>{user.email}</span>
+                  <small>{user.telefone || "Sem telefone"} - {user.tipo_usuario || "cliente"} - {user.status || "ativo"}</small>
+                </div>
+              </button>
+              <div className="admin-user-card-status">
+                <em className={`eq-status eq-status-${statusClass(user.status_aprovacao)}`}>{statusLabel(user.status_aprovacao)}</em>
+                {approvalStatus === "pendente" && (
+                  <LoadingButton className="eq-btn admin-user-quick-approve" type="button" loading={loading === `approve-${user.id}`} loadingLabel="Aprovando..." onClick={() => updateApproval(user, "aprovado")}>
+                    Aprovar
+                  </LoadingButton>
+                )}
               </div>
-              <em className={`eq-status eq-status-${statusClass(user.status_aprovacao)}`}>{statusLabel(user.status_aprovacao)}</em>
-            </button>
-          ))}
+            </div>
+          );})}
         </div>
 
         {!filtered.length && <p className="text-center mb-0 p-4">Nenhum usuario encontrado.</p>}

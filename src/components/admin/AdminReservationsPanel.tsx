@@ -72,7 +72,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
   const [roomFilter, setRoomFilter] = useState("todas");
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState("");
 
   const rooms = useMemo(() => Array.from(new Set(reservas.map((reserva) => reserva.sala?.nome).filter(Boolean))).sort() as string[], [reservas]);
   const stats = useMemo(() => ({
@@ -91,11 +91,11 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
 
   async function cancelReservation(reserva: Reserva) {
     if (!confirm("Deseja realmente cancelar esta reserva?")) return;
-    setLoading(true);
+    setLoading(`cancel-${reserva.id}`);
     setMessage("");
     const response = await fetch(`/api/admin/reservas/${reserva.id}/cancelar`, { method: "POST" });
     const data = await response.json();
-    setLoading(false);
+    setLoading("");
 
     if (!response.ok || !data.success) {
       setMessage(data.message || "Falha ao cancelar reserva.");
@@ -104,6 +104,29 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
 
     setMessage(data.message || "Reserva cancelada com sucesso!");
     setSelected(null);
+    router.refresh();
+  }
+
+  async function approveClient(reserva: Reserva) {
+    if (!reserva.usuario?.id) return;
+    setLoading(`approve-user-${reserva.usuario.id}`);
+    setMessage("");
+
+    const response = await fetch(`/api/admin/usuarios/${reserva.usuario.id}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status_aprovacao: "aprovado" }),
+    });
+    const data = await response.json();
+    setLoading("");
+
+    if (!response.ok || !data.success) {
+      setMessage(data.message || "Nao foi possivel aprovar o cliente.");
+      return;
+    }
+
+    setMessage(data.email?.sent ? "Cliente aprovado com sucesso. E-mail enviado." : "Cliente aprovado com sucesso.");
+    setSelected((current) => current?.id === reserva.id && current.usuario ? { ...current, usuario: { ...current.usuario, status_aprovacao: "aprovado" } } : current);
     router.refresh();
   }
 
@@ -153,6 +176,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
         <div className="admin-reservation-list admin-filter-transition" key={`${statusFilter}-${roomFilter}-${query}`}>
           {filtered.map((reserva) => {
             const canCancel = normalizeStatus(reserva.status) !== "CANCELADA";
+            const clientePendente = String(reserva.usuario?.status_aprovacao ?? "").toLowerCase() === "pendente";
             return (
               <div className="admin-reservation-row" key={reserva.id}>
                 <div className="admin-reservation-person">
@@ -165,7 +189,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                 <div>
                   <strong>Contato</strong>
                   <span>{reserva.usuario?.email || "Email nao informado"}</span>
-                  <small>{reserva.usuario?.telefone || "Telefone nao informado"}</small>
+                  <small>{reserva.usuario?.telefone || "Telefone nao informado"} - Cadastro {reserva.usuario?.status_aprovacao || "pendente"}</small>
                 </div>
                 <div>
                   <strong>{reserva.sala?.nome || "Sala nao encontrada"}</strong>
@@ -182,12 +206,18 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                       <i className="fa-solid fa-eye" aria-hidden="true" />
                       <span>Detalhes</span>
                     </button>
+                    {clientePendente && (
+                      <LoadingButton className="admin-table-action success" type="button" loading={loading === `approve-user-${reserva.usuario?.id}`} loadingLabel="Aprovando..." onClick={() => approveClient(reserva)}>
+                        <i className="fa-solid fa-user-check" aria-hidden="true" />
+                        <span>Aprovar cliente</span>
+                      </LoadingButton>
+                    )}
                     <a className="admin-table-action" href={reserva.sala?.id ? `/admin/salas?editar=${reserva.sala.id}` : "/admin/salas"}>
                       <i className="fa-solid fa-door-open" aria-hidden="true" />
                       <span>Sala</span>
                     </a>
                     {canCancel && (
-                      <LoadingButton className="admin-table-action danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(reserva)}>
+                      <LoadingButton className="admin-table-action danger" type="button" loading={loading === `cancel-${reserva.id}`} loadingLabel="Cancelando..." onClick={() => cancelReservation(reserva)}>
                         <i className="fa-solid fa-ban" aria-hidden="true" />
                         <span>Cancelar</span>
                       </LoadingButton>
@@ -224,6 +254,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                   <p><strong>{selected.usuario?.name || "Cliente nao identificado"}</strong></p>
                   <p>{selected.usuario?.email || "Email nao informado"}</p>
                   <p>{selected.usuario?.telefone || "Telefone nao informado"}</p>
+                  <p><strong>Cadastro:</strong> {selected.usuario?.status_aprovacao || "pendente"}</p>
                 </section>
                 <section>
                   <h3>Pagamento</h3>
@@ -245,8 +276,11 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
 
             <div className="admin-approval-box">
               <span>{normalizeStatus(selected.status) === "CANCELADA" ? "Esta reserva ja esta cancelada." : "Confira os dados antes de cancelar esta reserva."}</span>
-              <div className="d-flex" style={{ gap: 10 }}>
-                {normalizeStatus(selected.status) !== "CANCELADA" && <LoadingButton className="eq-btn danger" type="button" loading={loading} loadingLabel="Cancelando..." onClick={() => cancelReservation(selected)}>Cancelar reserva</LoadingButton>}
+              <div className="d-flex flex-wrap" style={{ gap: 10 }}>
+                {String(selected.usuario?.status_aprovacao ?? "").toLowerCase() === "pendente" && (
+                  <LoadingButton className="eq-btn" type="button" loading={loading === `approve-user-${selected.usuario?.id}`} loadingLabel="Aprovando..." onClick={() => approveClient(selected)}>Aprovar cliente</LoadingButton>
+                )}
+                {normalizeStatus(selected.status) !== "CANCELADA" && <LoadingButton className="eq-btn danger" type="button" loading={loading === `cancel-${selected.id}`} loadingLabel="Cancelando..." onClick={() => cancelReservation(selected)}>Cancelar reserva</LoadingButton>}
                 <a className="eq-btn secondary" href={selected.sala?.id ? `/admin/salas?editar=${selected.sala.id}` : "/admin/salas"}>Editar sala</a>
               </div>
             </div>

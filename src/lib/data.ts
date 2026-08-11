@@ -294,7 +294,7 @@ export async function listReservas(): Promise<Reserva[]> {
     usuarioIds.length
       ? supabase
           .from("users")
-          .select("id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario")
+          .select("id,name,email,telefone,photo,cpf,sexo,idade,registro_profissional,tipo_registro_profissional,status,tipo_usuario,status_aprovacao")
           .in("id", usuarioIds)
       : Promise.resolve({ data: [], error: null }),
   ]);
