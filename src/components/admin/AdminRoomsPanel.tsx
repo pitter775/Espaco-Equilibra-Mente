@@ -376,9 +376,6 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                 </button>
               ))}
             </div>
-            <p className="admin-room-tabs-hint">
-              Toque em <strong>Bloqueios</strong> para bloquear horarios da sala.
-            </p>
 
             <div className="admin-room-modal-body">
               {activeTab === "dados" && (
@@ -448,15 +445,33 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                       <strong>Bloqueio recorrente</strong>
                       <small>Escolha a sala, informe o periodo, marque os dias da semana e use Dia inteiro para bloquear todos os horarios desses dias.</small>
                     </div>
-                    <select className="form-select" name="tipo" value={blockType} onChange={(event) => setBlockType(event.target.value)}>
-                      <option value="dia_inteiro">Dia inteiro</option>
-                      <option value="intervalo">Intervalo</option>
-                    </select>
-                    <input className="form-control" name="data_inicio" type="date" required />
-                    <input className="form-control" name="data_fim" type="date" required />
-                    <input className="form-control" name="hora_inicio" type="time" disabled={blockType === "dia_inteiro"} />
-                    <input className="form-control" name="hora_fim" type="time" disabled={blockType === "dia_inteiro"} />
-                    <input className="form-control" name="motivo" placeholder="Motivo" />
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-ban" aria-hidden="true" /> Tipo</span>
+                      <select className="form-select" name="tipo" value={blockType} onChange={(event) => setBlockType(event.target.value)}>
+                        <option value="dia_inteiro">Dia inteiro</option>
+                        <option value="intervalo">Intervalo</option>
+                      </select>
+                    </label>
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-calendar-day" aria-hidden="true" /> Inicio</span>
+                      <input className="form-control" name="data_inicio" type="date" required />
+                    </label>
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-calendar-check" aria-hidden="true" /> Fim</span>
+                      <input className="form-control" name="data_fim" type="date" required />
+                    </label>
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-clock" aria-hidden="true" /> Hora inicial</span>
+                      <input className="form-control" name="hora_inicio" type="time" disabled={blockType === "dia_inteiro"} />
+                    </label>
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Hora final</span>
+                      <input className="form-control" name="hora_fim" type="time" disabled={blockType === "dia_inteiro"} />
+                    </label>
+                    <label className="admin-block-field">
+                      <span><i className="fa-solid fa-note-sticky" aria-hidden="true" /> Motivo</span>
+                      <input className="form-control" name="motivo" placeholder="Ex.: atendimento fixo" />
+                    </label>
                     <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
                     <div className="admin-block-weekdays">
                       <span>Repetir semanalmente em:</span>

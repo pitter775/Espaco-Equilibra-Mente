@@ -1001,6 +1001,27 @@ body.admin-room-open {
   grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) auto;
 }
 
+.admin-block-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+
+.admin-block-field span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #426043;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.admin-block-field i {
+  color: #216c2e;
+  font-size: 12px;
+}
+
 .admin-block-presets {
   grid-column: 1 / -1;
   display: flex;
@@ -2409,7 +2430,7 @@ body.admin-room-open {
   }
 
   .admin-room-tabs-hint {
-    display: block;
+    display: none;
     flex: 0 0 auto;
     padding: 0 16px 10px;
   }
@@ -2437,6 +2458,10 @@ body.admin-room-open {
   .admin-room-card-action {
     width: 100%;
     margin-top: 14px;
+  }
+
+  .admin-block-field span {
+    font-size: 12px;
   }
 
   .admin-segments {
