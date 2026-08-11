@@ -3832,6 +3832,171 @@ body.auth-modal-open {
   background: #d3eccc;
 }
 
+.complete-register-card {
+  max-width: 1040px;
+  margin: 0 auto;
+  border: 1px solid rgba(33, 108, 46, 0.1);
+  box-shadow: 0 22px 60px rgba(25, 42, 26, 0.09);
+}
+
+.complete-register-head {
+  margin-bottom: 26px;
+  border-bottom: 1px solid #e5ebe2;
+  padding-bottom: 18px;
+}
+
+.complete-register-head span {
+  display: inline-flex;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: #eef7eb;
+  color: #216c2e;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.complete-register-head h1 {
+  margin: 0;
+  color: #203522;
+  font-size: clamp(25px, 3vw, 36px);
+  font-weight: 700;
+}
+
+.complete-register-head p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #687568;
+  line-height: 1.6;
+}
+
+.complete-google-photo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 10px;
+}
+
+.complete-google-photo img {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.complete-section {
+  margin-top: 22px;
+}
+
+.complete-section h2 {
+  margin: 0 0 14px;
+  color: #203522;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.complete-register-card .form-label,
+.complete-field span {
+  color: #314436;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.complete-register-card .form-control {
+  min-height: 44px;
+  border-color: #dbe5d8;
+  border-radius: 8px;
+}
+
+.complete-register-card .form-control:focus {
+  border-color: #237832;
+  box-shadow: 0 0 0 4px rgba(35, 120, 50, 0.1);
+}
+
+.complete-password-field {
+  position: relative;
+}
+
+.complete-password-field input {
+  padding-right: 48px;
+}
+
+.complete-password-field button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #edf4eb;
+  color: #216c2e;
+  transform: translateY(-50%);
+}
+
+.complete-password-meter {
+  overflow: hidden;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #edf1eb;
+}
+
+.complete-password-meter span {
+  display: block;
+  height: 100%;
+  width: 25%;
+  border-radius: inherit;
+  background: #c14338;
+  transition: width 0.18s ease, background 0.18s ease;
+}
+
+.complete-password-meter.score-2 span {
+  width: 50%;
+  background: #bd9a1f;
+}
+
+.complete-password-meter.score-3 span {
+  width: 75%;
+  background: #3d8b47;
+}
+
+.complete-password-meter.score-4 span {
+  width: 100%;
+  background: #216c2e;
+}
+
+.complete-help,
+.complete-valid,
+.complete-invalid {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.complete-help {
+  color: #687568;
+}
+
+.complete-valid {
+  color: #216c2e;
+}
+
+.complete-invalid {
+  color: #a93229;
+}
+
+.complete-submit {
+  min-width: 230px;
+}
+
 .contract-modal-backdrop {
   position: fixed;
   inset: 0;

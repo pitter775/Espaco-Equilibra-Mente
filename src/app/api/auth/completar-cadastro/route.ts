@@ -10,6 +10,23 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function isValidCpf(value: string) {
+  const cpf = onlyDigits(value);
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+  const calc = (size: number) => {
+    const sum = cpf.slice(0, size).split("").reduce((total, digit, index) => total + Number(digit) * (size + 1 - index), 0);
+    const result = (sum * 10) % 11;
+    return result === 10 ? 0 : result;
+  };
+
+  return calc(9) === Number(cpf[9]) && calc(10) === Number(cpf[10]);
+}
+
 function safeFileName(name: string) {
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
 }
@@ -17,11 +34,19 @@ function safeFileName(name: string) {
 export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
   const form = await request.formData();
-  const email = String(form.get("email") ?? "");
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
   const senha = String(form.get("senha") ?? "");
   const senhaConfirmacao = String(form.get("senha_confirmation") ?? "");
   const documento = form.get("documento");
   const aceitouContrato = form.get("aceita_contrato") === "on";
+  const telefone = String(form.get("telefone") ?? "").trim();
+  const cpf = String(form.get("cpf") ?? "").trim();
+  const cep = String(form.get("endereco_cep") ?? "").trim();
+  const numero = String(form.get("endereco_numero") ?? "").trim();
+  const idade = String(form.get("idade") ?? "").trim();
+  const estado = String(form.get("endereco_estado") ?? "").trim().toUpperCase();
+  const telefoneDigits = onlyDigits(telefone);
+  const cepDigits = onlyDigits(cep);
 
   if (!aceitouContrato) {
     return NextResponse.redirect(new URL("/completar-cadastro?erro=contrato", request.url));
@@ -29,6 +54,20 @@ export async function POST(request: NextRequest) {
 
   if (senha.length < 8 || senha !== senhaConfirmacao) {
     return NextResponse.redirect(new URL("/completar-cadastro?erro=senha", request.url));
+  }
+
+  if (
+    !String(form.get("fullname") ?? "").trim() ||
+    !email.trim() ||
+    telefoneDigits.length < 10 ||
+    telefoneDigits.length > 11 ||
+    !isValidCpf(cpf) ||
+    cepDigits.length !== 8 ||
+    !/^\d+$/.test(numero) ||
+    !/^\d{1,3}$/.test(idade) ||
+    !/^[A-Z]{2}$/.test(estado)
+  ) {
+    return NextResponse.redirect(new URL("/completar-cadastro?erro=dados", request.url));
   }
 
   if (!(documento instanceof File) || !documento.name) {
@@ -76,12 +115,12 @@ export async function POST(request: NextRequest) {
     enderecavel_id: Number.isFinite(Number(userId)) ? Number(userId) : null,
     enderecavel_type: "App\\Models\\User",
     rua: String(form.get("endereco_rua") ?? ""),
-    numero: String(form.get("endereco_numero") ?? ""),
+    numero,
     complemento: String(form.get("endereco_complemento") ?? ""),
     bairro: String(form.get("endereco_bairro") ?? ""),
     cidade: String(form.get("endereco_cidade") ?? ""),
-    estado: String(form.get("endereco_estado") ?? ""),
-    cep: String(form.get("endereco_cep") ?? ""),
+    estado,
+    cep,
   };
 
   const { data: enderecoCriado } = await supabase.from("enderecos").insert(endereco).select("id").single();
@@ -93,10 +132,10 @@ export async function POST(request: NextRequest) {
       photo: String(form.get("photo") ?? user?.photo ?? ""),
       email,
       password: await bcrypt.hash(senha, 12),
-      telefone: String(form.get("telefone") ?? ""),
-      cpf: String(form.get("cpf") ?? ""),
+      telefone,
+      cpf,
       sexo: String(form.get("sexo") ?? ""),
-      idade: Number(form.get("idade") ?? 0),
+      idade: Number(idade),
       registro_profissional: String(form.get("registro_profissional") ?? ""),
       tipo_registro_profissional: String(form.get("tipo_registro_profissional") ?? "0000000") || "0000000",
       cadastro_completo: true,
