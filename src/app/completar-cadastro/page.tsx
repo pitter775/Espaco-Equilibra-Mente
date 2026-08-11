@@ -21,7 +21,7 @@ const errorMessages: Record<string, string> = {
 };
 
 type PageProps = {
-  searchParams?: Promise<{ erro?: string }>;
+  searchParams?: Promise<{ erro?: string; motivo?: string }>;
 };
 
 function parseGoogleData(value?: string): GoogleData {
@@ -39,7 +39,8 @@ export default async function CompletarCadastroPage({ searchParams }: PageProps)
   const googleData = parseGoogleData(cookieStore.get("eqm-google-data")?.value);
   const contract = await getLatestContract();
   const params = await searchParams;
-  const error = params?.erro ? errorMessages[params.erro] : "";
+  const errorBase = params?.erro ? errorMessages[params.erro] : "";
+  const error = errorBase && params?.motivo ? `${errorBase} Debug: ${params.motivo}` : errorBase;
   const name = googleData.name ?? user?.name ?? "";
   const email = googleData.email ?? user?.email ?? "";
   const photo = googleData.photo ?? user?.photo ?? "";

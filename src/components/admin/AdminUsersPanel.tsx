@@ -268,7 +268,7 @@ export function AdminUsersPanel({ users }: { users: AppUser[] }) {
                     {selected.documento_caminho ? (
                       <div className="admin-document-box">
                         <span>{selected.documento_caminho}</span>
-                        <a className="eq-btn secondary" href={selected.documento_caminho} target="_blank" rel="noreferrer">Abrir documento</a>
+                        <a className="eq-btn secondary" href={`/api/admin/documentos/${encodeURIComponent(String(selected.id))}`} target="_blank" rel="noreferrer">Abrir documento</a>
                       </div>
                     ) : <p>Nenhum documento registrado.</p>}
                   </section>

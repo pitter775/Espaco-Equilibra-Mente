@@ -9,6 +9,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 
 const MAX_DOCUMENT_SIZE = 4 * 1024 * 1024;
 const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const BLOB_ACCESS = "private";
 
 function onlyDigits(value: string) {
   return value.replace(/\D/g, "");
@@ -29,6 +30,20 @@ function isValidCpf(value: string) {
 
 function safeFileName(name: string) {
   return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+}
+
+function uploadErrorRedirect(request: NextRequest, reason: string) {
+  const url = new URL("/completar-cadastro", request.url);
+  url.searchParams.set("erro", "upload");
+  url.searchParams.set("motivo", reason);
+  return NextResponse.redirect(url);
+}
+
+function errorReason(error: unknown) {
+  if (error instanceof Error) {
+    return error.message.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 80) || "erro-desconhecido";
+  }
+  return "erro-desconhecido";
 }
 
 export async function POST(request: NextRequest) {
@@ -79,15 +94,55 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseAdmin();
+  const isNewUser = !user?.id;
   let userId = user?.id ?? "";
 
-  if (!userId) {
+  if (isNewUser) {
     const existing = await getProfileByEmail(email);
     if (existing) {
       return NextResponse.redirect(new URL("/completar-cadastro?erro=email", request.url));
     }
 
     userId = crypto.randomUUID();
+  }
+
+  let documentoUrl = "";
+  try {
+    const pathname = `cadastro/${userId}/${Date.now()}-${safeFileName(documento.name)}`;
+    console.info("[completar-cadastro:upload:start]", {
+      pathname,
+      access: BLOB_ACCESS,
+      fileName: documento.name,
+      fileType: documento.type,
+      fileSize: documento.size,
+      hasBlobToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      hasBlobStoreId: Boolean(process.env.BLOB_STORE_ID),
+    });
+
+    const blob = await put(pathname, documento, {
+      access: BLOB_ACCESS,
+      addRandomSuffix: true,
+    });
+    documentoUrl = blob.url;
+    console.info("[completar-cadastro:upload:success]", { pathname: blob.pathname, url: blob.url, access: BLOB_ACCESS });
+  } catch (error) {
+    const reason = errorReason(error);
+    console.error("[completar-cadastro:upload:error]", {
+      reason,
+      message: error instanceof Error ? error.message : String(error),
+      name: error instanceof Error ? error.name : typeof error,
+      stack: error instanceof Error ? error.stack : undefined,
+      fileName: documento.name,
+      fileType: documento.type,
+      fileSize: documento.size,
+      hasBlobToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      hasBlobStoreId: Boolean(process.env.BLOB_STORE_ID),
+      access: BLOB_ACCESS,
+    });
+    return uploadErrorRedirect(request, reason);
+  }
+
+  if (isNewUser) {
     const { error: userError } = await supabase.from("users").insert({
       id: userId,
       name: String(form.get("fullname") ?? ""),
@@ -98,18 +153,6 @@ export async function POST(request: NextRequest) {
       status_aprovacao: "pendente",
     });
     if (userError) return NextResponse.redirect(new URL("/completar-cadastro?erro=cadastro", request.url));
-  }
-
-  let documentoUrl = "";
-  try {
-    const blob = await put(`cadastro/${userId}/${Date.now()}-${safeFileName(documento.name)}`, documento, {
-      access: "public",
-      addRandomSuffix: true,
-    });
-    documentoUrl = blob.url;
-  } catch (error) {
-    console.error("Erro ao enviar documento para o Vercel Blob:", error);
-    return NextResponse.redirect(new URL("/completar-cadastro?erro=upload", request.url));
   }
 
   const endereco = {
