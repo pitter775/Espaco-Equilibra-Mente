@@ -53,7 +53,7 @@ export function AdminLocksPanel({ salas, lockedKeys }: { salas: RoomWithLock[]; 
   return (
     <>
       <AdminPageHero eyebrow="Chaves das salas" title="Fechadura">
-        <p className="mb-0">Tela dedicada de fechaduras conforme Laravel, com quatro chaves por sala e bloqueio visual para chave em uso.</p>
+        <p className="mb-0">Gerencie ate quatro chaves por sala e acompanhe chaves em uso nas reservas confirmadas.</p>
       </AdminPageHero>
       <AdminMetrics items={[
         { label: "Salas", value: salas.length },

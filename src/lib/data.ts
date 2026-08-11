@@ -356,3 +356,29 @@ const getLatestContractCached = cache(
 export async function getLatestContract(): Promise<{ id: number; versao: string; conteudo: string; created_at?: string | null } | null> {
   return getLatestContractCached();
 }
+
+const getLatestRegulationCached = cache(
+  async () => {
+    if (!isSupabaseConfigured()) return null;
+
+    const { data, error } = await getSupabaseServer()
+      .from("regulations")
+      .select("id,versao,conteudo,created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao buscar regulamento:", error.message);
+      return null;
+    }
+
+    return data;
+  },
+  ["latest-regulation"],
+  { revalidate: 900, tags: ["regulations"] },
+);
+
+export async function getLatestRegulation(): Promise<{ id: number; versao: string; conteudo: string; created_at?: string | null } | null> {
+  return getLatestRegulationCached();
+}

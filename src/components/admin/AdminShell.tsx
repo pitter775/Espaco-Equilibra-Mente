@@ -11,6 +11,7 @@ const links = [
   ["/admin/analitico", "Analitico", "fa-solid fa-chart-pie"],
   ["/admin/fechadura", "Fechadura", "fa-solid fa-key"],
   ["/admin/contrato", "Contrato", "fa-solid fa-file-signature"],
+  ["/admin/regulamento", "Regulamento", "fa-solid fa-clipboard-list"],
 ];
 
 function userInitials(name?: string | null) {

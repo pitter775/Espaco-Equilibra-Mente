@@ -28,7 +28,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <div className="profile-heading">
             <p className="admin-kicker mb-1">Minha conta</p>
             <h1>Perfil</h1>
-            <span>Atualize seus dados de acesso como na area de perfil do Laravel.</span>
+            <span>Atualize seus dados de acesso e mantenha sua conta em dia.</span>
           </div>
 
           {params.status && messages[params.status] && <p className="alert alert-success">{messages[params.status]}</p>}

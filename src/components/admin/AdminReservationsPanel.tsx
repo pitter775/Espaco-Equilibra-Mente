@@ -110,7 +110,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
   return (
     <>
       <AdminPageHero eyebrow="Operacao de reservas" title="Reservas">
-        <p className="mb-0">Cliente, contato, sala, periodo, status, detalhes e cancelamento conforme a tela Laravel.</p>
+        <p className="mb-0">Acompanhe cliente, contato, sala, periodo, status, detalhes e cancelamentos.</p>
       </AdminPageHero>
       <AdminMetrics items={[
         { label: "Total", value: stats.total },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth";
+import { getLatestRegulation } from "@/lib/data";
 
 const regulationPdf = "/assets/REGULAMENTO%20DO%20ESPA%C3%87O%20-%20EQM.pdf";
 
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function RegulamentoPage() {
   const user = await getCurrentUser();
+  const regulation = await getLatestRegulation();
 
   return (
     <main className="legacy-page">
@@ -34,9 +36,19 @@ export default async function RegulamentoPage() {
             </a>
           </div>
 
-          <div className="eq-card regulation-document">
-            <iframe title="Regulamento Interno do Espaco Equilibra Mente" src={regulationPdf} />
-          </div>
+          {regulation?.conteudo ? (
+            <article className="eq-card regulation-content">
+              <div>
+                <span>Versao {regulation.versao}</span>
+                <small>Regulamento interno vigente</small>
+              </div>
+              <pre>{regulation.conteudo}</pre>
+            </article>
+          ) : (
+            <div className="eq-card regulation-document">
+              <iframe title="Regulamento Interno do Espaco Equilibra Mente" src={regulationPdf} />
+            </div>
+          )}
         </div>
       </section>
       <SiteFooter />

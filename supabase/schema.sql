@@ -205,6 +205,14 @@ create table if not exists public.contracts (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.regulations (
+  id bigserial primary key,
+  versao varchar(255) not null default 'v1.0',
+  conteudo text not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 create table if not exists public.atividades (
   id bigserial primary key,
   id_usuario text references public.users(id) on delete set null,
@@ -257,6 +265,7 @@ alter table public.debug_logs enable row level security;
 alter table public.fechaduras enable row level security;
 alter table public.contratos_usuarios enable row level security;
 alter table public.contracts enable row level security;
+alter table public.regulations enable row level security;
 alter table public.atividades enable row level security;
 alter table public.bloqueios_salas enable row level security;
 
@@ -267,6 +276,7 @@ create policy "Public read sala_conveniencias" on public.sala_conveniencias for 
 create policy "Public read enderecos" on public.enderecos for select using (true);
 create policy "Public read bloqueios_salas" on public.bloqueios_salas for select using (true);
 create policy "Public read fechaduras" on public.fechaduras for select using (true);
+create policy "Public read regulations" on public.regulations for select using (true);
 
 create policy "Users read own profile" on public.users
   for select using (auth.uid()::text = id);

@@ -25,7 +25,7 @@ export default async function AdminContratoPage() {
   return (
     <>
       <AdminPageHero eyebrow="Contrato" title="Editar Contrato">
-        <p className="mb-0">Cria uma nova versao do contrato, seguindo o `ContratoController` do Laravel.</p>
+        <p className="mb-0">Atualize o texto vigente do contrato apresentado no cadastro dos clientes.</p>
       </AdminPageHero>
       <form action={saveContract} className="eq-card p-4 admin-contract-form">
         <label>

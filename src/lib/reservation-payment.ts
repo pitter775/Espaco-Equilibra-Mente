@@ -24,7 +24,7 @@ function splitName(name?: string | null) {
 function getAdminTestAmount(user: AppUser) {
   if (user.tipo_usuario !== "admin") return null;
   const raw = process.env.ADMIN_TEST_PAYMENT_AMOUNT?.trim();
-  if (!raw) return null;
+  if (!raw) return 1;
 
   const amount = Number(raw.replace(",", "."));
   return Number.isFinite(amount) && amount > 0 ? amount : null;

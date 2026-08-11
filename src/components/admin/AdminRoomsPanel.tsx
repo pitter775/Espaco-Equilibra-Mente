@@ -244,7 +244,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   return (
     <>
       <AdminPageHero eyebrow="Cadastro operacional" title="Salas">
-        <p className="mb-0">Cadastro, endereco, imagens, conveniencias, bloqueios e chaves seguindo a fonte Laravel.</p>
+        <p className="mb-0">Cadastro, endereco, imagens, conveniencias, bloqueios e chaves em uma unica tela.</p>
       </AdminPageHero>
       <AdminMetrics items={[
         { label: "Total", value: stats.total },

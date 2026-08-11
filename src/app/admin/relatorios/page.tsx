@@ -4,7 +4,7 @@ export default async function RelatoriosPage() {
   return (
     <>
       <AdminPageHero eyebrow="Relatorios" title="Relatorios">
-        <p className="mb-0">A fonte Laravel aponta esta rota para uma tela administrativa em construcao.</p>
+        <p className="mb-0">Area reservada para novos relatorios administrativos.</p>
       </AdminPageHero>
       <div className="eq-card p-4 admin-external-card">
         <h2>Dashboard Administrativo em Construcao</h2>

@@ -8,7 +8,7 @@ export default async function AnaliticoPage() {
   return (
     <>
       <AdminPageHero eyebrow="Google Analytics" title="Analitico">
-        <p className="mb-0">Acesso externo ao painel de analytics conforme a tela Laravel.</p>
+        <p className="mb-0">Acesso externo ao painel de analytics do site.</p>
       </AdminPageHero>
       <div className="eq-card p-4 admin-external-card">
         <h2>Acessar os dados do Google Analitico</h2>
