@@ -59,8 +59,12 @@ function siteUrl() {
 }
 
 function adminApprovalEmails() {
-  const raw = process.env.ADMIN_APPROVAL_EMAIL || process.env.ADMIN_EMAIL || "leyajicioliveira@gmail.com,camelorosiane@gmail.com,equilibramente12@gmail.com,pitter775@gmail.com";
-  return raw.split(",").map((email) => email.trim()).filter(Boolean);
+  return [
+    "leyajicioliveira@gmail.com",
+    "camelorosiane@gmail.com",
+    "equilibramente12@gmail.com",
+    "pitter775@gmail.com",
+  ];
 }
 
 function logoUrl() {
