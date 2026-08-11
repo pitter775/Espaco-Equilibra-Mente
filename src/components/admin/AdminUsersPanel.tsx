@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { AppUser } from "@/lib/types";
 import { LoadingButton } from "@/components/ui/LoadingButton";
@@ -114,6 +114,7 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
   });
 
   function openUser(user: AppUser) {
+    window.history.pushState({ ...(window.history.state ?? {}), adminDetail: "usuario" }, "", window.location.href);
     setIsClosing(false);
     setSelected(user);
     setMode("details");
@@ -127,7 +128,7 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
     setMessage("");
   }
 
-  function closeUser() {
+  function finishCloseUser() {
     setIsClosing(true);
     window.setTimeout(() => {
       setSelected(null);
@@ -136,6 +137,22 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
       setIsClosing(false);
     }, 220);
   }
+
+  function closeUser() {
+    if (window.history.state?.adminDetail === "usuario") {
+      window.history.back();
+      return;
+    }
+    finishCloseUser();
+  }
+
+  useEffect(() => {
+    const onPopState = () => {
+      if (selected) finishCloseUser();
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [selected]);
 
   async function submitJson(url: string, method: string, body?: unknown) {
     setLoading(method);

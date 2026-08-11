@@ -103,6 +103,14 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
     return () => document.body.classList.remove("admin-room-open");
   }, [selected]);
 
+  useEffect(() => {
+    const onPopState = () => {
+      if (selected) setSelected(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [selected]);
+
   const stats = useMemo(() => ({
     total: salas.length,
     disponiveis: salas.filter((sala) => sala.status === "disponivel").length,
@@ -139,6 +147,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   }
 
   function openRoom(sala: RoomWithRelationArrays, tab: RoomEditTab = "dados") {
+    window.history.pushState({ ...(window.history.state ?? {}), adminDetail: "sala" }, "", window.location.href);
     setSelected(sala);
     setActiveTab(tab);
     setIsClosing(false);
@@ -147,6 +156,10 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   }
 
   function closeRoom() {
+    if (window.history.state?.adminDetail === "sala") {
+      window.history.back();
+      return;
+    }
     setIsClosing(true);
     window.setTimeout(() => {
       setSelected(null);
@@ -358,7 +371,10 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
             <div className="admin-room-modal-header">
               <div>
                 <p className="admin-kicker mb-1">Editar sala</p>
-                <h2>{selected.nome}</h2>
+                <div className="admin-room-modal-title">
+                  {selected.imagens?.[0]?.imagem_base64 ? <img src={selected.imagens[0].imagem_base64} alt="" /> : null}
+                  <h2>{selected.nome}</h2>
+                </div>
               </div>
               <button className="eq-icon-btn" type="button" onClick={closeRoom} aria-label="Fechar">x</button>
             </div>
@@ -445,10 +461,6 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     </button>
                   </div>
                   <form className="admin-block-form" onSubmit={addBlock}>
-                    <div className="admin-block-presets">
-                      <strong>Bloqueio recorrente</strong>
-                      <small>Escolha a sala, informe o periodo, marque os dias da semana e use Dia inteiro para bloquear todos os horarios desses dias.</small>
-                    </div>
                     <label className="admin-block-field admin-block-type-field">
                       <span><i className="fa-solid fa-ban" aria-hidden="true" /> Tipo</span>
                       <select className="form-select" name="tipo" value={blockType} onChange={(event) => setBlockType(event.target.value)}>

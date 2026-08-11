@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminMetrics, AdminPageHero } from "./AdminPageChrome";
 import type { Reserva } from "@/lib/types";
@@ -74,6 +74,20 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState("");
 
+  function closeReservationDetails() {
+    if (window.history.state?.adminDetail === "reserva") {
+      window.history.back();
+      return;
+    }
+    setSelected(null);
+  }
+
+  useEffect(() => {
+    const onPopState = () => setSelected(null);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   const rooms = useMemo(() => Array.from(new Set(reservas.map((reserva) => reserva.sala?.nome).filter(Boolean))).sort() as string[], [reservas]);
   const stats = useMemo(() => ({
     total: reservas.length,
@@ -103,7 +117,7 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
     }
 
     setMessage(data.message || "Reserva cancelada com sucesso!");
-    setSelected(null);
+    closeReservationDetails();
     router.refresh();
   }
 
@@ -202,7 +216,11 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                 <div className="admin-reservation-actions">
                   <em className={`eq-status eq-status-${statusClass(reserva.status)}`}>{statusLabel(reserva.status)}</em>
                   <div className="admin-reservation-action-group">
-                    <button className="admin-table-action" type="button" onClick={() => { setSelected(reserva); setMessage(""); }}>
+                    <button className="admin-table-action" type="button" onClick={() => {
+                      window.history.pushState({ ...(window.history.state ?? {}), adminDetail: "reserva" }, "", window.location.href);
+                      setSelected(reserva);
+                      setMessage("");
+                    }}>
                       <i className="fa-solid fa-eye" aria-hidden="true" />
                       <span>Detalhes</span>
                     </button>
@@ -242,10 +260,10 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
                 <h2 className="h4 mb-0">{selected.sala?.nome || "Sala nao encontrada"}</h2>
               </div>
               <div className="admin-detail-modal-actions">
-                <button className="eq-btn secondary admin-detail-back" type="button" onClick={() => setSelected(null)}>
+                <button className="eq-btn secondary admin-detail-back" type="button" onClick={closeReservationDetails}>
                   <i className="fa-solid fa-arrow-left" aria-hidden="true" /> Voltar para reservas
                 </button>
-                <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+                <button className="eq-icon-btn" type="button" onClick={closeReservationDetails} aria-label="Fechar">x</button>
               </div>
             </div>
 

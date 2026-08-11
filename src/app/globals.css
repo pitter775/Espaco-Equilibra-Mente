@@ -708,6 +708,20 @@ a {
   font-weight: 800;
 }
 
+.admin-room-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-room-modal-title img {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 .admin-room-tabs {
   position: relative;
   display: flex;
@@ -2408,6 +2422,27 @@ body.admin-room-open {
     border-radius: 0;
   }
 
+  .admin-user-backdrop,
+  .admin-reservation-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100000 !important;
+    display: flex !important;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+    background: #fbfdfb;
+  }
+
+  .admin-user-modal {
+    display: flex;
+    flex-direction: column;
+    width: 100vw !important;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+  }
+
   .admin-room-backdrop {
     position: fixed !important;
     inset: 0 !important;
@@ -2448,8 +2483,12 @@ body.admin-room-open {
   }
 
   .admin-user-modal-body {
-    max-height: calc(100vh - 80px);
+    flex: 1;
+    min-height: 0;
+    max-height: none;
     overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 126px;
   }
 
   .admin-detail-modal-header {
@@ -2651,6 +2690,19 @@ body.admin-room-open {
     font-size: 11px;
   }
 
+  .admin-room-modal-title {
+    gap: 8px;
+  }
+
+  .admin-room-modal-title img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .admin-room-modal-header h2 {
+    font-size: 19px;
+  }
+
   .admin-segments {
     overflow-x: auto;
   }
@@ -2755,7 +2807,7 @@ body.admin-room-open {
   .admin-reservation-modal > .admin-reservation-detail {
     min-height: 0;
     overflow-y: auto;
-    padding-bottom: 12px;
+    padding-bottom: 126px;
   }
 
   .admin-reservation-image {
@@ -2781,6 +2833,19 @@ body.admin-room-open {
   .admin-reservation-detail-grid p {
     overflow-wrap: anywhere;
     font-size: 13px;
+  }
+
+  .admin-block-weekdays {
+    align-items: flex-start;
+  }
+
+  .admin-block-weekdays > span {
+    display: block;
+    flex-basis: 100%;
+    width: 100%;
+    margin-bottom: 2px;
+    font-size: 12px;
+    font-weight: 600;
   }
 }
 
