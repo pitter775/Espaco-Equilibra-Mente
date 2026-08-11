@@ -365,18 +365,19 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
 
             <div className="admin-room-tabs" role="tablist" aria-label="Editar sala">
               {[
-                ["dados", "Dados"],
-                ["imagens", `Imagens (${selected.imagens?.length ?? 0})`],
-                ["fechadura", "Fechadura"],
-                ["bloqueios", `Bloqueios (${bloqueios.length})`],
-              ].map(([tab, label]) => (
+                ["dados", "Dados", "fa-solid fa-sliders"],
+                ["imagens", `Imagens (${selected.imagens?.length ?? 0})`, "fa-solid fa-images"],
+                ["fechadura", "Fechadura", "fa-solid fa-key"],
+                ["bloqueios", `Bloqueios (${bloqueios.length})`, "fa-solid fa-calendar-xmark"],
+              ].map(([tab, label, icon]) => (
                 <button key={tab} className={activeTab === tab ? "active" : ""} type="button" onClick={() => setActiveTab(tab as RoomEditTab)}>
-                  {label}
+                  <i className={icon} aria-hidden="true" />
+                  <span>{label}</span>
                 </button>
               ))}
             </div>
             <p className="admin-room-tabs-hint">
-              Arraste as abas para o lado e toque em <strong>Bloqueios</strong> para bloquear horarios da sala.
+              Toque em <strong>Bloqueios</strong> para bloquear horarios da sala.
             </p>
 
             <div className="admin-room-modal-body">
