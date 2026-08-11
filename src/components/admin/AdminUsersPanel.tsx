@@ -264,12 +264,17 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
       {(selected || mode === "create") && (
         <div className={`eq-modal-backdrop admin-user-backdrop ${isClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" onClick={closeUser}>
           <div className={`eq-modal eq-card admin-user-modal ${isClosing ? "is-closing" : ""}`} onClick={(event) => event.stopPropagation()}>
-            <div className="admin-user-modal-header">
+            <div className="admin-user-modal-header admin-detail-modal-header">
               <div>
                 <p className="admin-kicker mb-1">{mode === "create" ? "Criar usuario" : mode === "edit" ? "Editar usuario" : "Revisar cadastro"}</p>
                 <h2 className="h4 mb-0">{selected?.name || "Novo usuario"}</h2>
               </div>
-              <button className="eq-icon-btn" type="button" onClick={closeUser} aria-label="Fechar">x</button>
+              <div className="admin-detail-modal-actions">
+                <button className="eq-btn secondary admin-detail-back" type="button" onClick={closeUser}>
+                  <i className="fa-solid fa-arrow-left" aria-hidden="true" /> Voltar para usuarios
+                </button>
+                <button className="eq-icon-btn" type="button" onClick={closeUser} aria-label="Fechar">x</button>
+              </div>
             </div>
 
             <div className="admin-user-modal-body">

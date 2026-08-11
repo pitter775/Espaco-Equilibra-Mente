@@ -234,14 +234,19 @@ export function AdminReservationsPanel({ reservas }: { reservas: Reserva[] }) {
       </div>
 
       {selected && (
-        <div className="eq-modal-backdrop" role="dialog" aria-modal="true">
+        <div className="eq-modal-backdrop admin-reservation-backdrop" role="dialog" aria-modal="true">
           <div className="eq-modal eq-card admin-reservation-modal">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="admin-reservation-modal-header">
               <div>
                 <p className="admin-kicker mb-1">Reserva #{selected.id}</p>
                 <h2 className="h4 mb-0">{selected.sala?.nome || "Sala nao encontrada"}</h2>
               </div>
-              <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+              <div className="admin-detail-modal-actions">
+                <button className="eq-btn secondary admin-detail-back" type="button" onClick={() => setSelected(null)}>
+                  <i className="fa-solid fa-arrow-left" aria-hidden="true" /> Voltar para reservas
+                </button>
+                <button className="eq-icon-btn" type="button" onClick={() => setSelected(null)} aria-label="Fechar">x</button>
+              </div>
             </div>
 
             <div className="admin-reservation-detail">
