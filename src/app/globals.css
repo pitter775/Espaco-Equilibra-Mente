@@ -2835,7 +2835,7 @@ body.admin-room-open {
   top: 0;
   height: 68px;
   border-bottom: 0 !important;
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   box-shadow: 0 16px 34px rgba(26, 31, 34, 0.09) !important;
   backdrop-filter: blur(18px) saturate(1.1);
   -webkit-backdrop-filter: blur(18px) saturate(1.1);
@@ -2864,11 +2864,11 @@ body.admin-room-open {
 .header-logo-img {
   display: block;
   width: auto;
-  max-width: 118px;
-  height: 42px;
+  max-width: 150px;
+  height: 52px;
   object-fit: contain;
-  opacity: 0.92;
-  filter: none;
+  opacity: 1;
+  filter: brightness(0.68) contrast(1.22) saturate(0.85);
   transition: opacity 0.22s ease, height 0.22s ease;
 }
 
@@ -2883,9 +2883,9 @@ body.admin-room-open {
 #header.header-scrolled .header-logo-img,
 #header.header-internal .header-logo-img,
 #header.mobile-menu-open .header-logo-img {
-  height: 44px;
+  height: 52px;
   opacity: 1;
-  filter: none;
+  filter: brightness(0.68) contrast(1.22) saturate(0.85);
 }
 
 .mobile-menu-toggle {
@@ -2956,14 +2956,23 @@ body.admin-room-open {
 }
 
 #header.header-scrolled .nav-menu a {
-  color: #233123 !important;
+  color: #405044 !important;
+  font-weight: 500 !important;
   text-shadow: none;
+}
+
+#header.header-internal {
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 10px 28px rgba(26, 31, 34, 0.08) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
 }
 
 #header.header-internal .nav-menu a,
 #header.header-internal .auth-nav-trigger,
 #header.header-internal .site-account-trigger {
-  color: #233123 !important;
+  color: #405044 !important;
+  font-weight: 500 !important;
   text-shadow: none;
 }
 
@@ -2975,6 +2984,11 @@ body.admin-room-open {
 #header.header-internal .nav-menu a:hover,
 #header.header-internal .nav-menu li:hover > a {
   color: #216c2e !important;
+}
+
+#header.header-internal .nav-menu li.is-active > a {
+  color: #216c2e !important;
+  font-weight: 600 !important;
 }
 
 #header .nav-menu li.is-active > a {
@@ -3067,7 +3081,7 @@ body.admin-room-open {
 #header .auth-nav-trigger:hover,
 #header .site-account-trigger:hover,
 #header .site-logout-button:hover {
-  font-weight: 700;
+  font-weight: 600 !important;
 }
 
 .site-account-menu {
@@ -5904,13 +5918,13 @@ body.auth-modal-open {
   #header.header-internal .header-logo-img,
   #header.mobile-menu-open .header-logo-img,
   #header .header-logo-img {
-    height: 36px;
-    max-width: 108px;
+    height: 42px;
+    max-width: 132px;
   }
 
   #header.mobile-menu-open .header-logo-img {
     opacity: 1;
-    filter: none;
+    filter: brightness(0.68) contrast(1.22) saturate(0.85);
   }
 
   #header .nav-menu {
