@@ -1016,7 +1016,7 @@ body.admin-room-open {
 }
 
 .admin-block-form {
-  grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) auto;
+  grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) minmax(130px, auto) auto;
 }
 
 .admin-block-field {
@@ -1042,9 +1042,47 @@ body.admin-room-open {
 
 .admin-block-type-field,
 .admin-block-reason-field,
+.admin-block-revenue-toggle,
 .admin-block-submit,
 .admin-block-weekdays {
   grid-column: auto;
+}
+
+.admin-block-revenue-toggle {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  border: 1px solid rgba(33, 108, 46, 0.14);
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 8px 10px;
+}
+
+.admin-block-revenue-toggle input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  accent-color: #216c2e;
+}
+
+.admin-block-revenue-toggle span {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.admin-block-revenue-toggle strong {
+  color: #203522;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-block-revenue-toggle small {
+  color: #697369;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 .admin-room-back-button {
@@ -2676,6 +2714,7 @@ body.admin-room-open {
 
   .admin-block-type-field,
   .admin-block-reason-field,
+  .admin-block-revenue-toggle,
   .admin-block-submit,
   .admin-block-weekdays {
     grid-column: 1 / -1;

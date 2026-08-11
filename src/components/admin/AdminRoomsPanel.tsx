@@ -241,6 +241,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
         hora_fim: data.get("hora_fim"),
         motivo: data.get("motivo"),
         dias_semana: data.getAll("dias_semana"),
+        gera_renda: data.get("gera_renda") === "on",
       }),
     }, "Bloqueio cadastrado com sucesso.");
     if (ok) {
@@ -488,6 +489,13 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                       <span><i className="fa-solid fa-note-sticky" aria-hidden="true" /> Motivo</span>
                       <input className="form-control" name="motivo" placeholder="Ex.: atendimento fixo" />
                     </label>
+                    <label className="admin-block-revenue-toggle">
+                      <input type="checkbox" name="gera_renda" defaultChecked />
+                      <span>
+                        <strong>Gera renda</strong>
+                        <small>Conta no dashboard pelo valor da sala.</small>
+                      </span>
+                    </label>
                     <LoadingButton className="eq-btn secondary admin-block-submit" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
                     <div className="admin-block-weekdays">
                       <span>Repetir semanalmente em:</span>
@@ -512,7 +520,9 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     {bloqueios.map((bloqueio: BloqueioSala) => (
                       <div key={bloqueio.id}>
                         <span>{blockDateLabel(bloqueio.data_inicio)} ate {blockDateLabel(bloqueio.data_fim)}</span>
-                        <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
+                        <small>
+                          {bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"} - {bloqueio.gera_renda === false ? "Sem renda" : "Gera renda"}
+                        </small>
                         <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/bloqueios/${bloqueio.id}`} loadingLabel="Removendo..." onClick={() => removeBlock(bloqueio.id)}>Remover</LoadingButton>
                       </div>
                     ))}

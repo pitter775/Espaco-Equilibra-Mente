@@ -118,7 +118,7 @@ export function AdminDashboardPanel({ data }: { data: DashboardData }) {
             {salasComDemanda.map((sala, index) => (
               <div key={sala.nome}>
                 <b>#{index + 1}</b>
-                <span><strong>{sala.nome}</strong><small>{sala.total} reserva(s) - {money(sala.receita)}</small></span>
+                <span><strong>{sala.nome}</strong><small>{sala.total} movimento(s) - {sala.bloqueios} bloqueio(s) com renda - {money(sala.receita)}</small></span>
               </div>
             ))}
             {!salasComDemanda.length && (
@@ -204,8 +204,8 @@ export function AdminDashboardPanel({ data }: { data: DashboardData }) {
       <AdminMetrics items={[
         { label: "Reservas hoje", value: data.resumo.reservasHoje },
         { label: "Reservas no mes", value: data.resumo.reservasMes },
-        { label: "Receita confirmada", value: money(data.resumo.receitaConfirmadaMes) },
-        { label: "Pendentes / Canceladas", value: `${data.resumo.pendentes} / ${data.resumo.canceladasMes}` },
+        { label: "Receita + bloqueios", value: money(data.resumo.receitaConfirmadaMes) },
+        { label: "Bloqueios com renda", value: data.resumo.bloqueiosComRendaMes },
       ]} />
     </>
   );

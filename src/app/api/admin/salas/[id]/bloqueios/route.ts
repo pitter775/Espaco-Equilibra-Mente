@@ -48,6 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const dataInicio = cleanText(body.data_inicio);
   const dataFim = cleanText(body.data_fim);
   const diasSemana = cleanWeekdays(body.dias_semana);
+  const geraRenda = body.gera_renda !== false;
 
   if (!["dia_inteiro", "intervalo"].includes(tipo)) {
     return NextResponse.json({ success: false, message: "Tipo de bloqueio invalido." }, { status: 422 });
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     hora_fim: tipo === "dia_inteiro" ? null : horaFim,
     motivo: cleanText(body.motivo) || null,
     ativo: true,
+    gera_renda: geraRenda,
     created_by: admin.id,
   };
 
@@ -80,7 +82,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     ? datasRepetidas.map((data) => ({ ...basePayload, data_inicio: data, data_fim: data }))
     : [{ ...basePayload, data_inicio: dataInicio, data_fim: dataFim }];
 
-  const { data, error } = await getSupabaseAdmin().from("bloqueios_salas").insert(payloads).select("*");
+  const supabase = getSupabaseAdmin();
+  let { data, error } = await supabase.from("bloqueios_salas").insert(payloads).select("*");
+  if (error?.message.toLowerCase().includes("gera_renda")) {
+    const payloadsSemRenda = payloads.map((payload) => {
+      const copy: Record<string, unknown> = { ...payload };
+      delete copy.gera_renda;
+      return copy;
+    });
+    ({ data, error } = await supabase.from("bloqueios_salas").insert(payloadsSemRenda).select("*"));
+  }
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
 
   revalidateTag("salas", "max");

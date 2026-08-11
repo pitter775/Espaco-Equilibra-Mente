@@ -233,10 +233,14 @@ create table if not exists public.bloqueios_salas (
   tipo varchar(255) not null default 'dia_inteiro',
   motivo text,
   ativo boolean not null default true,
+  gera_renda boolean not null default true,
   created_by text references public.users(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+alter table public.bloqueios_salas
+  add column if not exists gera_renda boolean not null default true;
 
 create index if not exists bloqueios_salas_periodo_idx
   on public.bloqueios_salas (sala_id, data_inicio, data_fim);

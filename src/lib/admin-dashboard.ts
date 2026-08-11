@@ -1,6 +1,6 @@
 import { listReservas, listSalasAdmin } from "./data";
 import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
-import type { Reserva, Sala } from "./types";
+import type { BloqueioSala, Reserva, Sala } from "./types";
 
 export type DashboardReserva = Reserva & {
   status_normalizado: "confirmada" | "pendente" | "cancelada";
@@ -24,6 +24,52 @@ function durationHours(start?: string | null, end?: string | null) {
   const endMinutes = (endParts[0] * 60) + endParts[1];
   const diff = endMinutes - startMinutes;
   return diff > 0 ? Math.round((diff / 60) * 100) / 100 : 0;
+}
+
+function inclusiveDays(startValue: string, endValue: string) {
+  const start = dateAtNoon(startValue);
+  const end = dateAtNoon(endValue);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) return 0;
+  return Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+}
+
+function bloqueioHours(bloqueio: BloqueioSala) {
+  const dias = inclusiveDays(bloqueio.data_inicio, bloqueio.data_fim);
+  if (!dias) return 0;
+  if (bloqueio.tipo === "intervalo") return durationHours(bloqueio.hora_inicio, bloqueio.hora_fim) * dias;
+  return 12 * dias;
+}
+
+function bloqueioHoursOnDate(bloqueio: BloqueioSala, date: Date) {
+  if (!bloqueioOverlapsDate(bloqueio, date)) return 0;
+  if (bloqueio.tipo === "intervalo") return durationHours(bloqueio.hora_inicio, bloqueio.hora_fim);
+  return 12;
+}
+
+function bloqueioHoursInMonth(bloqueio: BloqueioSala, monthDate: Date) {
+  const start = dateAtNoon(bloqueio.data_inicio);
+  const end = dateAtNoon(bloqueio.data_fim);
+  const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+  const rangeStart = start > monthStart ? start : monthStart;
+  const rangeEnd = end < monthEnd ? end : monthEnd;
+  const dias = inclusiveDays(dateKey(rangeStart), dateKey(rangeEnd));
+  if (!dias) return 0;
+  if (bloqueio.tipo === "intervalo") return durationHours(bloqueio.hora_inicio, bloqueio.hora_fim) * dias;
+  return 12 * dias;
+}
+
+function bloqueioOverlapsDate(bloqueio: BloqueioSala, date: Date) {
+  const key = dateKey(date);
+  return bloqueio.data_inicio <= key && bloqueio.data_fim >= key;
+}
+
+function bloqueioOverlapsMonth(bloqueio: BloqueioSala, monthDate: Date) {
+  const start = dateAtNoon(bloqueio.data_inicio);
+  const end = dateAtNoon(bloqueio.data_fim);
+  const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+  return start <= monthEnd && end >= monthStart;
 }
 
 function dateAtNoon(value: string) {
@@ -94,6 +140,20 @@ export async function getAdminDashboardData() {
       valor_total: Math.round(Number(reserva.sala?.valor ?? 0) * duracao * 100) / 100,
     };
   });
+  const dashboardBloqueios = salas.flatMap((sala) => (sala.bloqueios ?? [])
+    .filter((bloqueio) => bloqueio.ativo !== false && bloqueio.gera_renda !== false)
+    .map((bloqueio) => {
+      const valorHora = Number(sala.valor ?? 0);
+      const duracao = bloqueioHours(bloqueio);
+      return {
+        ...bloqueio,
+        sala_id: sala.id,
+        sala_nome: sala.nome,
+        valor_hora: valorHora,
+        duracao_horas: duracao,
+        valor_total: Math.round(valorHora * duracao * 100) / 100,
+      };
+    }));
 
   const reservasValidas = dashboardReservas.filter((reserva) => reserva.status_normalizado !== "cancelada");
   const reservasMes = reservasValidas.filter((reserva) => {
@@ -110,6 +170,8 @@ export async function getAdminDashboardData() {
   const receitaConfirmadaMes = reservasMes
     .filter((reserva) => reserva.status_normalizado === "confirmada")
     .reduce((total, reserva) => total + reserva.valor_total, 0);
+  const bloqueiosMes = dashboardBloqueios.filter((bloqueio) => bloqueioOverlapsMonth(bloqueio, today));
+  const rendaBloqueiosMes = bloqueiosMes.reduce((total, bloqueio) => total + (bloqueio.valor_hora * bloqueioHoursInMonth(bloqueio, today)), 0);
 
   const confirmadas = dashboardReservas.filter((reserva) => reserva.status_normalizado === "confirmada");
   const ticketMedio = confirmadas.length
@@ -119,10 +181,13 @@ export async function getAdminDashboardData() {
   const salasMaisReservadas = [...salas]
     .map((sala: Sala) => {
       const reservasSala = reservasValidas.filter((reserva) => Number(reserva.sala_id) === Number(sala.id));
+      const bloqueiosSala = dashboardBloqueios.filter((bloqueio) => Number(bloqueio.sala_id) === Number(sala.id));
       return {
         nome: sala.nome,
-        total: reservasSala.length,
-        receita: reservasSala.reduce((total, reserva) => total + reserva.valor_total, 0),
+        total: reservasSala.length + bloqueiosSala.length,
+        reservas: reservasSala.length,
+        bloqueios: bloqueiosSala.length,
+        receita: reservasSala.reduce((total, reserva) => total + reserva.valor_total, 0) + bloqueiosSala.reduce((total, bloqueio) => total + bloqueio.valor_total, 0),
       };
     })
     .sort((a, b) => b.total - a.total);
@@ -139,17 +204,21 @@ export async function getAdminDashboardData() {
     label: date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
     horas: reservasValidas
       .filter((reserva) => reserva.data_reserva === dateKey(date))
-      .reduce((total, reserva) => total + reserva.duracao_horas, 0),
+      .reduce((total, reserva) => total + reserva.duracao_horas, 0)
+      + dashboardBloqueios
+        .reduce((total, bloqueio) => total + bloqueioHoursOnDate(bloqueio, date), 0),
   }));
 
   const evolucaoMensal = Array.from({ length: 6 }, (_, index) => shiftMonths(today, index - 5)).map((date) => {
     const reservasMesAtual = reservasValidas.filter((reserva) => isSameMonth(dateAtNoon(reserva.data_reserva), date));
+    const bloqueiosMesAtual = dashboardBloqueios.filter((bloqueio) => bloqueioOverlapsMonth(bloqueio, date));
     return {
       label: monthLabel(date),
       reservas: reservasMesAtual.length,
       receita: reservasMesAtual
         .filter((reserva) => reserva.status_normalizado === "confirmada")
-        .reduce((total, reserva) => total + reserva.valor_total, 0),
+        .reduce((total, reserva) => total + reserva.valor_total, 0)
+        + bloqueiosMesAtual.reduce((total, bloqueio) => total + (bloqueio.valor_hora * bloqueioHoursInMonth(bloqueio, date)), 0),
     };
   });
 
@@ -163,7 +232,9 @@ export async function getAdminDashboardData() {
       reservasHoje: reservasValidas.filter((reserva) => reserva.data_reserva === dateKey(today)).length,
       reservasMes: reservasMes.length,
       pendentes: statusDistribuicao.pendente,
-      receitaConfirmadaMes,
+      receitaConfirmadaMes: receitaConfirmadaMes + rendaBloqueiosMes,
+      rendaBloqueiosMes,
+      bloqueiosComRendaMes: bloqueiosMes.length,
       ticketMedio,
       salasDisponiveis: salas.filter((sala) => sala.status === "disponivel").length,
       clientes,

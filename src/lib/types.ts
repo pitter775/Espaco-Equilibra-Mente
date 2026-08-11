@@ -50,6 +50,7 @@ export type BloqueioSala = {
   tipo: "dia_inteiro" | "intervalo" | string;
   motivo?: string | null;
   ativo?: boolean | null;
+  gera_renda?: boolean | null;
   created_by?: string | null;
   created_at?: string | null;
 };
