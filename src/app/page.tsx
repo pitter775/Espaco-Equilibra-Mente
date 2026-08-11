@@ -10,30 +10,33 @@ const especialistas = [
   {
     nome: "Rosiane Camelo",
     foto: "/assets/img/team/rose.jpeg",
-    whatsapp: "5511986428238",
+    linkedin: "https://www.linkedin.com/in/rosiane-camelo/",
     texto:
       "Psicóloga clínica com formação em Psicologia e Pós-Graduação em Terapia de Relacionamentos. Com mais de 10 anos de experiência na abordagem psicanalítica, é fundadora do Espaço EquilibraMente, um ambiente dedicado à saúde mental. Oferece atendimento personalizado e especializado em psicologia clínica, promovendo o bem-estar e o equilíbrio emocional de seus pacientes.",
   },
   {
     nome: "Jicileia Oliveira",
     foto: "/assets/img/team/ji.jpg",
-    whatsapp: "5511944751511",
     texto:
       "Psicóloga clínica com mais de 9 anos de experiência, atuando com abordagem psicanalítica. Pós-graduada em Neuropsicanálise, integra conhecimentos da psicanálise e da neurociência para um cuidado mais profundo e individualizado. Especializada em prevenção ao suicídio, ansiedade e depressão. Fundadora do Espaço EquilibraMente, um ambiente voltado ao acolhimento e à saúde emocional com ética, escuta e sensibilidade.",
   },
   {
     nome: "Cristina Azevedo",
     foto: "/assets/img/team/cristina.jpg",
-    whatsapp: "5511915654166",
     texto:
       "Psicóloga Clínica com mais de 5 anos de experiência em Terapia Cognitivo-Comportamental. Pós-graduanda em Neuropsicologia. Trabalha com avaliações e intervenções personalizadas.",
   },
   {
     nome: "Djane",
     foto: "/assets/img/team/djane.jpg",
-    whatsapp: "5511972396456",
     texto:
       "Psicopedagoga e Neuropsicopedagoga especializada no atendimento a crianças, jovens e adultos com TDAH, TEA e dificuldades de aprendizagem. Oferece avaliação, intervenção e orientação educacional personalizada.",
+  },
+  {
+    nome: "Giselle Abissamra",
+    foto: "/assets/img/team/giselle-abissamra.png",
+    texto:
+      "Fonoaudióloga, graduada em Fonoaudiologia pela PUC-SP, com especializações em Motricidade Oral e Disfagia, Voz Profissional e Canto, Fala, Linguagem e Distúrbios de Aprendizagem. Atua no atendimento de crianças, jovens, adultos e idosos, oferecendo acompanhamento especializado de acordo com as necessidades de cada paciente.",
   },
 ];
 
@@ -92,12 +95,6 @@ const depoimentos = [
       "As salas são perfeitas para atender meus pacientes. O ambiente é acolhedor e profissional, exatamente o que eu precisava para oferecer um serviço de qualidade.",
   },
 ];
-
-function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, "").replace(/^55/, "");
-  if (digits.length !== 11) return value;
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-}
 
 export default async function Home() {
   const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
@@ -241,10 +238,12 @@ export default async function Home() {
               <div className="specialist-copy">
                 <h4>{item.nome}</h4>
                 <p>{item.texto}</p>
-                <a href={`https://wa.me/${item.whatsapp}`} target="_blank" style={{ color: "inherit" }}>
-                  <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20, marginRight: 5 }} />
-                  <strong>{formatPhone(item.whatsapp)}</strong>
-                </a>
+                {"linkedin" in item && item.linkedin ? (
+                  <a href={item.linkedin} target="_blank" rel="noreferrer" className="specialist-linkedin" aria-label={`LinkedIn de ${item.nome}`}>
+                    <i className="fa-brands fa-linkedin-in" aria-hidden="true" />
+                    LinkedIn
+                  </a>
+                ) : null}
               </div>
             </div>
           ))}
@@ -261,14 +260,6 @@ export default async function Home() {
             <a href="https://wa.me/5511979691269" target="_blank" className="about-btn">
               <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
               Espaço - (11) 97969-1269
-            </a>
-            <a href="https://wa.me/5511986428238" target="_blank" className="about-btn">
-              <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
-              Rosiane - (11) 98642-8238
-            </a>
-            <a href="https://wa.me/5511944751511" target="_blank" className="about-btn">
-              <img src="/assets/img/icons/whats.png" alt="" style={{ height: 20 }} />
-              Jicileia - (11) 94475-1511
             </a>
             <a href="https://www.instagram.com/espaco_equilibramente" target="_blank" className="about-btn">
               <img src="/assets/img/icons/instagram.png" alt="" style={{ height: 18 }} />

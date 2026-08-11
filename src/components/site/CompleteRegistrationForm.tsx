@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { ContractAcceptance } from "@/components/site/ContractAcceptance";
 import { SubmitButton } from "@/components/ui/LoadingButton";
+import { compressImageFile } from "@/lib/client-images";
 
 type CompleteRegistrationFormProps = {
   error?: string;
@@ -78,6 +79,19 @@ function passwordLabel(score: number) {
   if (score >= 3) return "Senha boa";
   if (score >= 2) return "Senha media";
   return "Senha fraca";
+}
+
+function fileSizeLabel(size: number) {
+  if (size >= 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
+  return `${Math.max(1, Math.round(size / 1024))} KB`;
+}
+
+function replaceInputFile(input: HTMLInputElement, file: File) {
+  if (typeof DataTransfer === "undefined") return false;
+  const files = new DataTransfer();
+  files.items.add(file);
+  input.files = files.files;
+  return true;
 }
 
 function PasswordInput({
@@ -158,7 +172,7 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
     if (digits.length === 8) void fetchAddressByCep(digits);
   }
 
-  function validateDocument(file?: File | null) {
+  function validateDocument(file?: File | null, originalSize?: number) {
     setDocumentPreview((current) => {
       if (current?.type === "image") URL.revokeObjectURL(current.url);
       return null;
@@ -179,12 +193,50 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
       return;
     }
 
-    setDocumentMessage(`${file.name} selecionado.`);
+    const optimizedLabel = originalSize && originalSize > file.size ? ` Imagem otimizada de ${fileSizeLabel(originalSize)} para ${fileSizeLabel(file.size)}.` : "";
+    setDocumentMessage(`${file.name} selecionado.${optimizedLabel}`);
     if (file.type.startsWith("image/")) {
       setDocumentPreview({ url: URL.createObjectURL(file), type: "image", name: file.name });
       return;
     }
     setDocumentPreview({ url: "", type: "pdf", name: file.name });
+  }
+
+  async function handleDocumentChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+
+    if (!file) {
+      validateDocument(null);
+      return;
+    }
+
+    if (!allowedDocumentTypes.includes(file.type)) {
+      validateDocument(file);
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      validateDocument(file);
+      return;
+    }
+
+    setDocumentMessage("Otimizando imagem antes do envio...");
+    try {
+      const compressed = await compressImageFile(file, { maxWidth: 1600, maxHeight: 1600, quality: 0.78 });
+      if (compressed !== file) {
+        if (replaceInputFile(input, compressed)) {
+          validateDocument(compressed, file.size);
+        } else {
+          validateDocument(file);
+        }
+        return;
+      }
+    } catch (error) {
+      console.error("Erro ao otimizar documento:", error);
+    }
+
+    validateDocument(file);
   }
 
   function validateBeforeSubmit(event: FormEvent<HTMLFormElement>) {
@@ -359,7 +411,7 @@ export function CompleteRegistrationForm({ error, name, email, photo, contract }
           </div>
           <div className="col-md-8 mb-3">
             <label className="form-label">Arquivo do documento</label>
-            <input className="form-control" type="file" name="documento" accept=".jpg,.jpeg,.png,.pdf" required onChange={(event) => validateDocument(event.target.files?.[0])} />
+            <input className="form-control" type="file" name="documento" accept=".jpg,.jpeg,.png,.pdf" required onChange={handleDocumentChange} />
             {documentMessage && <small className={documentMessage.includes("selecionado") ? "complete-valid" : "complete-invalid"}>{documentMessage}</small>}
             {documentPreview && (
               <div className="complete-document-preview">

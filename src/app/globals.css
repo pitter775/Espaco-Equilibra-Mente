@@ -4866,6 +4866,33 @@ body.auth-modal-open {
   line-height: 1.7;
 }
 
+.specialist-linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid rgba(10, 102, 194, 0.18);
+  border-radius: 999px;
+  background: #eef6fb;
+  color: #0a66c2;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.specialist-linkedin:hover {
+  transform: translateY(-1px);
+  border-color: rgba(10, 102, 194, 0.34);
+  background: #e2f1fb;
+  color: #084f95;
+}
+
+.specialist-linkedin i {
+  font-size: 15px;
+}
+
 .contact-section {
   position: relative;
   background: linear-gradient(180deg, #fafafa 0%, #f4f6f2 100%);
