@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getProfileByEmail } from "@/lib/data";
+import { getGoogleOAuthConfig } from "@/lib/google-oauth";
 import { setSessionCookie } from "@/lib/session";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -10,16 +11,8 @@ type GoogleUserInfo = {
   picture?: string;
 };
 
-function getGoogleConfig(origin: string) {
-  return {
-    clientId: process.env.GOOGLE_CLIENT_ID?.trim(),
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET?.trim(),
-    redirectUri: process.env.GOOGLE_REDIRECT_URI?.trim() || `${origin}/login/google/callback`,
-  };
-}
-
 async function getGoogleUser(code: string, origin: string): Promise<GoogleUserInfo | null> {
-  const { clientId, clientSecret, redirectUri } = getGoogleConfig(origin);
+  const { clientId, clientSecret, redirectUri } = getGoogleOAuthConfig(origin);
   if (!clientId || !clientSecret) return null;
 
   const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {

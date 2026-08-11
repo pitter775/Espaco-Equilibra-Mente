@@ -1,11 +1,6 @@
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-
-function getGoogleConfig(origin: string) {
-  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI?.trim() || `${origin}/login/google/callback`;
-  return { clientId, redirectUri };
-}
+import { getGoogleOAuthConfig } from "@/lib/google-oauth";
 
 export async function GET(request: NextRequest) {
   const origin = new URL(request.url).origin;
@@ -13,7 +8,7 @@ export async function GET(request: NextRequest) {
   const anchor = request.nextUrl.searchParams.get("anchor");
   const hash = anchor && /^[a-z0-9_-]+$/i.test(anchor) ? `#${anchor}` : "";
   const redirectAfterLogin = salaId ? `/sala/${salaId}${hash}` : request.headers.get("referer") ?? "/";
-  const { clientId, redirectUri } = getGoogleConfig(origin);
+  const { clientId, redirectUri } = getGoogleOAuthConfig(origin);
 
   if (!clientId) {
     return NextResponse.redirect(new URL("/login?erro=google", request.url));
