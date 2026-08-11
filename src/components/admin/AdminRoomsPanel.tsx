@@ -131,9 +131,9 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
     return true;
   }
 
-  function openRoom(sala: RoomWithRelationArrays) {
+  function openRoom(sala: RoomWithRelationArrays, tab: RoomEditTab = "dados") {
     setSelected(sala);
-    setActiveTab("dados");
+    setActiveTab(tab);
     setIsClosing(false);
     setBlockType("dia_inteiro");
     setMessage("");
@@ -279,7 +279,19 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
 
         <div className="admin-room-grid admin-filter-transition" key={`${filter}-${query}`}>
           {filtered.map((sala) => (
-            <button className="admin-room-card" key={sala.id} type="button" onClick={() => openRoom(sala)}>
+            <article
+              className="admin-room-card"
+              key={sala.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => openRoom(sala)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openRoom(sala);
+                }
+              }}
+            >
               <div className="admin-room-image">
                 {roomImage(sala) ? <img src={roomImage(sala)} alt="" /> : <span>Sem imagem</span>}
               </div>
@@ -291,8 +303,27 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                 <span>{money(sala.valor)} / hora - {sala.metragem} m2</span>
                 <small>{sala.endereco ? `${sala.endereco.bairro}, ${sala.endereco.cidade}/${sala.endereco.estado}` : "Endereco nao cadastrado"}</small>
                 <small>{sala.imagens?.length ?? 0} imagens - {sala.conveniencias?.length ?? 0} conveniencias - {sala.bloqueios?.length ?? 0} bloqueios</small>
+                <span
+                  className="admin-room-card-action"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openRoom(sala, "bloqueios");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      openRoom(sala, "bloqueios");
+                    }
+                  }}
+                >
+                  <i className="fa-solid fa-calendar-xmark" aria-hidden="true" />
+                  Bloquear agenda
+                </span>
               </div>
-            </button>
+            </article>
           ))}
         </div>
 
@@ -333,6 +364,9 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                 </button>
               ))}
             </div>
+            <p className="admin-room-tabs-hint">
+              Arraste as abas para o lado e toque em <strong>Bloqueios</strong> para bloquear horarios da sala.
+            </p>
 
             <div className="admin-room-modal-body">
               {activeTab === "dados" && (

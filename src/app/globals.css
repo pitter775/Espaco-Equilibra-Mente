@@ -545,12 +545,15 @@ a {
   background: #fff;
   padding: 0;
   text-align: left;
+  cursor: pointer;
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.admin-room-card:hover {
+.admin-room-card:hover,
+.admin-room-card:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(28, 42, 25, 0.12);
+  outline: none;
 }
 
 .admin-room-image {
@@ -596,6 +599,32 @@ a {
 .admin-room-content span,
 .admin-room-content small {
   color: #697369;
+}
+
+.admin-room-card-action {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  min-height: 38px;
+  margin-top: 12px;
+  padding: 8px 13px;
+  border: 1px solid rgba(33, 108, 46, 0.18);
+  border-radius: 999px;
+  background: #edf6eb;
+  color: #216c2e !important;
+  font-size: 12px !important;
+  font-weight: 800;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.admin-room-card-action:hover,
+.admin-room-card-action:focus-visible {
+  border-color: rgba(33, 108, 46, 0.34);
+  background: #e3f2df;
+  transform: translateY(-1px);
+  outline: none;
 }
 
 .admin-room-backdrop {
@@ -676,14 +705,20 @@ a {
 }
 
 .admin-room-tabs {
+  position: relative;
   display: flex;
   gap: 8px;
+  overflow-x: auto;
   padding: 12px 24px;
   border-bottom: 1px solid #e8eee5;
   background: #f8fbf7;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
 }
 
 .admin-room-tabs button {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -697,6 +732,16 @@ a {
   background: #216c2e;
   color: #fff;
   box-shadow: 0 8px 18px rgba(33, 108, 46, 0.16);
+}
+
+.admin-room-tabs-hint {
+  display: none;
+  margin: 0;
+  border-bottom: 1px solid #e8eee5;
+  background: #f8fbf7;
+  color: #607060;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .admin-room-modal-body {
@@ -2083,7 +2128,7 @@ a {
   .admin-sidebar {
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 30;
     width: 100%;
     height: auto;
     min-height: 0;
@@ -2101,8 +2146,11 @@ a {
     flex-direction: row;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    margin-right: -14px;
+    margin-left: -14px;
+    padding: 0 14px 6px;
     scrollbar-width: none;
+    scroll-snap-type: x proximity;
   }
 
   .admin-sidebar-nav::-webkit-scrollbar {
@@ -2115,6 +2163,7 @@ a {
     justify-content: center;
     padding: 9px 10px;
     font-size: 12px;
+    scroll-snap-align: start;
   }
 
   .admin-sidebar-nav a span {
@@ -2187,7 +2236,21 @@ a {
   .admin-room-modal,
   .admin-user-modal {
     width: 100vw;
+    max-height: 100dvh;
     border-radius: 0;
+  }
+
+  .admin-room-backdrop {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .admin-room-modal {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
   }
 
   .admin-room-modal-header,
@@ -2221,13 +2284,37 @@ a {
   }
 
   .admin-room-tabs {
-    overflow-x: auto;
-    padding-right: 16px;
-    padding-left: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    margin-right: 0;
+    margin-left: 0;
+    padding: 10px 16px;
+    background:
+      linear-gradient(90deg, #f8fbf7 0%, rgba(248, 251, 247, 0) 22px),
+      linear-gradient(270deg, #f8fbf7 0%, rgba(248, 251, 247, 0) 22px),
+      #f8fbf7;
   }
 
   .admin-room-tabs button {
     flex: 0 0 auto;
+    min-width: max-content;
+  }
+
+  .admin-room-tabs-hint {
+    display: block;
+    padding: 0 16px 10px;
+  }
+
+  .admin-room-modal-body {
+    flex: 1;
+    max-height: none;
+    overflow: auto;
+  }
+
+  .admin-room-card-action {
+    width: 100%;
+    margin-top: 14px;
   }
 
   .admin-segments {
