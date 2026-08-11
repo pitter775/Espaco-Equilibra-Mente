@@ -942,6 +942,29 @@ a {
   grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) auto;
 }
 
+.admin-block-presets {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(33, 108, 46, 0.1);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff, #f7faf6);
+  padding: 10px 12px;
+}
+
+.admin-block-presets strong {
+  color: #203522;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-block-presets small {
+  flex-basis: 100%;
+  color: #697369;
+}
+
 .admin-block-weekdays {
   grid-column: 1 / -1;
   display: flex;
@@ -971,6 +994,16 @@ a {
   padding: 5px 9px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.admin-block-weekdays input {
+  accent-color: #216c2e;
+}
+
+.admin-block-form input:disabled {
+  background: #f2f5f1;
+  color: #9aa49a;
+  cursor: not-allowed;
 }
 
 .admin-block-weekdays small {

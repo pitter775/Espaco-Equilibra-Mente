@@ -96,6 +96,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
   const [loading, setLoading] = useState("");
   const [activeTab, setActiveTab] = useState<RoomEditTab>("dados");
   const [isClosing, setIsClosing] = useState(false);
+  const [blockType, setBlockType] = useState("dia_inteiro");
 
   const stats = useMemo(() => ({
     total: salas.length,
@@ -134,6 +135,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
     setSelected(sala);
     setActiveTab("dados");
     setIsClosing(false);
+    setBlockType("dia_inteiro");
     setMessage("");
   }
 
@@ -221,7 +223,10 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
         dias_semana: data.getAll("dias_semana"),
       }),
     }, "Bloqueio cadastrado com sucesso.");
-    if (ok) form.reset();
+    if (ok) {
+      form.reset();
+      setBlockType("dia_inteiro");
+    }
   }
 
   async function removeImage(id: number) {
@@ -393,14 +398,18 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     </div>
                   </div>
                   <form className="admin-block-form" onSubmit={addBlock}>
-                    <select className="form-select" name="tipo" defaultValue="dia_inteiro">
+                    <div className="admin-block-presets">
+                      <strong>Bloqueio recorrente</strong>
+                      <small>Escolha a sala, informe o periodo, marque os dias da semana e use Dia inteiro para bloquear todos os horarios desses dias.</small>
+                    </div>
+                    <select className="form-select" name="tipo" value={blockType} onChange={(event) => setBlockType(event.target.value)}>
                       <option value="dia_inteiro">Dia inteiro</option>
                       <option value="intervalo">Intervalo</option>
                     </select>
                     <input className="form-control" name="data_inicio" type="date" required />
                     <input className="form-control" name="data_fim" type="date" required />
-                    <input className="form-control" name="hora_inicio" type="time" />
-                    <input className="form-control" name="hora_fim" type="time" />
+                    <input className="form-control" name="hora_inicio" type="time" disabled={blockType === "dia_inteiro"} />
+                    <input className="form-control" name="hora_fim" type="time" disabled={blockType === "dia_inteiro"} />
                     <input className="form-control" name="motivo" placeholder="Motivo" />
                     <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
                     <div className="admin-block-weekdays">
