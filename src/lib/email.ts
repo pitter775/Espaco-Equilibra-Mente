@@ -6,6 +6,8 @@ type EmailResult = {
   sent: boolean;
   skipped?: boolean;
   error?: string;
+  provider?: "smtp" | "resend";
+  to?: string;
 };
 
 let resendClient: Resend | null = null;
@@ -46,7 +48,14 @@ function escapeHtml(value: string) {
 }
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || "https://www.espacoequilibramente.com.br";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || "https://www.espacoequilibramente.com.br";
+  const withProtocol = raw.startsWith("http") ? raw : `https://${raw}`;
+
+  try {
+    return new URL(withProtocol).origin;
+  } catch {
+    return "https://www.espacoequilibramente.com.br";
+  }
 }
 
 function adminApprovalEmails() {
@@ -66,17 +75,26 @@ function fromAddress() {
 
 async function sendEmail(to: string, subject: string, html: string): Promise<EmailResult> {
   const smtp = getSmtpTransport();
+  let smtpError: string | null = null;
+
   if (smtp) {
     try {
       await smtp.sendMail({ from: fromAddress(), to, subject, html });
-      return { sent: true };
+      return { sent: true, provider: "smtp", to };
     } catch (error) {
-      return { sent: false, error: error instanceof Error ? error.message : "Erro ao enviar e-mail por SMTP." };
+      smtpError = error instanceof Error ? error.message : "Erro ao enviar e-mail por SMTP.";
     }
   }
 
   const resend = getResend();
-  if (!resend) return { sent: false, skipped: true, error: "SMTP/RESEND nao configurado." };
+  if (!resend) {
+    return {
+      sent: false,
+      skipped: !smtpError,
+      error: smtpError ? `SMTP falhou: ${smtpError}. Resend nao configurado.` : "SMTP/RESEND nao configurado.",
+      to,
+    };
+  }
 
   const { error } = await resend.emails.send({
     from: fromAddress(),
@@ -85,8 +103,16 @@ async function sendEmail(to: string, subject: string, html: string): Promise<Ema
     html,
   });
 
-  if (error) return { sent: false, error: error.message };
-  return { sent: true };
+  if (error) {
+    return {
+      sent: false,
+      error: smtpError ? `SMTP falhou: ${smtpError}. Resend falhou: ${error.message}` : error.message,
+      provider: "resend",
+      to,
+    };
+  }
+
+  return { sent: true, provider: "resend", to };
 }
 
 function pendingHtml(user: AppUser) {
@@ -225,7 +251,15 @@ export async function sendApprovalStatusEmail(user: AppUser, status: "aprovado" 
 
   const subject = status === "aprovado" ? "Seu cadastro foi aprovado!" : "Atualizacao do seu cadastro";
   const html = status === "aprovado" ? approvalHtml(user) : rejectionHtml(user);
-  return sendEmail(user.email, subject, html);
+  const result = await sendEmail(user.email, subject, html);
+
+  if (result.sent) {
+    console.info(`[email:approval] ${status} enviado para ${user.email} via ${result.provider ?? "desconhecido"}.`);
+  } else {
+    console.error(`[email:approval] falha ao enviar ${status} para ${user.email}: ${result.error ?? "erro desconhecido"}`);
+  }
+
+  return result;
 }
 
 export async function sendPendingRegistrationEmail(user: AppUser): Promise<EmailResult> {

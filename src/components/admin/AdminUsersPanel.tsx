@@ -12,6 +12,8 @@ type ApiResult = {
     sent?: boolean;
     skipped?: boolean;
     error?: string;
+    provider?: string;
+    to?: string;
   } | null;
 };
 
@@ -181,7 +183,11 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
     if (!updated) return;
     setLocalUsers((current) => current.map((item) => item.id === user.id ? { ...updated, status_aprovacao: status } : item));
     setSelected((current) => current && current.id === user.id ? { ...updated, status_aprovacao: status } : current);
-    const emailMessage = result?.email?.sent ? " E-mail enviado." : result?.email?.error ? ` E-mail pendente: ${result.email.error}` : "";
+    const emailMessage = result?.email?.sent
+      ? ` E-mail enviado para ${result.email.to ?? "o usuario"}${result.email.provider ? ` via ${result.email.provider}` : ""}.`
+      : result?.email?.error
+        ? ` E-mail pendente: ${result.email.error}`
+        : "";
     setMessage(`${status === "aprovado" ? "Cadastro aprovado com sucesso." : "Cadastro reprovado com sucesso."}${emailMessage}`);
   }
 

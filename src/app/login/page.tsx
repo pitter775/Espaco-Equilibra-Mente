@@ -6,8 +6,12 @@ import { getCurrentUser } from "@/lib/auth";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ sala_id?: string; redirect_to?: string }> }) {
   const { sala_id, redirect_to } = await searchParams;
-  const googleHref = sala_id ? `/login/google?sala_id=${sala_id}&anchor=agenda` : "/login/google";
   const redirectTo = redirect_to?.startsWith("/") && !redirect_to.startsWith("//") ? redirect_to : sala_id ? `/sala/${sala_id}#agenda` : "/";
+  const googleHref = sala_id
+    ? `/login/google?sala_id=${sala_id}&anchor=agenda`
+    : redirectTo !== "/"
+      ? `/login/google?redirect_to=${encodeURIComponent(redirectTo)}`
+      : "/login/google";
   const user = await getCurrentUser();
 
   if (user && redirectTo !== "/") {

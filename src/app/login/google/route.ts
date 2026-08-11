@@ -6,8 +6,10 @@ export async function GET(request: NextRequest) {
   const origin = new URL(request.url).origin;
   const salaId = request.nextUrl.searchParams.get("sala_id");
   const anchor = request.nextUrl.searchParams.get("anchor");
+  const requestedRedirect = request.nextUrl.searchParams.get("redirect_to");
   const hash = anchor && /^[a-z0-9_-]+$/i.test(anchor) ? `#${anchor}` : "";
-  const redirectAfterLogin = salaId ? `/sala/${salaId}${hash}` : request.headers.get("referer") ?? "/";
+  const safeRequestedRedirect = requestedRedirect?.startsWith("/") && !requestedRedirect.startsWith("//") ? requestedRedirect : null;
+  const redirectAfterLogin = salaId ? `/sala/${salaId}${hash}` : safeRequestedRedirect ?? request.headers.get("referer") ?? "/";
   const { clientId, redirectUri } = getGoogleOAuthConfig(origin);
 
   if (!clientId) {
