@@ -42,6 +42,12 @@ function normalizeTime(value?: string | null) {
   return value ? value.slice(0, 5) : "";
 }
 
+function blockDateLabel(value?: string | null) {
+  if (!value) return "";
+  const [year, month, day] = value.split("-");
+  return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
 function readFiles(files: FileList | null): Promise<string[]> {
   if (!files?.length) return Promise.resolve([]);
   return Promise.all(Array.from(files).map((file) => new Promise<string>((resolve, reject) => {
@@ -212,6 +218,7 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
         hora_inicio: data.get("hora_inicio"),
         hora_fim: data.get("hora_fim"),
         motivo: data.get("motivo"),
+        dias_semana: data.getAll("dias_semana"),
       }),
     }, "Bloqueio cadastrado com sucesso.");
     if (ok) form.reset();
@@ -396,11 +403,29 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     <input className="form-control" name="hora_fim" type="time" />
                     <input className="form-control" name="motivo" placeholder="Motivo" />
                     <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
+                    <div className="admin-block-weekdays">
+                      <span>Repetir semanalmente em:</span>
+                      {[
+                        ["1", "Seg"],
+                        ["2", "Ter"],
+                        ["3", "Qua"],
+                        ["4", "Qui"],
+                        ["5", "Sex"],
+                        ["6", "Sab"],
+                        ["0", "Dom"],
+                      ].map(([value, label]) => (
+                        <label key={value}>
+                          <input type="checkbox" name="dias_semana" value={value} />
+                          {label}
+                        </label>
+                      ))}
+                      <small>Selecione os dias para bloquear automaticamente entre a data inicial e final.</small>
+                    </div>
                   </form>
                   <div className="admin-block-list">
                     {bloqueios.map((bloqueio: BloqueioSala) => (
                       <div key={bloqueio.id}>
-                        <span>{bloqueio.data_inicio} ate {bloqueio.data_fim}</span>
+                        <span>{blockDateLabel(bloqueio.data_inicio)} ate {blockDateLabel(bloqueio.data_fim)}</span>
                         <small>{bloqueio.tipo === "intervalo" ? `${normalizeTime(bloqueio.hora_inicio)} - ${normalizeTime(bloqueio.hora_fim)}` : "Dia inteiro"} - {bloqueio.motivo || "Sem motivo"}</small>
                         <LoadingButton type="button" className="eq-btn danger" loading={loading === `/api/admin/bloqueios/${bloqueio.id}`} loadingLabel="Removendo..." onClick={() => removeBlock(bloqueio.id)}>Remover</LoadingButton>
                       </div>

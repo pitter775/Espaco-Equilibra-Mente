@@ -133,6 +133,12 @@ a {
 
 .eq-btn.danger {
   background: #b83a2f;
+  color: #fff !important;
+}
+
+.eq-btn.danger .btn-label,
+.eq-btn.danger .btn-spinner {
+  color: #fff !important;
 }
 
 .eq-status {
@@ -936,6 +942,42 @@ a {
   grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) auto;
 }
 
+.admin-block-weekdays {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #f7faf6;
+  padding: 10px 12px;
+}
+
+.admin-block-weekdays span {
+  color: #203522;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-block-weekdays label {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(33, 108, 46, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #526052;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-block-weekdays small {
+  flex-basis: 100%;
+  color: #697369;
+}
+
 .admin-block-list {
   display: grid;
   gap: 8px;
@@ -959,6 +1001,22 @@ a {
 
 .admin-block-list small {
   color: #697369;
+}
+
+.admin-block-list .eq-btn.danger {
+  border: 1px solid rgba(184, 58, 47, 0.16);
+  background: #f8e9e8;
+  color: #9b3129 !important;
+  box-shadow: none;
+}
+
+.admin-block-list .eq-btn.danger .btn-label,
+.admin-block-list .eq-btn.danger .btn-spinner {
+  color: #9b3129 !important;
+}
+
+.admin-block-list .eq-btn.danger:hover {
+  background: #f1d7d4;
 }
 
 .admin-reservation-toolbar {
