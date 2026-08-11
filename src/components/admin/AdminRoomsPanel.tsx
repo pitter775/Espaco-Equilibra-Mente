@@ -365,14 +365,15 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
 
             <div className="admin-room-tabs" role="tablist" aria-label="Editar sala">
               {[
-                ["dados", "Dados", "fa-solid fa-sliders"],
-                ["imagens", `Imagens (${selected.imagens?.length ?? 0})`, "fa-solid fa-images"],
-                ["fechadura", "Fechadura", "fa-solid fa-key"],
-                ["bloqueios", `Bloqueios (${bloqueios.length})`, "fa-solid fa-calendar-xmark"],
-              ].map(([tab, label, icon]) => (
+                ["dados", "Dados", "Dados", "fa-solid fa-sliders"],
+                ["imagens", `Imagens (${selected.imagens?.length ?? 0})`, `Imgs. (${selected.imagens?.length ?? 0})`, "fa-solid fa-images"],
+                ["fechadura", "Fechadura", "Fech.", "fa-solid fa-key"],
+                ["bloqueios", `Bloqueios (${bloqueios.length})`, `Bloq. (${bloqueios.length})`, "fa-solid fa-calendar-xmark"],
+              ].map(([tab, label, mobileLabel, icon]) => (
                 <button key={tab} className={activeTab === tab ? "active" : ""} type="button" onClick={() => setActiveTab(tab as RoomEditTab)}>
                   <i className={icon} aria-hidden="true" />
-                  <span>{label}</span>
+                  <span className="admin-room-tab-label-desktop">{label}</span>
+                  <span className="admin-room-tab-label-mobile">{mobileLabel}</span>
                 </button>
               ))}
             </div>
@@ -439,40 +440,43 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                       <h3>Bloqueios da agenda</h3>
                       <p>Bloqueie dias ou intervalos em que a sala nao pode receber reserva.</p>
                     </div>
+                    <button className="eq-btn secondary admin-room-back-button" type="button" onClick={() => setActiveTab("dados")}>
+                      <i className="fa-solid fa-arrow-left" aria-hidden="true" /> Voltar para dados
+                    </button>
                   </div>
                   <form className="admin-block-form" onSubmit={addBlock}>
                     <div className="admin-block-presets">
                       <strong>Bloqueio recorrente</strong>
                       <small>Escolha a sala, informe o periodo, marque os dias da semana e use Dia inteiro para bloquear todos os horarios desses dias.</small>
                     </div>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-type-field">
                       <span><i className="fa-solid fa-ban" aria-hidden="true" /> Tipo</span>
                       <select className="form-select" name="tipo" value={blockType} onChange={(event) => setBlockType(event.target.value)}>
                         <option value="dia_inteiro">Dia inteiro</option>
                         <option value="intervalo">Intervalo</option>
                       </select>
                     </label>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-date-field">
                       <span><i className="fa-solid fa-calendar-day" aria-hidden="true" /> Inicio</span>
                       <input className="form-control" name="data_inicio" type="date" required />
                     </label>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-date-field">
                       <span><i className="fa-solid fa-calendar-check" aria-hidden="true" /> Fim</span>
                       <input className="form-control" name="data_fim" type="date" required />
                     </label>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-time-field">
                       <span><i className="fa-solid fa-clock" aria-hidden="true" /> Hora inicial</span>
                       <input className="form-control" name="hora_inicio" type="time" disabled={blockType === "dia_inteiro"} />
                     </label>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-time-field">
                       <span><i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Hora final</span>
                       <input className="form-control" name="hora_fim" type="time" disabled={blockType === "dia_inteiro"} />
                     </label>
-                    <label className="admin-block-field">
+                    <label className="admin-block-field admin-block-reason-field">
                       <span><i className="fa-solid fa-note-sticky" aria-hidden="true" /> Motivo</span>
                       <input className="form-control" name="motivo" placeholder="Ex.: atendimento fixo" />
                     </label>
-                    <LoadingButton className="eq-btn secondary" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
+                    <LoadingButton className="eq-btn secondary admin-block-submit" type="submit" loading={Boolean(loading)} loadingLabel="Bloqueando...">Bloquear</LoadingButton>
                     <div className="admin-block-weekdays">
                       <span>Repetir semanalmente em:</span>
                       {[

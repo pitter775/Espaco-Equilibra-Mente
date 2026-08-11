@@ -1022,6 +1022,27 @@ body.admin-room-open {
   font-size: 12px;
 }
 
+.admin-block-type-field,
+.admin-block-reason-field,
+.admin-block-submit,
+.admin-block-weekdays {
+  grid-column: auto;
+}
+
+.admin-room-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.admin-room-tab-label-mobile {
+  display: none;
+}
+
 .admin-block-presets {
   grid-column: 1 / -1;
   display: flex;
@@ -2411,7 +2432,8 @@ body.admin-room-open {
     padding: 9px 10px;
     border: 1px solid #dfe9dc;
     background: #fff;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 700;
     line-height: 1.1;
     box-shadow: 0 5px 14px rgba(28, 42, 25, 0.06);
   }
@@ -2427,6 +2449,14 @@ body.admin-room-open {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .admin-room-tab-label-desktop {
+    display: none !important;
+  }
+
+  .admin-room-tab-label-mobile {
+    display: inline !important;
   }
 
   .admin-room-tabs-hint {
@@ -2462,6 +2492,26 @@ body.admin-room-open {
 
   .admin-block-field span {
     font-size: 12px;
+  }
+
+  .admin-block-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-block-type-field,
+  .admin-block-reason-field,
+  .admin-block-submit,
+  .admin-block-weekdays {
+    grid-column: 1 / -1;
+  }
+
+  .admin-section-heading {
+    align-items: flex-start;
+  }
+
+  .admin-room-back-button {
+    padding: 7px 10px;
+    font-size: 11px;
   }
 
   .admin-segments {
