@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function AdminNavPendingHint({ clicked }: { clicked: boolean }) {
   const { pending } = useLinkStatus();
@@ -17,12 +17,24 @@ function isActive(pathname: string, href: string) {
 
 export function AdminNavLink({ href, label, icon }: { href: string; label: string; icon: string }) {
   const pathname = usePathname();
+  const linkRef = useRef<HTMLAnchorElement>(null);
   const [pendingNav, setPendingNav] = useState({ href: "", from: "" });
   const active = isActive(pathname, href);
   const clicked = pendingNav.href === href && pendingNav.from === pathname && !active;
 
+  useEffect(() => {
+    if (!active || !linkRef.current || window.innerWidth > 991) return;
+    linkRef.current.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [active, pathname]);
+
   return (
-    <Link href={href} className={active ? "is-active" : undefined} onClick={() => !active && setPendingNav({ href, from: pathname })}>
+    <Link
+      ref={linkRef}
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={active ? "is-active" : undefined}
+      onClick={() => !active && setPendingNav({ href, from: pathname })}
+    >
       <i className={icon} aria-hidden="true" />
       <span>{label}</span>
       <AdminNavPendingHint clicked={clicked} />

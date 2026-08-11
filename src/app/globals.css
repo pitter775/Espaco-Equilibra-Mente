@@ -2170,6 +2170,16 @@ body.admin-room-open {
     scroll-snap-align: start;
   }
 
+  .admin-sidebar-nav a:hover,
+  .admin-sidebar-nav a.is-active {
+    transform: none;
+  }
+
+  .admin-sidebar-nav a.is-active {
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 18px rgba(6, 18, 10, 0.14);
+  }
+
   .admin-sidebar-nav a span {
     white-space: nowrap;
   }
