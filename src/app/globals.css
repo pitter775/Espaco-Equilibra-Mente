@@ -4866,7 +4866,14 @@ body.auth-modal-open {
   line-height: 1.7;
 }
 
-.specialist-linkedin {
+.specialist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.specialist-contact {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -4874,16 +4881,41 @@ body.auth-modal-open {
   padding: 8px 14px;
   border: 1px solid rgba(10, 102, 194, 0.18);
   border-radius: 999px;
-  background: #eef6fb;
-  color: #0a66c2;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
   transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
 }
 
-.specialist-linkedin:hover {
+.specialist-contact:hover {
   transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.specialist-phone {
+  border-color: rgba(37, 211, 102, 0.2);
+  background: #edf9f1;
+  color: #167a3f;
+}
+
+.specialist-phone:hover {
+  border-color: rgba(37, 211, 102, 0.36);
+  background: #e1f5e8;
+  color: #0f6331;
+}
+
+.specialist-phone img {
+  width: 16px;
+  height: 16px;
+}
+
+.specialist-linkedin {
+  border-color: rgba(10, 102, 194, 0.18);
+  background: #eef6fb;
+  color: #0a66c2;
+}
+
+.specialist-linkedin:hover {
   border-color: rgba(10, 102, 194, 0.34);
   background: #e2f1fb;
   color: #084f95;
