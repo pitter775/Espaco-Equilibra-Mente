@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
 import bcrypt from "bcryptjs";
 import { requireAdmin } from "@/lib/auth";
 import { sendApprovalStatusEmail } from "@/lib/email";
@@ -46,6 +47,20 @@ function addressPayload(body: Record<string, unknown>, userId: string) {
     estado: cleanText(body.endereco_estado),
     cep: cleanText(body.endereco_cep),
   };
+}
+
+async function deleteBlobAsset(value?: string | null) {
+  const url = cleanText(value);
+  if (!url.includes(".blob.vercel-storage.com/")) return;
+
+  try {
+    await del(url);
+  } catch (error) {
+    console.error("[admin-usuarios:delete-blob:error]", {
+      message: error instanceof Error ? error.message : String(error),
+      url,
+    });
+  }
 }
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -104,7 +119,10 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   await requireAdmin();
   const { id } = await params;
   const supabase = getSupabaseAdmin();
-  await supabase.from("users").delete().eq("id", id);
+  const { data: usuario } = await supabase.from("users").select("documento_caminho").eq("id", id).maybeSingle();
+  await deleteBlobAsset(usuario?.documento_caminho);
+  const { error } = await supabase.from("users").delete().eq("id", id);
+  if (error) return NextResponse.json({ success: false, message: error.message }, { status: 422 });
   revalidatePath("/admin/usuarios");
   return NextResponse.json({ success: true });
 }
