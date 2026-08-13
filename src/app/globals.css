@@ -2517,7 +2517,7 @@ body.admin-room-open {
     flex: 0 0 auto;
     position: relative;
     z-index: 6;
-    padding-top: max(14px, env(safe-area-inset-top));
+    padding-top: max(64px, env(safe-area-inset-top));
   }
 
   .admin-user-modal-body {
@@ -2820,6 +2820,7 @@ body.admin-room-open {
   .admin-reservation-modal {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     width: 100vw !important;
     height: 100dvh;
     min-height: 100dvh;
@@ -2827,7 +2828,7 @@ body.admin-room-open {
     overflow: hidden;
     border: 0;
     border-radius: 0;
-    padding: 16px;
+    padding: 66px 16px 16px;
   }
 
   .admin-reservation-backdrop {
