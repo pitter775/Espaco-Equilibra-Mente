@@ -2855,19 +2855,27 @@ body.admin-room-open {
   }
 
   .admin-reservation-modal > .admin-reservation-detail {
+    gap: 24px;
     min-height: 0;
     overflow-y: auto;
     padding-bottom: 126px;
   }
 
   .admin-reservation-image {
-    min-height: 180px;
-    max-height: 220px;
-    aspect-ratio: 16 / 10;
+    display: block;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    aspect-ratio: auto;
   }
 
   .admin-reservation-image img {
-    object-fit: contain;
+    display: block;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 16px 34px rgba(31, 46, 32, 0.16);
   }
 
   .admin-reservation-detail-grid section {
