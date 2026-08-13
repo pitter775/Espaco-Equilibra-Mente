@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getSupabaseServer, isSupabaseConfigured } from "@/lib/supabase";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://espaco-equilibra-mente.vercel.app";
+import { absoluteUrl } from "@/lib/seo";
 
 function url(path: string) {
-  return new URL(path, siteUrl).toString();
+  return absoluteUrl(path);
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

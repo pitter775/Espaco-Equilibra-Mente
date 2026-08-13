@@ -8,8 +8,8 @@ import { getLatestRegulation } from "@/lib/data";
 const regulationPdf = "/assets/REGULAMENTO%20DO%20ESPA%C3%87O%20-%20EQM.pdf";
 
 export const metadata: Metadata = {
-  title: "Regulamento Interno | Espaco Equilibra Mente",
-  description: "Regulamento interno de uso das salas do Espaco Equilibra Mente.",
+  title: "Regulamento Interno | Espaço Equilibra Mente",
+  description: "Regulamento interno de uso das salas do Espaço Equilibra Mente.",
 };
 
 export default async function RegulamentoPage() {
@@ -25,7 +25,7 @@ export default async function RegulamentoPage() {
             <p className="admin-kicker mb-1">Uso das salas</p>
             <h1>Regulamento Interno</h1>
             <span>
-              Consulte as regras de uso do Espaco Equilibra Mente antes de realizar ou confirmar uma reserva.
+              Consulte as regras de uso do Espaço Equilibra Mente antes de realizar ou confirmar uma reserva.
             </span>
           </div>
 
@@ -46,7 +46,7 @@ export default async function RegulamentoPage() {
             </article>
           ) : (
             <div className="eq-card regulation-document">
-              <iframe title="Regulamento Interno do Espaco Equilibra Mente" src={regulationPdf} />
+              <iframe title="Regulamento Interno do Espaço Equilibra Mente" src={regulationPdf} />
             </div>
           )}
         </div>

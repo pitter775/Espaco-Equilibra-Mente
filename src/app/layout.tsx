@@ -1,31 +1,57 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import {
+  absoluteUrl,
+  businessAddress,
+  businessPhone,
+  geoCoordinates,
+  instagramUrl,
+  siteDescription,
+  siteKeywords,
+  siteLegalName,
+  siteName,
+  siteUrl,
+  socialImageUrl,
+  whatsappUrl,
+} from "@/lib/seo";
 import "./globals.css";
 
-const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.espacoequilibramente.com.br");
-const siteName = "Espaco Equilibra Mente";
-const siteDescription =
-  "Coworking para psicologos, terapeutas e profissionais da saude em Sao Paulo, com salas acolhedoras para atendimento por hora.";
-const socialImage = "/assets/img/seo/equilibra-mente-og.jpg";
-const socialImageUrl = new URL(socialImage, siteUrl).toString();
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["LocalBusiness", "HealthAndBeautyBusiness"],
   name: siteName,
+  alternateName: [
+    siteLegalName,
+    "Equilibra Mente Espaço",
+    "Espaço Equilibramente",
+    "Espaço EquilibraMente Coworking",
+  ],
   description: siteDescription,
   url: siteUrl.toString(),
   image: socialImageUrl,
-  logo: new URL("/assets/img/logoescuro.png", siteUrl).toString(),
-  telephone: "+55 11 97969-1269",
+  logo: absoluteUrl("/assets/img/logoescuro.png"),
+  telephone: businessPhone,
+  sameAs: [instagramUrl, whatsappUrl],
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Rua Dona Antônia de Queirós, 504 - cj 43",
-    addressLocality: "São Paulo",
-    addressRegion: "SP",
-    addressCountry: "BR",
+    ...businessAddress,
   },
-  areaServed: "São Paulo",
+  geo: {
+    "@type": "GeoCoordinates",
+    ...geoCoordinates,
+  },
+  areaServed: ["São Paulo", "Consolação", "Bela Vista", "Higienópolis", "Paulista"],
   priceRange: "$$",
+  makesOffer: [
+    {
+      "@type": "Offer",
+      name: "Aluguel de salas para atendimento por hora",
+      itemOffered: {
+        "@type": "Service",
+        name: "Salas para psicólogos, terapeutas e profissionais da saúde",
+      },
+    },
+  ],
 };
 
 const geistSans = Geist({
@@ -42,18 +68,11 @@ export const metadata: Metadata = {
   metadataBase: siteUrl,
   applicationName: siteName,
   title: {
-    default: `${siteName} | Salas para profissionais da saude`,
+    default: `${siteName} | Salas para profissionais da saúde`,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
-  keywords: [
-    "aluguel de salas para psicologos",
-    "sala para atendimento terapeutico",
-    "coworking para profissionais da saude",
-    "consultorio por hora",
-    "sala para terapia em Sao Paulo",
-    "Espaco Equilibra Mente",
-  ],
+  keywords: siteKeywords,
   authors: [{ name: siteName }],
   creator: siteName,
   publisher: siteName,
@@ -70,20 +89,20 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "/",
     siteName,
-    title: `${siteName} | Salas para profissionais da saude`,
+    title: `${siteName} | Salas para profissionais da saúde`,
     description: siteDescription,
     images: [
       {
         url: socialImageUrl,
         width: 1200,
         height: 630,
-        alt: "Recepcao do Espaco Equilibra Mente",
+        alt: "Recepção do Espaço Equilibra Mente",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteName} | Salas para profissionais da saude`,
+    title: `${siteName} | Salas para profissionais da saúde`,
     description: siteDescription,
     images: [socialImageUrl],
   },

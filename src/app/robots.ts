@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://espaco-equilibra-mente.vercel.app";
+import { absoluteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin", "/cliente", "/profile", "/reserva"],
     },
-    sitemap: new URL("/sitemap.xml", siteUrl).toString(),
+    sitemap: absoluteUrl("/sitemap.xml"),
   };
 }

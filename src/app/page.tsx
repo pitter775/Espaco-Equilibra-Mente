@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AboutGallery } from "@/components/site/AboutGallery";
 import { PublicRooms } from "@/components/site/PublicRooms";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -6,6 +7,16 @@ import { SiteMotion } from "@/components/site/SiteMotion";
 import { SpecialistsSection, type SpecialistItem } from "@/components/site/SpecialistsSection";
 import { getCurrentUser } from "@/lib/auth";
 import { listSalas } from "@/lib/data";
+import { absoluteUrl, businessAddress, siteDescription, siteKeywords, siteName } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Aluguel de salas para psicólogos e terapeutas em São Paulo",
+  description: siteDescription,
+  alternates: {
+    canonical: "/",
+  },
+  keywords: siteKeywords,
+};
 
 const especialistas: SpecialistItem[] = [
   {
@@ -69,7 +80,7 @@ const profissionais = [
 const perguntas = [
   {
     pergunta: "Como faço para reservar uma sala?",
-    resposta: 'Para reservar uma sala, basta acessar nossa página, escolher a unidade desejada e selecionar a opção "Reservar".',
+    resposta: 'Para reservar uma sala, basta acessar nossa página, escolher a sala desejada e selecionar a opção "Reservar".',
   },
   {
     pergunta: "Quais são os métodos de pagamento aceitos?",
@@ -106,6 +117,52 @@ const depoimentos = [
   },
 ];
 
+function homeStructuredData() {
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: siteName,
+      url: absoluteUrl("/"),
+      inLanguage: "pt-BR",
+      description: siteDescription,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${absoluteUrl("/")}?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: perguntas.map((item) => ({
+        "@type": "Question",
+        name: item.pergunta,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.resposta,
+        },
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: "Aluguel de salas para atendimento por hora",
+      provider: {
+        "@type": "LocalBusiness",
+        name: siteName,
+        address: {
+          "@type": "PostalAddress",
+          ...businessAddress,
+        },
+      },
+      areaServed: "São Paulo",
+      serviceType: "Coworking para profissionais da saúde",
+      description: "Salas por hora para psicólogos, terapeutas, psiquiatras, nutricionistas, fisioterapeutas e profissionais da saúde.",
+    },
+  ];
+}
+
 export default async function Home() {
   const [salas, user] = await Promise.all([listSalas(), getCurrentUser()]);
 
@@ -113,10 +170,14 @@ export default async function Home() {
     <div className="legacy-page">
       <SiteHeader user={user} />
       <SiteMotion />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeStructuredData()) }}
+      />
       <section id="inicio" className="public-hero">
         <div className="public-hero-content">
           <img src="/assets/img/logoescuro.png" alt="Equilibra Mente" className="public-hero-logo" />
-          <p style={{ fontSize: 25 }}>Espaco Coworking para Profissionais da Saude</p>
+          <p style={{ fontSize: 25 }}>Espaço Coworking para Profissionais da Saúde</p>
           <p style={{ fontSize: 20 }}>
             Rua Dona Antônia de Queirós n. 504 - cj 43
             <br />
@@ -141,7 +202,7 @@ export default async function Home() {
           </div>
           <PublicRooms salas={salas} />
           {!salas.length && (
-            <p className="rooms-empty">Nenhuma sala disponivel no momento. Verifique a conexao com o Supabase.</p>
+            <p className="rooms-empty">Nenhuma sala disponível no momento. Verifique a conexão com o Supabase.</p>
           )}
         </div>
       </section>
@@ -208,7 +269,7 @@ export default async function Home() {
           <div className="contentg">
             <h3>Um pouco <span>Sobre nós</span></h3>
             <div className="about-text text-left mt-4">
-              <p>Em um mundo cada vez mais acelerado e exigente, cuidar da saúde emocional tornou-se uma prioridade. Foi com esse propósito que as psicólogas clínicas <strong>Rosiane Camelo</strong> e <strong>Jiciléia Oliveira</strong> fundaram o <strong>Espaço EquilibraMente</strong>, um ambiente pensado com carinho para acolher profissionais da saúde mental e seus pacientes.</p>
+              <p>Em um mundo cada vez mais acelerado e exigente, cuidar da saúde emocional tornou-se uma prioridade. Foi com esse propósito que as psicólogas clínicas <strong>Rosiane Camelo</strong> e <strong>Jicileia Oliveira</strong> fundaram o <strong>Espaço EquilibraMente</strong>, um ambiente pensado com carinho para acolher profissionais da saúde mental e seus pacientes.</p>
               <p>O Espaço oferece salas aconchegantes, silenciosas e bem equipadas, disponíveis para locação por hora, proporcionando uma estrutura de qualidade para atendimentos presenciais ou online. Nosso objetivo é garantir um ambiente onde o bem-estar, a privacidade e a qualidade no atendimento caminham lado a lado.</p>
               <p>Aqui, cada detalhe foi pensado para que você possa cuidar de quem cuida.</p>
             </div>

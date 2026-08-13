@@ -56,17 +56,17 @@ export function RoomCard({ sala, imageOffset = 0 }: { sala: Sala; imageOffset?: 
             <button type="button" onClick={() => setLocalOffset((current) => current - 1)} aria-label={`Imagem anterior da ${sala.nome}`}>
               <i className="fa-solid fa-chevron-left" aria-hidden="true" />
             </button>
-            <button type="button" onClick={() => setLocalOffset((current) => current + 1)} aria-label={`Proxima imagem da ${sala.nome}`}>
+            <button type="button" onClick={() => setLocalOffset((current) => current + 1)} aria-label={`Próxima imagem da ${sala.nome}`}>
               <i className="fa-solid fa-chevron-right" aria-hidden="true" />
             </button>
           </div>
         )}
-        <span className="badge-open">{indisponivel ? "Indisponivel" : "Disponivel"}</span>
+        <span className="badge-open">{indisponivel ? "Indisponível" : "Disponível"}</span>
       </div>
       <div className="room-body">
         <h4>{sala.nome}</h4>
         <div className="room-meta">
-          <span><i className="fa-solid fa-location-dot mr-1" />Consolacao, Sao Paulo</span>
+          <span><i className="fa-solid fa-location-dot mr-1" />Consolação, São Paulo</span>
           <span>{sala.metragem ?? "-"} m2</span>
         </div>
         <div className="room-price-line">
@@ -75,7 +75,7 @@ export function RoomCard({ sala, imageOffset = 0 }: { sala: Sala; imageOffset?: 
             <br />
             <strong>{Number(sala.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/h</strong>
           </div>
-          <Link href={`/sala/${sala.id}`} className="about-btn">Ver Detalhes</Link>
+          <Link href={`/sala/${sala.id}`} className="about-btn">Ver detalhes</Link>
         </div>
       </div>
     </div>

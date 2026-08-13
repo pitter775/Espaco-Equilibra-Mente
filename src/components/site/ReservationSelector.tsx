@@ -178,11 +178,11 @@ export function ReservationSelector({
             <div className="reservation-approval-icon">
               <i className="fa-regular fa-clock" aria-hidden="true" />
             </div>
-            <span>Cadastro em analise</span>
-            <h3 id="reservation-approval-title">Sua reserva ainda nao pode ser concluida</h3>
+            <span>Cadastro em análise</span>
+            <h3 id="reservation-approval-title">Sua reserva ainda não pode ser concluída</h3>
             <p>
-              Recebemos seus dados e a equipe do Espaco Equilibra Mente esta conferindo o cadastro.
-              Assim que for aprovado, voce recebera um e-mail e podera finalizar suas reservas.
+              Recebemos seus dados e a equipe do Espaço Equilibra Mente está conferindo o cadastro.
+              Assim que for aprovado, você receberá um e-mail e poderá finalizar suas reservas.
             </p>
             <div className="reservation-approval-actions">
               <button type="button" className="eq-btn" onClick={() => setApprovalModalOpen(false)}>Entendi</button>
