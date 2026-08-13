@@ -2510,7 +2510,7 @@ body.admin-room-open {
   .admin-reservation-modal::before {
     content: "";
     display: block;
-    flex: 0 0 64px;
+    flex: 0 0 144px;
     width: 100%;
     background: transparent;
     pointer-events: none;
