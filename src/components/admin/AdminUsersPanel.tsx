@@ -208,15 +208,6 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
     setMessage(`${status === "aprovado" ? "Cadastro aprovado com sucesso." : "Cadastro reprovado com sucesso."}${emailMessage}`);
   }
 
-  async function toggleStatus(user: AppUser) {
-    const result = await submitJson(`/api/admin/usuarios/${user.id}`, "PUT", { toggleStatus: true });
-    const updated = result?.data;
-    if (!updated) return;
-    setLocalUsers((current) => current.map((item) => item.id === user.id ? updated : item));
-    setSelected(updated);
-    setMessage("Status do usuario atualizado.");
-  }
-
   async function deleteUser(user: AppUser) {
     if (!confirm("Deseja realmente excluir este usuario?")) return;
     const result = await submitJson(`/api/admin/usuarios/${user.id}`, "DELETE");
@@ -370,10 +361,6 @@ export function AdminUsersPanel({ users, initialUserId }: { users: AppUser[]; in
                       <i className="fa-solid fa-pen" aria-hidden="true" />
                       Editar
                     </button>
-                    <LoadingButton className="admin-pill-action neutral" type="button" loading={loading === "PUT"} loadingLabel="Salvando..." onClick={() => toggleStatus(selected)}>
-                      <i className="fa-solid fa-power-off" aria-hidden="true" />
-                      {selected.status === "ativo" ? "Inativar" : "Ativar"}
-                    </LoadingButton>
                     <LoadingButton className="admin-pill-action reject" type="button" loading={loading === "DELETE"} loadingLabel="Excluindo..." onClick={() => deleteUser(selected)}>
                       <i className="fa-solid fa-trash" aria-hidden="true" />
                       Excluir

@@ -2620,6 +2620,19 @@ body.admin-room-open {
     flex-direction: column;
   }
 
+  .admin-review-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    justify-content: stretch;
+  }
+
+  .admin-review-actions .admin-pill-action {
+    width: 100%;
+    min-height: 48px;
+  }
+
   .admin-approval-box .d-flex,
   .admin-user-modal-footer {
     display: grid !important;
