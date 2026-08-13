@@ -2855,6 +2855,8 @@ body.admin-room-open {
   }
 
   .admin-reservation-modal > .admin-reservation-detail {
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     min-height: 0;
     overflow-y: auto;
@@ -2863,19 +2865,30 @@ body.admin-room-open {
 
   .admin-reservation-image {
     display: block;
+    flex: 0 0 auto;
+    width: 100%;
     min-height: 0;
     max-height: none;
-    overflow: visible;
+    overflow: hidden;
     background: transparent;
     aspect-ratio: auto;
   }
 
   .admin-reservation-image img {
     display: block;
+    width: 100%;
     height: auto;
     border-radius: 8px;
     object-fit: cover;
     box-shadow: 0 16px 34px rgba(31, 46, 32, 0.16);
+  }
+
+  .admin-reservation-detail-grid {
+    display: grid;
+    flex: 0 0 auto;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .admin-reservation-detail-grid section {
