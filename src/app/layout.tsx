@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import {
   absoluteUrl,
   businessAddress,
@@ -16,6 +17,9 @@ import {
 } from "@/lib/seo";
 import { SiteScrollReset } from "@/components/site/SiteScrollReset";
 import "./globals.css";
+
+const googleAnalyticsId = "G-GRG4XXWLH3";
+const shouldLoadGoogleAnalytics = process.env.NODE_ENV === "production";
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -146,6 +150,22 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        {shouldLoadGoogleAnalytics && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAnalyticsId}');
+              `}
+            </Script>
+          </>
+        )}
         <SiteScrollReset />
         {children}
       </body>
