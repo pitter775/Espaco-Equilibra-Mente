@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ReservationSelector } from "@/components/site/ReservationSelector";
 import { AuthModalTrigger } from "@/components/site/AuthModalTrigger";
+import { MobileRoomReservationBar } from "@/components/site/MobileRoomReservationBar";
 import { RoomDetailGallery } from "@/components/site/RoomDetailGallery";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -138,6 +139,14 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="legacy-page">
       <SiteHeader user={user} />
+      <MobileRoomReservationBar
+        salaId={sala.id}
+        roomName={sala.nome}
+        image={seoImage}
+        price={Number(sala.valor)}
+        hasUser={Boolean(user)}
+        disabled={indisponivel}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(roomStructuredData({ sala, enderecoTexto, image: seoImage })) }}
