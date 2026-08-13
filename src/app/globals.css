@@ -4177,6 +4177,10 @@ body.auth-modal-open {
   box-shadow: 0 10px 24px rgba(31, 46, 32, 0.06);
 }
 
+.room-mobile-more-toggle {
+  display: none;
+}
+
 .room-price-card {
   position: sticky;
   top: 92px;
@@ -6568,6 +6572,49 @@ body.auth-modal-open {
     padding-bottom: 92px;
   }
 
+  .room-detail-mobile-section:not(.is-expanded) .room-detail-copy {
+    position: relative;
+    max-height: 10.8em;
+    overflow: hidden;
+  }
+
+  .room-detail-mobile-section:not(.is-expanded) .room-detail-copy::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 56px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 82%);
+    content: "";
+    pointer-events: none;
+  }
+
+  .room-detail-mobile-section:not(.is-expanded) .room-detail-divider,
+  .room-detail-mobile-section:not(.is-expanded) .room-conveniences {
+    display: none;
+  }
+
+  .room-mobile-more-toggle {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: 999px;
+    background: #eef4ec;
+    color: #216c2e;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 10px 22px rgba(31, 46, 32, 0.08);
+  }
+
+  .room-mobile-more-toggle i {
+    font-size: 11px;
+  }
+
   .mobile-room-cta {
     position: fixed;
     right: 12px;
@@ -6669,6 +6716,49 @@ body.auth-modal-open {
     font-size: 13px;
     font-weight: 800;
     box-shadow: 0 8px 18px rgba(33, 108, 46, 0.18);
+  }
+
+  .mobile-room-cta-summary {
+    display: grid;
+    min-width: 94px;
+    min-height: 42px;
+    align-content: center;
+    justify-items: center;
+    border: 0;
+    border-radius: 999px;
+    background: #eef4ec;
+    color: #216c2e !important;
+    padding: 7px 12px;
+    text-align: center;
+  }
+
+  .mobile-room-cta-summary strong,
+  .mobile-room-cta-summary span {
+    display: block;
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+
+  .mobile-room-cta-summary strong {
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .mobile-room-cta-summary span {
+    margin-top: 3px;
+    color: #697369;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .mobile-room-cta-summary.has-selection {
+    background: #216c2e;
+    color: #fff !important;
+    box-shadow: 0 8px 18px rgba(33, 108, 46, 0.18);
+  }
+
+  .mobile-room-cta-summary.has-selection span {
+    color: rgba(255, 255, 255, 0.82);
   }
 
   .mobile-room-cta-action.is-disabled,

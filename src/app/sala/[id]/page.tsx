@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ReservationSelector } from "@/components/site/ReservationSelector";
 import { AuthModalTrigger } from "@/components/site/AuthModalTrigger";
 import { MobileRoomReservationBar } from "@/components/site/MobileRoomReservationBar";
+import { RoomExpandableDetails } from "@/components/site/RoomExpandableDetails";
 import { RoomDetailGallery } from "@/components/site/RoomDetailGallery";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -173,16 +174,7 @@ export default async function SalaPage({ params }: { params: Promise<{ id: strin
                   <div className="contentg room-detail-heading">
                     <h3>Sobre a <span>{sala.nome}</span></h3>
                   </div>
-                  <div className="room-detail-copy" dangerouslySetInnerHTML={{ __html: sala.descricao ?? "" }} />
-                  <hr className="room-detail-divider" />
-                  <div className="room-conveniences">
-                    {sala.conveniencias?.length ? sala.conveniencias.map((item) => (
-                      <div className="eq-card room-convenience-card" key={item.id}>
-                        <i className={`${item.icone ?? "fa fa-check"} mr-2`} style={{ color: "#76aa66" }} />
-                        <span style={{ fontSize: 13, color: "#777" }}>{item.nome}</span>
-                      </div>
-                    )) : <p>Sem conveniências cadastradas para esta sala.</p>}
-                  </div>
+                  <RoomExpandableDetails description={sala.descricao} conveniences={sala.conveniencias} />
                 </div>
                 <div className="col-lg-4">
                   <div className="eq-card p-4 mb-3 room-price-card">

@@ -23,6 +23,7 @@ export function MobileRoomReservationBar({
   disabled,
 }: MobileRoomReservationBarProps) {
   const [visible, setVisible] = useState(false);
+  const [selection, setSelection] = useState({ count: 0, total: 0 });
 
   useEffect(() => {
     const updateVisibility = () => {
@@ -50,9 +51,24 @@ export function MobileRoomReservationBar({
     };
   }, []);
 
+  useEffect(() => {
+    const onSelectionChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ salaId: number; count: number; total: number }>).detail;
+      if (Number(detail?.salaId) !== Number(salaId)) return;
+      setSelection({ count: detail.count, total: detail.total });
+    };
+
+    window.addEventListener("eqm:reservation-selection", onSelectionChange);
+    return () => window.removeEventListener("eqm:reservation-selection", onSelectionChange);
+  }, [salaId]);
+
   function goToAgenda() {
     document.getElementById("agenda")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  const selectionLabel = selection.count
+    ? `${selection.count} horario${selection.count === 1 ? "" : "s"}`
+    : "Escolha horarios";
 
   return (
     <div className={`mobile-room-cta ${visible ? "is-visible" : ""}`} aria-hidden={!visible}>
@@ -70,8 +86,9 @@ export function MobileRoomReservationBar({
           Indisponível
         </button>
       ) : hasUser ? (
-        <button className="mobile-room-cta-action" type="button" onClick={goToAgenda}>
-          Reservar
+        <button className={`mobile-room-cta-summary ${selection.count ? "has-selection" : ""}`} type="button" onClick={goToAgenda}>
+          <strong>{selectionLabel}</strong>
+          <span>{selection.count ? money(selection.total) : "Ver agenda"}</span>
         </button>
       ) : (
         <AuthModalTrigger label="Reservar" className="mobile-room-cta-action" salaId={salaId} />

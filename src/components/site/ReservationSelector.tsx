@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { money } from "@/lib/format";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 
@@ -38,6 +38,16 @@ export function ReservationSelector({
   const selectedDateLabel = date
     ? new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })
     : "Selecione a data";
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("eqm:reservation-selection", {
+      detail: {
+        salaId,
+        count: selected.length,
+        total,
+      },
+    }));
+  }, [salaId, selected.length, total]);
 
   async function loadSlots(value: string) {
     setDate(value);
@@ -118,7 +128,6 @@ export function ReservationSelector({
           <span><i className="is-free"></i> Livre</span>
           <span><i className="is-selected"></i> Selecionado</span>
           <span><i className="is-busy"></i> Reservado</span>
-          <span><i className="is-blocked"></i> Bloqueado</span>
         </div>
 
         <div className="reservation-slots-area">

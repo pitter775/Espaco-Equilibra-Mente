@@ -14,6 +14,7 @@ import {
   socialImageUrl,
   whatsappUrl,
 } from "@/lib/seo";
+import { SiteScrollReset } from "@/components/site/SiteScrollReset";
 import "./globals.css";
 
 const structuredData = {
@@ -145,6 +146,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        <SiteScrollReset />
         {children}
       </body>
     </html>
