@@ -1016,7 +1016,9 @@ body.admin-room-open {
 }
 
 .admin-block-form {
-  grid-template-columns: 140px repeat(4, minmax(110px, 1fr)) minmax(160px, 1fr) minmax(130px, auto) auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: end;
 }
 
 .admin-block-field {
@@ -1041,11 +1043,23 @@ body.admin-room-open {
 }
 
 .admin-block-type-field,
-.admin-block-reason-field,
-.admin-block-revenue-toggle,
-.admin-block-submit,
 .admin-block-weekdays {
   grid-column: auto;
+}
+
+.admin-block-reason-field {
+  grid-column: span 2;
+}
+
+.admin-block-revenue-toggle,
+.admin-block-submit {
+  align-self: end;
+}
+
+.admin-block-field .form-control,
+.admin-block-field .form-select {
+  width: 100%;
+  min-height: 44px;
 }
 
 .admin-block-revenue-toggle {

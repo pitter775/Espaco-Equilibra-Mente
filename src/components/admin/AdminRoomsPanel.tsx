@@ -48,6 +48,14 @@ function blockDateLabel(value?: string | null) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
+function openNativeDatePicker(input: HTMLInputElement) {
+  try {
+    input.showPicker?.();
+  } catch {
+    input.focus();
+  }
+}
+
 function readFiles(files: FileList | null): Promise<string[]> {
   if (!files?.length) return Promise.resolve([]);
   return Promise.all(Array.from(files).map((file) => new Promise<string>((resolve, reject) => {
@@ -471,11 +479,11 @@ export function AdminRoomsPanel({ salas, conveniencias }: { salas: RoomWithRelat
                     </label>
                     <label className="admin-block-field admin-block-date-field">
                       <span><i className="fa-solid fa-calendar-day" aria-hidden="true" /> Inicio</span>
-                      <input className="form-control" name="data_inicio" type="date" required />
+                      <input className="form-control" name="data_inicio" type="date" required onClick={(event) => openNativeDatePicker(event.currentTarget)} onFocus={(event) => openNativeDatePicker(event.currentTarget)} />
                     </label>
                     <label className="admin-block-field admin-block-date-field">
                       <span><i className="fa-solid fa-calendar-check" aria-hidden="true" /> Fim</span>
-                      <input className="form-control" name="data_fim" type="date" required />
+                      <input className="form-control" name="data_fim" type="date" required onClick={(event) => openNativeDatePicker(event.currentTarget)} onFocus={(event) => openNativeDatePicker(event.currentTarget)} />
                     </label>
                     <label className="admin-block-field admin-block-time-field">
                       <span><i className="fa-solid fa-clock" aria-hidden="true" /> Hora inicial</span>
