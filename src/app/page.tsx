@@ -32,6 +32,7 @@ const especialistas: SpecialistItem[] = [
     nome: "Jicileia Oliveira",
     foto: "/assets/img/team/ji.jpg",
     whatsapp: "5511944751511",
+    registro: "CRP 06/133381",
     texto:
       "Psicóloga clínica com mais de 9 anos de experiência, atuando com abordagem psicanalítica. Pós-graduada em Neuropsicanálise, integra conhecimentos da psicanálise e da neurociência para um cuidado mais profundo e individualizado. Especializada em prevenção ao suicídio, ansiedade e depressão. Fundadora do Espaço EquilibraMente, um ambiente voltado ao acolhimento e à saúde emocional com ética, escuta e sensibilidade.",
   },
