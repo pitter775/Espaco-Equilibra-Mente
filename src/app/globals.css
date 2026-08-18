@@ -5393,7 +5393,58 @@ body.auth-modal-open {
   width: 52%;
   height: 360px;
   border-radius: 4px;
-  background: url("/assets/img/960x0.jpg") center center / cover no-repeat;
+  overflow: hidden;
+  background: #eef1ec;
+}
+
+.professionals-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation: professionalsFade 15s infinite;
+}
+
+.professionals-slide-1 {
+  opacity: 1;
+}
+
+.professionals-slide-2 {
+  animation-delay: 5s;
+}
+
+.professionals-slide-3 {
+  animation-delay: 10s;
+}
+
+@keyframes professionalsFade {
+  0%,
+  28% {
+    opacity: 1;
+  }
+
+  35%,
+  93% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .professionals-slide {
+    animation: none;
+  }
+
+  .professionals-slide-1 {
+    opacity: 1;
+  }
 }
 
 .professionals-card {

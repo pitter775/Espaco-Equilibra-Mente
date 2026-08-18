@@ -79,6 +79,12 @@ const profissionais = [
   { icon: "/assets/img/icons/medico.png", label: "Médicos de diversas especialidades" },
 ];
 
+const professionalCareImages = [
+  "/assets/img/professional-care-01.webp",
+  "/assets/img/professional-care-02.webp",
+  "/assets/img/professional-care-03.webp",
+];
+
 const perguntas = [
   {
     pergunta: "Como faço para reservar uma sala?",
@@ -235,7 +241,15 @@ export default async function Home() {
 
       <section id="profissionais" className="professionals-section">
         <div className="container professionals-wrap">
-          <div className="professionals-image" />
+          <div className="professionals-image" aria-hidden="true">
+            {professionalCareImages.map((image, index) => (
+              <span
+                key={image}
+                className={`professionals-slide professionals-slide-${index + 1}`}
+                style={{ backgroundImage: `url(${image})` }}
+              />
+            ))}
+          </div>
           <div className="professionals-card">
             <p>Atenda seus clientes em um ambiente confortável, sofisticado e privado. Nosso espaço é ideal para profissionais liberais da área da saúde, incluindo:</p>
             <ul>
