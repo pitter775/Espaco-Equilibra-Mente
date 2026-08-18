@@ -24,6 +24,7 @@ const especialistas: SpecialistItem[] = [
     foto: "/assets/img/team/rose.jpeg",
     whatsapp: "5511986428238",
     linkedin: "https://www.linkedin.com/in/rosiane-camelo/",
+    registro: "CRP: 06/134343",
     texto:
       "Psicóloga clínica com formação em Psicologia e Pós-Graduação em Terapia de Relacionamentos. Com mais de 10 anos de experiência na abordagem psicanalítica, é fundadora do Espaço EquilibraMente, um ambiente dedicado à saúde mental. Oferece atendimento personalizado e especializado em psicologia clínica, promovendo o bem-estar e o equilíbrio emocional de seus pacientes.",
   },
@@ -49,6 +50,7 @@ const especialistas: SpecialistItem[] = [
   {
     nome: "Giselle Abissamra",
     foto: "/assets/img/team/giselle-abissamra.png",
+    registro: "CRP: 14008",
     texto:
       "Fonoaudióloga, graduada em Fonoaudiologia pela PUC-SP, com especializações em Motricidade Oral e Disfagia, Voz Profissional e Canto, Fala, Linguagem e Distúrbios de Aprendizagem. Atua no atendimento de crianças, jovens, adultos e idosos, oferecendo acompanhamento especializado de acordo com as necessidades de cada paciente.",
   },

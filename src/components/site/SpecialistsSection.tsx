@@ -64,7 +64,7 @@ export function SpecialistsSection({ especialistas }: { especialistas: Specialis
       <div className="container">
         <div className="contentg">
           <h3>Nosso time de <span>Especialistas</span></h3>
-          <p>Nosso time é formado por profissionais experientes comprometidas com o cuidado emocional, garantindo qualidade no atendimento e cuidado com cada detalhe.</p>
+          <p>Reunimos profissionais qualificados de diferentes áreas da saúde, comprometidos com um atendimento ético, humanizado e de excelência, respeitando as necessidades e particularidades de cada pessoa.</p>
         </div>
         <div className="specialists-layout">
           <nav ref={navRef} className="specialist-thumb-nav" aria-label="Navegar entre especialistas">
