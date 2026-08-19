@@ -12,6 +12,21 @@ type ReservaHorario = {
   hora_fim: string;
 };
 
+type SupabaseError = {
+  code?: string;
+  message?: string;
+};
+
+type ReservaConflito = {
+  id: number;
+  usuario_id: string | number;
+  hora_inicio: string;
+  hora_fim: string;
+  status: string;
+};
+
+const reservaDuplicadaMessage = "Nao foi possivel confirmar essa reserva porque ja existe uma tentativa para esse mesmo horario. Confira em Minhas reservas ou escolha outro horario.";
+
 function randomChave(chaves: unknown) {
   const lista = Array.isArray(chaves) ? chaves : [];
   if (!lista.length) return null;
@@ -37,19 +52,23 @@ async function existeBloqueioParaPeriodo(salaId: number, horario: ReservaHorario
   });
 }
 
-async function existeConflitoReserva(salaId: number, horario: ReservaHorario) {
+async function buscarConflitoReserva(salaId: number, horario: ReservaHorario) {
   const { data } = await getSupabaseAdmin()
     .from("reservas")
-    .select("hora_inicio,hora_fim")
+    .select("id,usuario_id,hora_inicio,hora_fim,status")
     .eq("sala_id", salaId)
     .eq("data_reserva", horario.data_reserva)
     .in("status", ["PENDENTE", "pendente", "CONFIRMADA", "confirmada"]);
 
-  return (data ?? []).some((reserva) => {
+  return ((data ?? []) as ReservaConflito[]).find((reserva) => {
     const inicio = String(reserva.hora_inicio).slice(0, 5);
     const fim = String(reserva.hora_fim).slice(0, 5);
     return horario.hora_inicio < fim && horario.hora_fim > inicio;
   });
+}
+
+function isReservaUnicaError(error: SupabaseError | null) {
+  return error?.code === "23505" || String(error?.message ?? "").includes("reserva_unica");
 }
 
 export async function POST(request: NextRequest) {
@@ -72,13 +91,31 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin();
     await expireStalePendingReservations(sala.id);
     const criadas = [];
+    let reusouReservaPendente = false;
     for (const horario of reservaData.horarios) {
       if (await existeBloqueioParaPeriodo(sala.id, horario)) {
         return NextResponse.json({ success: false, message: "Horario indisponivel. Existe um bloqueio manual para esse periodo." }, { status: 409 });
       }
 
-      if (await existeConflitoReserva(sala.id, horario)) {
-        return NextResponse.json({ success: false, message: "Horario indisponivel. Ja existe uma reserva nesse horario." }, { status: 409 });
+      const conflito = await buscarConflitoReserva(sala.id, horario);
+      const conflitoMesmoUsuario = conflito && String(conflito.usuario_id) === String(user.id);
+      const conflitoMesmoHorario = conflito
+        && String(conflito.hora_inicio).slice(0, 5) === horario.hora_inicio
+        && String(conflito.hora_fim).slice(0, 5) === horario.hora_fim;
+      const conflitoPendente = String(conflito?.status ?? "").toLowerCase() === "pendente";
+
+      if (conflitoMesmoUsuario && conflitoMesmoHorario && conflitoPendente) {
+        criadas.push(conflito);
+        reusouReservaPendente = true;
+        continue;
+      }
+
+      if (conflitoMesmoUsuario && conflitoMesmoHorario) {
+        return NextResponse.json({ success: false, message: "Voce ja possui uma reserva confirmada para esse horario." }, { status: 409 });
+      }
+
+      if (conflito) {
+        return NextResponse.json({ success: false, message: "Esse horario acabou de ficar indisponivel porque outra pessoa ja iniciou ou confirmou uma reserva. Escolha outro horario disponivel." }, { status: 409 });
       }
 
       const { data: fechadura } = await supabase.from("fechaduras").select("chaves").eq("sala_id", sala.id).maybeSingle();
@@ -95,7 +132,9 @@ export async function POST(request: NextRequest) {
         .eq("data_reserva", horario.data_reserva)
         .eq("hora_inicio", horario.hora_inicio)
         .eq("hora_fim", horario.hora_fim)
-        .eq("status", "CANCELADA")
+        .in("status", ["CANCELADA", "cancelada"])
+        .order("updated_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (cancelada) {
@@ -105,7 +144,8 @@ export async function POST(request: NextRequest) {
           .eq("id", cancelada.id)
           .select("*")
           .single();
-        if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+        if (isReservaUnicaError(error)) return NextResponse.json({ success: false, message: reservaDuplicadaMessage }, { status: 409 });
+        if (error) return NextResponse.json({ success: false, message: "Erro ao reativar a reserva. Tente novamente." }, { status: 500 });
         criadas.push(data);
         continue;
       }
@@ -123,7 +163,8 @@ export async function POST(request: NextRequest) {
         })
         .select("*")
         .single();
-      if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+      if (isReservaUnicaError(error)) return NextResponse.json({ success: false, message: reservaDuplicadaMessage }, { status: 409 });
+      if (error) return NextResponse.json({ success: false, message: "Erro ao confirmar a reserva. Tente novamente." }, { status: 500 });
       criadas.push(data);
     }
 
@@ -137,7 +178,7 @@ export async function POST(request: NextRequest) {
     }
 
     cookieStore.delete("eqm-reserva");
-    return NextResponse.json(payment);
+    return NextResponse.json({ ...payment, reusedPendingReservation: reusouReservaPendente });
   } catch (error) {
     console.error("Erro ao confirmar reserva:", error);
     return NextResponse.json({

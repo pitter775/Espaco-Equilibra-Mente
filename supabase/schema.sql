@@ -102,9 +102,12 @@ create table if not exists public.reservas (
   status varchar(255) not null default 'ativa',
   chave_usada varchar(255),
   created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  constraint reserva_unica unique (sala_id, data_reserva, hora_inicio, hora_fim)
+  updated_at timestamptz default now()
 );
+
+create unique index if not exists reserva_unica
+  on public.reservas (sala_id, data_reserva, hora_inicio, hora_fim)
+  where lower(status) in ('pendente', 'confirmada');
 
 create table if not exists public.transacoes (
   id bigserial primary key,

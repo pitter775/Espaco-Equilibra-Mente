@@ -40,7 +40,7 @@ export function ConfirmReservationButton() {
         ? data.redirect
         : new URL(data.redirect, window.location.origin).href;
       paymentWindow?.location.replace(redirectUrl);
-      setMessage("Reserva criada. Finalize o pagamento na aba aberta.");
+      setMessage(data.reusedPendingReservation ? "Voce ja tinha uma reserva pendente. Reabrimos o pagamento na aba aberta." : "Pagamento aberto. Finalize sua reserva na aba aberta.");
     } catch {
       paymentWindow?.close();
       setMessage("Erro ao confirmar a reserva.");
